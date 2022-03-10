@@ -22,6 +22,9 @@ contract AvatarNFT is ERC721URIStorage, Ownable {
 
     address private _CONFIG;    //Configuration Contract
 
+    //TODO: Rating: professional , personal and community + role + pos/neg
+    
+
     /**
 	 * Constructor
 	 */
@@ -67,5 +70,5 @@ contract AvatarNFT is ERC721URIStorage, Ownable {
             "Sorry, Assets are non-transferable"
         );
     }
-    
+
 }
