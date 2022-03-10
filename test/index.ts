@@ -17,3 +17,29 @@ describe("Greeter", function () {
     expect(await greeter.greet()).to.equal("Hola, mundo!");
   });
 });
+
+
+describe("Avatar", function () {
+  //Contract Instances
+  let avatarContract;
+  //Addresses
+  let owner;
+  let admin;
+  let tester;
+  let addrs;
+
+
+  before(async function () {
+      //Deploy
+      const AvatarContract = await ethers.getContractFactory("AvaterNFT");
+      avatarContract = await AvatarContract.deploy();
+      //Populate Accounts
+      [owner, admin, tester, ...addrs] = await ethers.getSigners();
+  })
+
+  // it("Should ...", async function () {
+    
+    // expect(await greeter.greet()).to.equal("Hola, mundo!");
+  // });
+
+});
