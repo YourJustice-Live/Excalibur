@@ -12,6 +12,7 @@ library RoleSimple {
 
 
     //[TODO] Only elementary types, contract types or enums are allowed as mapping keys
+    // asKey(NFT nft){ }
 
     // Mapping from token ID to account balances
     mapping(string => mapping(DataTypes.NFT => bool)) private _assoc;

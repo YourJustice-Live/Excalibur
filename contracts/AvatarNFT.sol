@@ -13,9 +13,10 @@ import "./interfaces/IConfig.sol";
  * Avatar as NFT
  * Version 0.0.1
  *  - [TODO] Contract is open for everyone to mint.
+ *  - [TODO] Max of one NFT assigned for each account
+ *  - [TODO] Can create un-assigned NFT (Kept on contract)
  *  - [TODO] Minted Tokens are updatable by Token holder
  *  - [TODO] Assets are non-transferable by owner
- *  - [TODO] Max of one NFT for account
  *  - [TODO] Contract is Updatable
  */
 contract AvatarNFT is ERC721URIStorage, Ownable {
@@ -56,6 +57,12 @@ contract AvatarNFT is ERC721URIStorage, Ownable {
     function owner() public view override returns (address) {
         return IConfig(getConfig()).owner();
     }
+
+    /// Mint (Create New Avatar for oneself)
+
+    /// Add (Create New Avatar Without an Owner)
+
+    /// Merge 
 
     /**
      * @dev Transfer Rules
