@@ -6,6 +6,7 @@
 import { ethers } from "hardhat";
 
 async function main() {
+  /*
   // Hardhat always runs the compile task when running scripts with its command
   // line interface.
   //
@@ -20,6 +21,16 @@ async function main() {
   await greeter.deployed();
 
   console.log("Greeter deployed to:", greeter.address);
+  */
+
+  //Deploy Config
+  const Config = await ethers.getContractFactory("Config");
+  const config = await Config.deploy();
+
+  //Deploy Avatar
+  const Avatar = await ethers.getContractFactory("Avatar");
+  const avatar = await Avatar.deploy(config.address);
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere
