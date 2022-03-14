@@ -7,7 +7,8 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 //Interfaces
 import "./interfaces/IConfig.sol";
-
+//Libraries
+import "./libraries/DataTypes.sol";
 
 /**
  * Avatar as NFT
@@ -21,39 +22,49 @@ import "./interfaces/IConfig.sol";
  */
 contract AvatarNFT is ERC721URIStorage, Ownable {
 
-    address private _CONFIG;    //Configuration Contract
-
-    //TODO: Rating: professional , personal and community + role + pos/neg
+    //--- Storage
+    address internal _CONFIG;    //Configuration Contract
+    address internal _HUB;    //Hub Contract
     
 
-    /**
-	 * Constructor
-	 */
+    //TODO: Rating: professional , personal and community + role + pos/neg
+    // uint256 internal _rep;       //Reputation Tracking
+    mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256))) internal _rep;     //Reputation Trackin Per Domain
+    //[Token][Domain][bool] => Rep
+
+    // DataTypes.Domain public domain;
+
+    /// @dev Fetch Avatar's Reputation 
+    function getRepForDomain(uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating) public view returns (uint256){
+        return _rep[tokenId][domain][rating];
+    }
+    
+
+    /// Constructor
     constructor(address config) ERC721("Avatar", "AVATAR") {
         //Set Protocol's Config Address
-        _CONFIG = config;
+        _setConfig(config);
     }
 
-    /**
-     * Get Configurations Contract Address
-     */
+    /// Get Configurations Contract Address
     function getConfig() public view returns (address) {
         return _CONFIG;
     }
 
-    /**
-     * Set Configurations Contract Address
-     */
+    /// Expose Configurations Set to Current Owner
     function setConfig(address config) public onlyOwner {
+        _setConfig(config);
+    }
+
+    /// Set Configurations Contract Address
+    function _setConfig(address config) internal {
         //Validate Contract's Designation
         require(keccak256(abi.encodePacked(IConfig(config).role())) == keccak256(abi.encodePacked("YJConfig")), "Invalid Config Contract");
         //Set
         _CONFIG = config;
     }
 
-    /**
-     * @dev Returns the address of the current owner.
-     */
+    /// Inherit owner from Protocol's config
     function owner() public view override returns (address) {
         return IConfig(getConfig()).owner();
     }
@@ -64,9 +75,7 @@ contract AvatarNFT is ERC721URIStorage, Ownable {
 
     /// Merge 
 
-    /**
-     * @dev Transfer Rules
-     */
+    /// Token Transfer Rules
     function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721) {
         super._beforeTokenTransfer(from, to, tokenId);
         require(
