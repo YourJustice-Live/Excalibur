@@ -12,5 +12,9 @@ contract Config is Ownable {
 
     // Arbitrary contract designation signature
     string public constant role = "YJConfig";
-
+    
+    
+    // constructor() {
+    
+    // }
 }

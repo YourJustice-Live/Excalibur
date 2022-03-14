@@ -22,8 +22,11 @@ describe("Greeter", function () {
 
 describe("Protocol", function () {
   //Contract Instances
-  let avatarContract: Contract;
   let configContract: Contract;
+  let hubContract: Contract;
+  let avatarContract: Contract;
+  
+  
   //Addresses
   let owner: Signer;
   let admin: Signer;
@@ -32,13 +35,17 @@ describe("Protocol", function () {
 
 
   before(async function () {
-      //Deploy Avatar
+      //Deploy Config
       const ConfigContract = await ethers.getContractFactory("Config");
       configContract = await ConfigContract.deploy();
 
+      //Deploy Hub
+      const HubContract = await ethers.getContractFactory("Hub");
+      hubContract = await HubContract.deploy(configContract.address);
+
       //Deploy Avatar
       const AvatarContract = await ethers.getContractFactory("AvatarNFT");
-      avatarContract = await AvatarContract.deploy(configContract.address);
+      avatarContract = await AvatarContract.deploy(hubContract.address);
 
       //Populate Accounts
       [owner, admin, tester, ...addrs] = await ethers.getSigners();
@@ -53,10 +60,6 @@ describe("Protocol", function () {
 
   });
   describe("Avatar", function () {
-
-    it("Should have Config", async function () {      
-      expect(await avatarContract.getConfig()).to.equal(configContract.address);
-    });
 
     it("Should inherit owner", async function () {
       expect(await avatarContract.owner()).to.equal(await owner.getAddress());

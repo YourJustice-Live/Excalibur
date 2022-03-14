@@ -21,7 +21,8 @@ contract Case is CommonYJ{
 
     //--- Functions
     
-    constructor(address jurisdiction) {
+    // constructor(address jurisdiction) {
+    constructor(address hub, address jurisdiction) CommonYJ(hub){
         _jurisdiction = jurisdiction;
     }
 

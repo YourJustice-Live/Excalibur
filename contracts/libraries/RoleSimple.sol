@@ -11,6 +11,8 @@ import "../libraries/DataTypes.sol";
 library RoleSimple {
 
 
+    /* TBD
+    
     //[TODO] Only elementary types, contract types or enums are allowed as mapping keys
     // asKey(NFT nft){ }
 
@@ -21,4 +23,5 @@ library RoleSimple {
     function hasRole(string role, DataTypes.NFT nft) public view returns (bool) {
         return _assoc[role][nft];
     }
+    */
 }
