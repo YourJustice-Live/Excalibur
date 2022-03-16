@@ -5,6 +5,13 @@
 // Runtime Environment's members available in the global scope.
 import { ethers } from "hardhat";
 
+//Track Addresses (Fill in present addresses to prevent new deplopyment)
+const contractAddr = {
+  config:"",
+  hub:"",
+  avatar:"",
+};
+
 async function main() {
   /*
   // Hardhat always runs the compile task when running scripts with its command
@@ -23,13 +30,36 @@ async function main() {
   console.log("Greeter deployed to:", greeter.address);
   */
 
-  //Deploy Config
-  const Config = await ethers.getContractFactory("Config");
-  const config = await Config.deploy();
+  //--- Config
+  if(!contractAddr.config){
+    //Deploy Config
+    const ConfigContract = await ethers.getContractFactory("Config");
+    let configContract = await ConfigContract.deploy();
+    //Set Address
+    contractAddr.config = configContract.address;
+    //Log
+    console.log("Deployed Config Contract to " + contractAddr.config);
+  }
 
+  //--- Hub
+  if(!contractAddr.hub){
+    //Deploy Hub
+    const HubContract = await ethers.getContractFactory("Hub");
+    let hubContract = await HubContract.deploy(contractAddr.config);
+    //Set Address
+    contractAddr.hub = hubContract.address;
+    //Log
+    console.log("Deployed Hub Contract to " + contractAddr.config);
+  }
+
+  //--- Avatar
   //Deploy Avatar
-  const Avatar = await ethers.getContractFactory("Avatar");
-  const avatar = await Avatar.deploy(config.address);
+  const AvatarContract = await ethers.getContractFactory("AvatarNFT");
+  let avatarContract = await AvatarContract.deploy(contractAddr.hub);
+  //Set Address
+  contractAddr.avatar = avatarContract.address;
+  //Log
+  console.log("Deployed Avatar Contract to " + contractAddr.avatar);
 
 }
 
