@@ -87,8 +87,13 @@ contract AvatarNFT is CommonYJ, ERC721URIStorage, IERC721Receiver {
 
     /// [TBD] Merge NFTs
 
-    /// [TBD] Burn NFTs
-
+    /// Burn NFTs
+    function burn(uint256 tokenId) external {
+        //Validate Owner of Contract
+        require(_msgSender() == owner(), "Only Owner");
+        //Burn Token
+        _burn(tokenId);
+    }
 
     /// Create a new Avatar
     function _createAvatar(address to, string memory uri) internal returns (uint256){
