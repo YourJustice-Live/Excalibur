@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { Contract, Signer } from "ethers";
 import { ethers } from "hardhat";
 
+/* Example
 describe("Greeter", function () {
   it("Should return the new greeting once it's changed", async function () {
     const Greeter = await ethers.getContractFactory("Greeter");
@@ -18,7 +19,7 @@ describe("Greeter", function () {
     expect(await greeter.greet()).to.equal("Hola, mundo!");
   });
 });
-
+*/
 
 describe("Protocol", function () {
   //Contract Instances
@@ -26,11 +27,12 @@ describe("Protocol", function () {
   let hubContract: Contract;
   let avatarContract: Contract;
   
-  
   //Addresses
   let owner: Signer;
   let admin: Signer;
   let tester: Signer;
+  let tester2: Signer;
+  let tester3: Signer;
   let addrs: Signer[];
 
 
@@ -48,10 +50,9 @@ describe("Protocol", function () {
       avatarContract = await AvatarContract.deploy(hubContract.address);
 
       //Populate Accounts
-      [owner, admin, tester, ...addrs] = await ethers.getSigners();
+      [owner, admin, tester, tester2, tester3, ...addrs] = await ethers.getSigners();
   })
 
-  
   describe("Config", function () {
 
     it("Should be owned by deployer", async function () {
@@ -61,12 +62,78 @@ describe("Protocol", function () {
   });
   describe("Avatar", function () {
 
-    it("Should inherit owner", async function () {
+    it("Can inherit owner", async function () {
       expect(await avatarContract.owner()).to.equal(await owner.getAddress());
     });
+    
+    it("Can mint only one", async function () {
+      let test_uri = "TEST_URI";
 
-    //Should Fail to transfer -- "Sorry, Assets are non-transferable"
+      let tx = await avatarContract.connect(tester).mint(test_uri);
+      tx.wait();
+      // console.log("minting", tx);
+      //Fetch Token
+      let result = await avatarContract.ownerOf(1);
+      //Check Owner
+      expect(result).to.equal(await tester.getAddress());
+      //Check URI
+      expect(await avatarContract.tokenURI(1)).to.equal(test_uri);
 
+      //Another Call Should Fail
+      await expect(
+        avatarContract.connect(tester).mint(test_uri)
+      ).to.be.revertedWith("Requesting account already has an avatar");
+    });
+
+    
+    it("Can add other people", async function () {
+      let test_uri = "TEST_URI_2";
+
+      let tx = await avatarContract.connect(tester).add(test_uri);
+      tx.wait();
+      // console.log("minting", tx);
+      //Fetch Token
+      let result = await avatarContract.ownerOf(2);
+      //Check Owner
+      expect(result).to.equal(await avatarContract.address);
+      //Check URI
+      expect(await avatarContract.tokenURI(2)).to.equal(test_uri);
+    });
+
+
+    it("Should NOT be transferable", async function () {
+      //Should Fail to transfer -- "Sorry, Assets are non-transferable"
+      let fromAddr = await tester.getAddress();
+      let toAddr = await tester2.getAddress();
+      await expect(
+        avatarContract.connect(tester).transferFrom(fromAddr, toAddr, 1)
+      ).to.be.revertedWith("Sorry, Assets are non-transferable");
+    });
+
+    it("Can update token's metadata", async function () {
+      let test_uri = "TEST_URI_UPDATED";
+      //Update URI
+      await avatarContract.connect(tester).update(1, test_uri);
+      //Check URI
+      expect(await avatarContract.connect(tester).tokenURI(1)).to.equal(test_uri);
+    });
+
+    it("Can collect reputation", async function () {
+      //Rep Call Data      
+      let repCall = { tokenId:1, domain:1, rating:1, amount:2};
+      let tx = await avatarContract.repAdd(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount);
+
+      //Expect Event
+      await expect(tx).to.emit(avatarContract, 'ReputationChange').withArgs(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount);
+
+      //Validate State
+      let rep = await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain, repCall.rating);
+      expect(rep).to.equal(repCall.amount);
+
+      //Other Domain Rep - Should be 0
+      expect(await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain + 1, repCall.rating)).to.equal(0);
+    });
+    
   });
 
 });
