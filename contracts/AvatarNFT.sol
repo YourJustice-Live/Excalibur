@@ -4,77 +4,119 @@ pragma solidity ^0.8.0;
 // import "@openzeppelin/contracts/token/ERC721/ERC721.sol";		//https://eips.ethereum.org/EIPS/eip-721
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";  //Individual Metadata URI Storage Functions
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";  //To Hold NFTs on Contract
+// import "@openzeppelin/contracts/access/Ownable.sol";
 //Interfaces
-import "./interfaces/IConfig.sol";
+// import "./interfaces/IConfig.sol";
+// import "./interfaces/IHub.sol";
 //Libraries
 import "./libraries/DataTypes.sol";
+//Abstract
+import "./abstract/CommonYJ.sol";
 
 /**
- * Avatar as NFT
- * Version 0.0.1
- *  - [TODO] Contract is open for everyone to mint.
- *  - [TODO] Max of one NFT assigned for each account
- *  - [TODO] Can create un-assigned NFT (Kept on contract)
- *  - [TODO] Minted Tokens are updatable by Token holder
- *  - [TODO] Assets are non-transferable by owner
+ * @title Avatar as NFT
+ * @dev Version 0.2.0
+ *  - Contract is open for everyone to mint.
+ *  - Max of one NFT assigned for each account
+ *  - Can create un-assigned NFT (Kept on contract)
+ *  - Minted Token's URI is updatable by Token holder
+ *  - Assets are non-transferable by owner
+ *  - [TODO] Orphan tokens can be claimed
  *  - [TODO] Contract is Updatable
  */
-contract AvatarNFT is ERC721URIStorage, Ownable {
-
-    //--- Storage
-    address internal _CONFIG;    //Configuration Contract
-    address internal _HUB;    //Hub Contract
+contract AvatarNFT is CommonYJ, ERC721URIStorage, IERC721Receiver {
     
+    
+    //--- Storage
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
 
-    //TODO: Rating: professional , personal and community + role + pos/neg
-    // uint256 internal _rep;       //Reputation Tracking
-    mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256))) internal _rep;     //Reputation Trackin Per Domain
-    //[Token][Domain][bool] => Rep
 
-    // DataTypes.Domain public domain;
+    //Positive & Negative Reputation Trackin Per Domain (Personal,Community,Professional) 
+    mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256))) internal _rep;  //[Token][Domain][bool] => Rep
 
-    /// @dev Fetch Avatar's Reputation 
+
+    //--- Events
+    
+	/// URI Change Event
+    event URI(string value, uint256 indexed id);    //Copied from ERC1155
+
+    /// Reputation Changed
+    event ReputationChange(uint256 indexed id, DataTypes.Domain domain, DataTypes.Rating rating, uint256 socre);
+
+
+    //--- Modifiers
+
+
+    //--- Functions
+
+    /// Constructor
+    constructor(address hub) CommonYJ(hub) ERC721("Avatar", "AVATAR") {
+
+    }
+
+    /// Add Reputation (Positive or Negative)
+    function repAdd(uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating, uint8 amount) external {
+        //[TBD] Validate
+
+        //Set
+        _rep[tokenId][domain][rating] += amount;
+        //Event
+        emit ReputationChange(tokenId, domain, rating, _rep[tokenId][domain][rating]);
+    }
+
+    /// Fetch Avatar's Reputation 
     function getRepForDomain(uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating) public view returns (uint256){
         return _rep[tokenId][domain][rating];
     }
     
-
-    /// Constructor
-    constructor(address config) ERC721("Avatar", "AVATAR") {
-        //Set Protocol's Config Address
-        _setConfig(config);
-    }
-
-    /// Get Configurations Contract Address
-    function getConfig() public view returns (address) {
-        return _CONFIG;
-    }
-
-    /// Expose Configurations Set to Current Owner
-    function setConfig(address config) public onlyOwner {
-        _setConfig(config);
-    }
-
-    /// Set Configurations Contract Address
-    function _setConfig(address config) internal {
-        //Validate Contract's Designation
-        require(keccak256(abi.encodePacked(IConfig(config).role())) == keccak256(abi.encodePacked("YJConfig")), "Invalid Config Contract");
-        //Set
-        _CONFIG = config;
-    }
-
-    /// Inherit owner from Protocol's config
-    function owner() public view override returns (address) {
-        return IConfig(getConfig()).owner();
-    }
-
     /// Mint (Create New Avatar for oneself)
-
+    function mint(string memory tokenURI) public returns (uint256) {
+        //One Per Account
+        require(balanceOf(_msgSender()) == 0, "Requesting account already has an avatar");
+        //Mint
+        return _createAvatar(_msgSender(), tokenURI);
+    }
+	
     /// Add (Create New Avatar Without an Owner)
+    function add(string memory tokenURI) public returns (uint256) {
+        //Mint
+        return _createAvatar(address(this), tokenURI);
+    }
 
-    /// Merge 
+    /// [TBD] Merge NFTs
 
+    /// [TBD] Burn NFTs
+
+
+    /// Create a new Avatar
+    function _createAvatar(address to, string memory uri) internal returns (uint256){
+        //Validate - Bot Protection
+        require(tx.origin == _msgSender(), "Bots not allowed");
+        //Mint
+        _tokenIds.increment();
+        uint256 newItemId = _tokenIds.current();
+        _safeMint(to, newItemId);       //Self Only
+        //Set URI
+        _setTokenURI(newItemId, uri);	//This Goes for Specific Metadata Set (IPFS and Such)
+        //Emit URI Changed Event
+        emit URI(uri, newItemId);
+        //Done
+        return newItemId;
+    }
+    
+    /// Update Token's Metadata
+    function update(uint256 tokenId, string memory uri) public returns (uint256) {
+        //Validate Owner of Token
+        require(_isApprovedOrOwner(_msgSender(), tokenId) || _msgSender() == owner(), "caller is not owner nor approved");
+        _setTokenURI(tokenId, uri);	//This Goes for Specific Metadata Set (IPFS and Such)
+        //Emit URI Changed Event
+        emit URI(uri, tokenId);
+        //Done
+        return tokenId;
+    }
+    
     /// Token Transfer Rules
     function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721) {
         super._beforeTokenTransfer(from, to, tokenId);
@@ -85,6 +127,12 @@ contract AvatarNFT is ERC721URIStorage, Ownable {
             ,
             "Sorry, Assets are non-transferable"
         );
+    }
+
+    /// For Holding NFTs on Contract
+    function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4) {
+    // function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external pure override returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
     }
 
 }
