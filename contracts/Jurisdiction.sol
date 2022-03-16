@@ -16,7 +16,7 @@ import "./abstract/CommonYJ.sol";
  */
 contract Jurisdiction is Rules, CommonYJ {
     
-    constructor() {
+    constructor(address hub) CommonYJ(hub){
 
     }
 

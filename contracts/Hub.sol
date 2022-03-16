@@ -28,7 +28,8 @@ contract Hub is Ownable {
 
 
     //--- Events
-
+    //TODO: Owner 
+    //TODO: Config changed
 
     //--- Functions
 
