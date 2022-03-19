@@ -8,9 +8,10 @@ pragma solidity >=0.8.0 <0.9.0;
  */
 library DataTypes {
     /// NFT Identifiers
-    struct NFT{
-        address constract;
+    struct Entity {
+        address hash;
         uint256 id;
+        //uint256 chain;
     }
     /// Rating Domains
     enum Domain {
