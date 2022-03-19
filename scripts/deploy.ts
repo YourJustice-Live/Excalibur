@@ -7,9 +7,10 @@ import { ethers } from "hardhat";
 
 //Track Addresses (Fill in present addresses to prevent new deplopyment)
 const contractAddr = {
-  config:"",
-  hub:"",
-  avatar:"",
+  config:"0xe42a960537e1fB2F39361b6cffFa6CeD6162752b",
+  hub:"0xdd2e3c7d34ea7f5876bf7a05775106968b80ba83",
+  avatar:"0xAb4B21d7651b1484986E1D2790b125be8b6c460B",
+  jurisdiction:"",
 };
 
 async function main() {
@@ -35,6 +36,7 @@ async function main() {
     //Deploy Config
     const ConfigContract = await ethers.getContractFactory("Config");
     let configContract = await ConfigContract.deploy();
+    await configContract.deployed();
     //Set Address
     contractAddr.config = configContract.address;
     //Log
@@ -46,20 +48,44 @@ async function main() {
     //Deploy Hub
     const HubContract = await ethers.getContractFactory("Hub");
     let hubContract = await HubContract.deploy(contractAddr.config);
+    await hubContract.deployed();
     //Set Address
     contractAddr.hub = hubContract.address;
     //Log
-    console.log("Deployed Hub Contract to " + contractAddr.config);
+    console.log("Deployed Hub Contract to " + contractAddr.hub);
   }
 
   //--- Avatar
-  //Deploy Avatar
-  const AvatarContract = await ethers.getContractFactory("AvatarNFT");
-  let avatarContract = await AvatarContract.deploy(contractAddr.hub);
-  //Set Address
-  contractAddr.avatar = avatarContract.address;
-  //Log
-  console.log("Deployed Avatar Contract to " + contractAddr.avatar);
+  if(!contractAddr.avatar){
+    //Deploy Avatar
+    const AvatarContract = await ethers.getContractFactory("AvatarNFT");
+    let avatarContract = await AvatarContract.deploy(contractAddr.hub);
+    await avatarContract.deployed();
+    //Set Address
+    contractAddr.avatar = avatarContract.address;
+    //Log
+    console.log("Deployed Avatar Contract to " + contractAddr.avatar);
+  }
+
+  //--- Jurisdiction
+  if(!contractAddr.jurisdiction){
+    
+  }
+
+  /*
+  try{
+    // Verify your contracts with Etherscan
+    console.log("Start code verification on etherscan");
+    await run("verify:verify", {
+        address: contractAddr.avatar,
+        contract: "contracts/AvatarNFT.sol:AvatarNFT",
+        contractArguments: [contractAddr.hub],
+    });
+    console.log("End code verification on etherscan");
+  }
+  catch(error){
+      console.error("Faild Etherscan Verification", error);
+  }*/
 
 }
 
@@ -69,3 +95,24 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+
+/*
+function etherscanVerify(address, contract, contractArguments){
+  try{
+    // Verify your contracts with Etherscan
+    console.log("Start code verification on etherscan");
+    await run("verify:verify", {
+        // address: "0x938Ce74dee47035C58a9aFeA1FC13B48BA8Dbe3d",
+        // contract: "contracts/Config.sol:Config",
+        // contractArguments: [],
+        address,
+        contract,
+        contractArguments,
+    });
+    console.log("End code verification on etherscan");
+  }
+  catch(error){
+      console.error("Faild Etherscan Verification", error);
+  }
+}
+*/
