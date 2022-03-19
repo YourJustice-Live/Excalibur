@@ -2,6 +2,8 @@
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
+import "../interfaces/IRoles.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 /**
  * @title Role Controls
@@ -13,7 +15,7 @@ import "hardhat/console.sol";
  *  OZ Access Control  https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/AccessControl.sol
  */
 // abstract contract AccessControl is Context, IAccessControl, ERC165 {
-abstract contract Roles {
+abstract contract Roles is IRoles, ERC165 {
     
     // struct Rule {
     //     string name;
@@ -23,6 +25,13 @@ abstract contract Roles {
 
     constructor() {
 
+    }
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == type(IRoles).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /* SNIPPETS START */
@@ -39,7 +48,7 @@ abstract contract Roles {
     //     _;
     // }
 
-
+    
     //--- OZ  https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/AccessControl.sol
 
     struct RoleData {
@@ -49,6 +58,7 @@ abstract contract Roles {
     mapping(bytes32 => RoleData) private _roles;
 
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
+
 
     /**
      * @dev Modifier that checks that an account has a specific role. Reverts
