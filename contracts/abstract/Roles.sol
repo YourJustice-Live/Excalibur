@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 import "../interfaces/IRoles.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import "@openzeppelin/contracts/utils/Context.sol";
 
 /**
  * @title Role Controls
@@ -15,7 +16,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
  *  OZ Access Control  https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/AccessControl.sol
  */
 // abstract contract AccessControl is Context, IAccessControl, ERC165 {
-abstract contract Roles is IRoles, ERC165 {
+abstract contract Roles is IRoles, ERC165, Context {
     
     // struct Rule {
     //     string name;
