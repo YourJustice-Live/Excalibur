@@ -38,5 +38,9 @@ abstract contract CommonYJ is Ownable {
         _HUB = IHub(config);
     }
 
+    /// Set Hub Contract
+    function _getHub() internal view returns(address) {
+        return address(_HUB);
+    }
     
 }
