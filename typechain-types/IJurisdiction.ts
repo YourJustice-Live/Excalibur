@@ -23,6 +23,7 @@ export interface IJurisdictionInterface extends utils.Interface {
     "join()": FunctionFragment;
     "leave()": FunctionFragment;
     "roleAssign(address,string)": FunctionFragment;
+    "roleHas(address,string)": FunctionFragment;
     "roleRemove(address,string)": FunctionFragment;
   };
 
@@ -33,6 +34,10 @@ export interface IJurisdictionInterface extends utils.Interface {
     values: [string, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "roleHas",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "roleRemove",
     values: [string, string]
   ): string;
@@ -40,6 +45,7 @@ export interface IJurisdictionInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "join", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "leave", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "roleAssign", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "roleHas", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "roleRemove", data: BytesLike): Result;
 
   events: {
@@ -107,6 +113,12 @@ export interface IJurisdiction extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    roleHas(
+      account: string,
+      role: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     roleRemove(
       account: string,
       role: string,
@@ -128,6 +140,12 @@ export interface IJurisdiction extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  roleHas(
+    account: string,
+    role: string,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   roleRemove(
     account: string,
     role: string,
@@ -144,6 +162,12 @@ export interface IJurisdiction extends BaseContract {
       role: string,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    roleHas(
+      account: string,
+      role: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     roleRemove(
       account: string,
@@ -184,6 +208,12 @@ export interface IJurisdiction extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    roleHas(
+      account: string,
+      role: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     roleRemove(
       account: string,
       role: string,
@@ -204,6 +234,12 @@ export interface IJurisdiction extends BaseContract {
       account: string,
       role: string,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    roleHas(
+      account: string,
+      role: string,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     roleRemove(

@@ -13,6 +13,7 @@ import "./interfaces/IConfig.sol";
 
 /**
  * Case Contract
+ * - [TODO] Hold Public Avatar NFT Contract Address
  */
 // contract Hub is CommonYJ, Ownable{
 contract Hub is Ownable {

@@ -90,6 +90,30 @@ const _abi = [
         type: "string",
       },
     ],
+    name: "roleHas",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
+        internalType: "string",
+        name: "role",
+        type: "string",
+      },
+    ],
     name: "roleRemove",
     outputs: [],
     stateMutability: "nonpayable",
