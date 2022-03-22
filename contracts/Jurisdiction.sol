@@ -25,6 +25,9 @@ import "./Case.sol";
  * - Mints Member NFTs
  * - [TODO] Rules...
  * - [TODO] Deploys Cases
+ * - [TODO] Token URIs 
+ * - [TODO] Contract URI
+ * - [TODO] Make Sure Account has an Avatar NFT
  */
 contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
     /*** STORAGE ***/
@@ -98,10 +101,16 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
     }
     */
 
+    /// Check if account is assigned to role
+    function roleHas(address account, string calldata role) public view override returns (bool) {
+        return (balanceOf(account, _roleToId(role)) > 0);
+    }
+
     /// Create New Role
     function _roleCreate(string memory role) internal {
         // require(!_roleExists(role), "ROLE_EXISTS");
-        require(_roles[role] != 0, "ROLE_EXISTS");
+        // require(_roles[role] == 0, "ROLE_EXISTS");
+        require(_roles[role] == 0, string(abi.encodePacked(role, " role already exists ")));
         //Assign Token ID
         _tokenIds.increment(); //Start with 1
         uint256 tokenId = _tokenIds.current();
@@ -172,29 +181,34 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
         _burn(account, tokenId, 1);
     }
 
-  /**
-   * @dev Hook that is called before any token transfer. This includes minting and burning, as well as batched variants.
-   *  - Max of Single Token for each account
-   */
-  function _beforeTokenTransfer(
-    address operator,
-    address from,
-    address to,
-    uint256[] memory ids,
-    uint256[] memory amounts,
-    bytes memory data
-  ) internal virtual override {
-    super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
-    if (to != address(0)) {
-      for (uint256 i = 0; i < ids.length; ++i) {
-        uint256 id = ids[i];
-        uint256 amount = amounts[i];
-        //Validate - Max of 1 Per Account
-        require(balanceOf(_msgSender(), id) == 0, "ALREADY_ASSIGNED_TO_ROLE");
-        require(amount == 1, "ONE_TOKEN_MAX");
-      }
+    /// Translate Role to Token ID
+    function _roleToId(string calldata role) internal view roleExists(role) returns(uint256) {
+        return _roles[role];
     }
-  }
+
+    /**
+    * @dev Hook that is called before any token transfer. This includes minting and burning, as well as batched variants.
+    *  - Max of Single Token for each account
+    */
+    function _beforeTokenTransfer(
+        address operator,
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) internal virtual override {
+        super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
+        if (to != address(0)) {
+        for (uint256 i = 0; i < ids.length; ++i) {
+            uint256 id = ids[i];
+            uint256 amount = amounts[i];
+            //Validate - Max of 1 Per Account
+            require(balanceOf(_msgSender(), id) == 0, "ALREADY_ASSIGNED_TO_ROLE");
+            require(amount == 1, "ONE_TOKEN_MAX");
+        }
+        }
+    }
 
     /// Get Token URI
     // function tokenURI(uint256 token_id) public view returns (string memory) {

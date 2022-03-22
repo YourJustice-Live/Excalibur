@@ -16,6 +16,9 @@ interface IJurisdiction {
     /// Remove Someone Else from a Role
     function roleRemove(address account, string calldata role) external;
 
+    /// Check if account is assigned to role
+    function roleHas(address account, string calldata role) external view returns (bool);
+    
     /// Create a new Role
     // function roleCreate(address account, string calldata role) external;
 

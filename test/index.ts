@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Contract, Signer } from "ethers";
+import { Contract, ContractReceipt, Signer } from "ethers";
 import { ethers } from "hardhat";
 
 /* Example
@@ -26,7 +26,8 @@ describe("Protocol", function () {
   let configContract: Contract;
   let hubContract: Contract;
   let avatarContract: Contract;
-  
+  let jurisdictionContract: Contract;
+
   //Addresses
   let owner: Signer;
   let admin: Signer;
@@ -60,6 +61,7 @@ describe("Protocol", function () {
     });
 
   });
+
   describe("Avatar", function () {
 
     it("Can inherit owner", async function () {
@@ -132,6 +134,70 @@ describe("Protocol", function () {
 
       //Other Domain Rep - Should be 0
       expect(await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain + 1, repCall.rating)).to.equal(0);
+    });
+    
+  });
+
+  describe("Jurisdiction", function () {
+    
+    before(async function () {
+        //Deploy Jurisdiction
+        const JurisdictionContract = await ethers.getContractFactory("Jurisdiction");
+        jurisdictionContract = await JurisdictionContract.deploy(hubContract.address);
+    });
+
+    it("Users can join as a member", async function () {
+
+      let testerAddr = await tester.getAddress();
+
+      //Check Before
+      expect(await jurisdictionContract.roleHas(testerAddr, "member")).to.equal(false);
+
+      //Join Jurisdiction
+      await jurisdictionContract.connect(tester).join();
+
+      //Check After
+      expect(await jurisdictionContract.roleHas(testerAddr, "member")).to.equal(true);
+    });
+
+    it("Owner can appoint Admin", async function () {
+      // let testerAddr = await tester.getAddress();
+      let adminAddr = await admin.getAddress();
+
+      //Check Before
+      expect(await jurisdictionContract.roleHas(adminAddr, "admin")).to.equal(false);
+
+      //Should Fail - Require Permissions
+      await expect(
+        jurisdictionContract.connect(tester).roleAssign(adminAddr, "admin")
+      ).to.be.revertedWith("INVALID_PERMISSIONS");
+      
+      //Assign Admin
+      await jurisdictionContract.roleAssign(adminAddr, "admin");
+
+      //Check After
+      expect(await jurisdictionContract.roleHas(adminAddr, "admin")).to.equal(true);
+    });
+
+    it("Admin can appoint judge", async function () {
+
+      let testerAddr = await tester.getAddress();
+      let adminAddr = await admin.getAddress();
+
+      //Check Before
+      expect(await jurisdictionContract.roleHas(testerAddr, "judge")).to.equal(false);
+
+      //Should Fail - Require Permissions
+      await expect(
+        jurisdictionContract.connect(tester2).roleAssign(testerAddr, "judge")
+      ).to.be.revertedWith("INVALID_PERMISSIONS");
+      
+      //Assign Admin
+      await jurisdictionContract.connect(admin).roleAssign(testerAddr, "judge");
+
+      //Check After
+      expect(await jurisdictionContract.roleHas(testerAddr, "judge")).to.equal(true);
+
     });
     
   });
