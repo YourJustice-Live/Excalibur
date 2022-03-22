@@ -22,6 +22,6 @@ interface IJurisdiction {
     
     /*** EVENTS ***/
 
-    // event roleAdded(address account, string role);        // Role Added Event? ... Transfer events should cover this...
-
+    event RoleCreated(uint256 indexed id, string role);        // Role Added Event? ... Transfer events should cover this...
+    event CaseCreated(uint256 indexed id, address contractAddress);
 }

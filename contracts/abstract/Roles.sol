@@ -36,30 +36,32 @@ abstract contract Roles is IRoles, ERC165, Context {
     }
 
     /* SNIPPETS START */
+    
     //--- Fractal DAO Access Control  https://github.com/fractal-framework/fractal-contracts/blob/93bc0e845a382673f3714e7df858e846d0f10b37/contracts/AccessControl.sol
+    /*
     string public constant DAO_ROLE = "DAO_ROLE";
-
+    
     mapping(string => RoleData) private _roles;
     mapping(address => mapping(bytes4 => string[])) private _actionsToRoles;
-
+    
     /// @notice Modifier that checks that an account has a specific role. Reverts
     /// with a standardized message including the required role.
     // modifier onlyRole(string memory role) {
     //     _checkRole(role, msg.sender);
     //     _;
     // }
-
+    */
     
     //--- OZ  https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/AccessControl.sol
 
+    /*
     struct RoleData {
         mapping(address => bool) members;
         bytes32 adminRole;
     }
     mapping(bytes32 => RoleData) private _roles;
-
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
-
+    */
 
     /**
      * @dev Modifier that checks that an account has a specific role. Reverts

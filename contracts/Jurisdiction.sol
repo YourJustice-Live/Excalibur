@@ -5,6 +5,7 @@ import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 // import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";  //Track Token Supply & Check 
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 
@@ -27,13 +28,18 @@ import "./Case.sol";
  */
 contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
     /*** STORAGE ***/
-
+    using Strings for uint256;
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds; //Track Last Token ID
+    Counters.Counter private _caseIds;  //Track Last Case ID
 
+    // Contract name
+    string public name;
+    // Contract symbol
+    string public symbol;
+    
     mapping(string => uint256) private _roles;     //NFTs as Roles
-
-    // mapping(uint256 => address) private _cases;      // Mapping for Case Contracts
+    mapping(uint256 => address) private _cases;      // Mapping for Case Contracts
 
     // mapping(uint256 => string) private _rulesURI;      // Mapping for Rule/Tile URIs
 
@@ -48,10 +54,9 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
 
     // constructor(address hub) CommonYJ(hub) ERC1155(string memory uri_){
     constructor(address hub) CommonYJ(hub) ERC1155(""){
+        name = "Anti-Scam Jurisdiction";
+        symbol = "YJ_J1";
         //Set Default Roles
-        // _roles["admin"] = 1;
-        // _roles["member"] = 2;
-        // _roles["judge"] = 3;
         _roleCreate("admin");
         _roleCreate("member");
         _roleCreate("judge");
@@ -60,6 +65,28 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
     //-- Case Functions
 
 
+    /// Make a new Case
+    function caseMake(string calldata name_) public returns (uint256, address) {
+        //TODO: Validate Caller Permissions
+
+        //Assign Case ID
+        _caseIds.increment(); //Start with 1
+        uint256 caseId = _caseIds.current();
+
+        //Make
+        // MetaCoin metaCoin = new MetaCoin(metaCoinOwner, initialBalance);
+        Case newCase = new Case(name_, string(abi.encodePacked("YJ_", caseId.toString())), _getHub(), address(this));
+
+        //Remember
+        // metaCoinAddresses.push(metaCoin);
+        _cases[caseId] = address(newCase);
+
+        //Event
+        // emit MetaCoinCreated(metaCoin);
+        emit CaseCreated(caseId, address(newCase));
+        //Return
+        return (caseId, address(newCase));
+    }
 
     //-- Role Functions
 
@@ -80,10 +107,12 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
         uint256 tokenId = _tokenIds.current();
         //Map Role to Token ID
         _roles[role] = tokenId;
+        //Event
+        emit RoleCreated(tokenId, role);
     }
 
     /// Join a role in current jurisdiction
-    function join() external {
+    function join() external override {
         //Member Token ID
         uint256 tokenId = _roles["member"];
         //Mint Role Token
@@ -91,7 +120,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
     }
 
     /// Leave Role in current jurisdiction
-    function leave() external {
+    function leave() external override {
         //Member Token ID
         uint256 tokenId = _roles["member"];
         //Burn
@@ -99,7 +128,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
     }
     
     /// Assign Someone Else to a Role
-    function roleAssign(address account, string calldata role) external roleExists(role) {
+    function roleAssign(address account, string calldata role) external override roleExists(role) {
         //Validate Permissions
         require(
             _msgSender() == account         //Self
@@ -111,7 +140,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
     }
 
     /// Remove Someone Else from a Role
-    function roleRemove(address account, string calldata role) external roleExists(role) {
+    function roleRemove(address account, string calldata role) external override roleExists(role) {
         //Validate Permissions
         require(
             _msgSender() == account         //Self
