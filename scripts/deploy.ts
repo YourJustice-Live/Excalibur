@@ -69,7 +69,14 @@ async function main() {
 
   //--- Jurisdiction
   if(!contractAddr.jurisdiction){
-    
+    //Deploy Avatar
+    const JurisdictionContract = await ethers.getContractFactory("AvatarNFT");
+    let jurisdictionContract = await JurisdictionContract.deploy(contractAddr.hub);
+    await jurisdictionContract.deployed();
+    //Set Address
+    contractAddr.jurisdiction = jurisdictionContract.address;
+    //Log
+    console.log("Deployed Jurisdiction Contract to " + contractAddr.jurisdiction);
   }
 
   /*
