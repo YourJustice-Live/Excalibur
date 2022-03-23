@@ -3,6 +3,8 @@
 pragma solidity ^0.8.0;
 
 interface IJurisdiction {
+    /// Symbol As Arbitrary contract designation signature
+    function symbol() external view returns (string memory);
 
     /// Join jurisdiction as member
     function join() external;

@@ -25,6 +25,7 @@ export interface IJurisdictionInterface extends utils.Interface {
     "roleAssign(address,string)": FunctionFragment;
     "roleHas(address,string)": FunctionFragment;
     "roleRemove(address,string)": FunctionFragment;
+    "symbol()": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "join", values?: undefined): string;
@@ -41,12 +42,14 @@ export interface IJurisdictionInterface extends utils.Interface {
     functionFragment: "roleRemove",
     values: [string, string]
   ): string;
+  encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "join", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "leave", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "roleAssign", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "roleHas", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "roleRemove", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
 
   events: {
     "CaseCreated(uint256,address)": EventFragment;
@@ -124,6 +127,8 @@ export interface IJurisdiction extends BaseContract {
       role: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    symbol(overrides?: CallOverrides): Promise<[string]>;
   };
 
   join(
@@ -152,6 +157,8 @@ export interface IJurisdiction extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  symbol(overrides?: CallOverrides): Promise<string>;
+
   callStatic: {
     join(overrides?: CallOverrides): Promise<void>;
 
@@ -174,6 +181,8 @@ export interface IJurisdiction extends BaseContract {
       role: string,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    symbol(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -219,6 +228,8 @@ export interface IJurisdiction extends BaseContract {
       role: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    symbol(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -247,5 +258,7 @@ export interface IJurisdiction extends BaseContract {
       role: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

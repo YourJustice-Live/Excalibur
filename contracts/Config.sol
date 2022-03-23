@@ -10,8 +10,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  */
 contract Config is Ownable {
 
-    // Arbitrary contract designation signature
-    string public constant role = "YJConfig";
+    // Symbol as Arbitrary contract designation signature
+    string public constant symbol = "YJConfig";
     
     
     // constructor() {

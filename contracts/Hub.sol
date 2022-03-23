@@ -60,7 +60,7 @@ contract Hub is Ownable {
     /// Set Configurations Contract Address
     function _setConfig(address config) internal {
         //Validate Contract's Designation
-        require(keccak256(abi.encodePacked(IConfig(config).role())) == keccak256(abi.encodePacked("YJConfig")), "Invalid Config Contract");
+        require(keccak256(abi.encodePacked(IConfig(config).symbol())) == keccak256(abi.encodePacked("YJConfig")), "Invalid Config Contract");
         //Set
         _CONFIG = IConfig(config);
     }

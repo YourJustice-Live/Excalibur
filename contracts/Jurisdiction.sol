@@ -31,7 +31,7 @@ import "./Case.sol";
  */
 contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
     /*** STORAGE ***/
-    string public constant role = "YJ_Jurisdiction";
+    string public constant override symbol = "YJ_Jurisdiction";
     using Strings for uint256;
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds; //Track Last Token ID
@@ -40,7 +40,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
     // Contract name
     string public name;
     // Contract symbol
-    string public symbol;
+    // string public symbol;
     
     mapping(string => uint256) private _roles;     //NFTs as Roles
     mapping(uint256 => address) private _cases;      // Mapping for Case Contracts
@@ -59,7 +59,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
     // constructor(address hub) CommonYJ(hub) ERC1155(string memory uri_){
     constructor(address hub) CommonYJ(hub) ERC1155(""){
         name = "Anti-Scam Jurisdiction";
-        symbol = "YJ_J1";
+        // symbol = "YJ_J1";
         //Set Default Roles
         _roleCreate("admin");
         _roleCreate("member");
