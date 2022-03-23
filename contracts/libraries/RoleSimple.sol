@@ -12,7 +12,9 @@ library RoleSimple {
 
 
     /* TBD
-    
+    // mapping(string => mapping(DataTypes.NFT => bool)) private _assoc;
+
+
     //[TODO] Only elementary types, contract types or enums are allowed as mapping keys
     // asKey(NFT nft){ }
 

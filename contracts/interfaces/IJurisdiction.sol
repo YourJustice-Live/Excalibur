@@ -4,10 +4,10 @@ pragma solidity ^0.8.0;
 
 interface IJurisdiction {
 
-    /// Join a role in current jurisdiction
+    /// Join jurisdiction as member
     function join() external;
 
-    /// Leave Role in current jurisdiction
+    /// Leave member role in current jurisdiction
     function leave() external;
 
     /// Assign Someone to a Role
