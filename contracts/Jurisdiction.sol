@@ -19,18 +19,19 @@ import "./Case.sol";
 
 
 /**
- * Jurisdiction Contract
+ * @title Jurisdiction Contract
  * V1: Role NFTs
  * V2:  
  * - Mints Member NFTs
  * - [TODO] Rules...
  * - [TODO] Deploys Cases
- * - [TODO] Token URIs 
+ * - [TODO] Token URIs for Roles
  * - [TODO] Contract URI
- * - [TODO] Make Sure Account has an Avatar NFT
+ * - [TODO] Validation: Make Sure Account has an Avatar NFT -- Assign Avatars instead of Accounts
  */
 contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
     /*** STORAGE ***/
+    string public constant role = "YJ_Jurisdiction";
     using Strings for uint256;
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds; //Track Last Token ID
