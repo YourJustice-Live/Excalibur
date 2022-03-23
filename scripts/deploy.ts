@@ -10,7 +10,7 @@ const contractAddr = {
   config:"0xe42a960537e1fB2F39361b6cffFa6CeD6162752b",
   hub:"0xdd2e3c7d34ea7f5876bf7a05775106968b80ba83",
   avatar:"0xAb4B21d7651b1484986E1D2790b125be8b6c460B",
-  jurisdiction:"",
+  jurisdiction:"0xe3ABf940D89DAB100080d087Ab651559a00D6db1",
 };
 
 async function main() {
@@ -70,13 +70,13 @@ async function main() {
   //--- Jurisdiction
   if(!contractAddr.jurisdiction){
     //Deploy Avatar
-    const JurisdictionContract = await ethers.getContractFactory("AvatarNFT");
+    const JurisdictionContract = await ethers.getContractFactory("Jurisdiction");
     let jurisdictionContract = await JurisdictionContract.deploy(contractAddr.hub);
     await jurisdictionContract.deployed();
     //Set Address
     contractAddr.jurisdiction = jurisdictionContract.address;
     //Log
-    console.log("Deployed Jurisdiction Contract to " + contractAddr.jurisdiction);
+    console.log("Deployed Jurisdiction Contract to " + contractAddr.jurisdiction+ " Hub: "+ contractAddr.hub);
   }
 
   /*
