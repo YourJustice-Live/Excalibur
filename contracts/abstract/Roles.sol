@@ -10,6 +10,10 @@ import "@openzeppelin/contracts/utils/Context.sol";
  * @title Role Controls
  * To Extend Cases
  * - [TODO] Hold Roles
+ * - [TODO] Assign Roles
+ * ---- 
+ * - [TODO] request + approve 
+ * - [TODO] offer + accept
  * 
  * References: 
  *  Fractal DAO Access Control  https://github.com/fractal-framework/fractal-contracts/blob/93bc0e845a382673f3714e7df858e846d0f10b37/contracts/AccessControl.sol
