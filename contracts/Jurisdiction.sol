@@ -30,7 +30,7 @@ import "./Case.sol";
  * - [TODO] Validation: Make Sure Account has an Avatar NFT -- Assign Avatars instead of Accounts
  */
 contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
-    /*** STORAGE ***/
+    //--- Storage
     string public constant override symbol = "YJ_Jurisdiction";
     using Strings for uint256;
     using Counters for Counters.Counter;
@@ -47,14 +47,14 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
 
     // mapping(uint256 => string) private _rulesURI;      // Mapping for Rule/Tile URIs
 
-    /*** MODIFIERS ***/
+    //--- Modifiers
 
     modifier roleExists(string calldata role) {
         require(_roleExists(role), "INEXISTENT_ROLE");
         _;
     }
 
-    /*** FUNCTIONS ***/
+    //--- Functions
 
     // constructor(address hub) CommonYJ(hub) ERC1155(string memory uri_){
     constructor(address hub) CommonYJ(hub) ERC1155(""){
@@ -66,7 +66,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
         _roleCreate("judge");
     }
 
-    //-- Case Functions
+    //** Case Functions
 
 
     /// Make a new Case
@@ -92,7 +92,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
         return (caseId, address(newCase));
     }
 
-    //-- Role Functions
+    //** Role Functions
 
     /* [TBD] - would need to track role IDs
     /// Create a new Role

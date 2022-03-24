@@ -25,8 +25,8 @@ interface IJurisdiction {
     // function roleCreate(address account, string calldata role) external;
 
     
-    /*** EVENTS ***/
-
+    //--- Events
+    
     event RoleCreated(uint256 indexed id, string role);        // Role Added Event? ... Transfer events should cover this...
     event CaseCreated(uint256 indexed id, address contractAddress);
 }
