@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
+import "../interfaces/IRules.sol";
 
 /**
  * Rules Contract
@@ -9,7 +10,7 @@ import "hardhat/console.sol";
  * - [TODO] Hold & Serve Rules
  * - [TODO] Event: Rule Added / Removed / Updated (can rules be removed?)
  */
-abstract contract Rules {
+abstract contract Rules is IRules {
     
     //--- Storage
 
@@ -20,7 +21,7 @@ abstract contract Rules {
         //eventId: 1, 
         uint256 eventId;
         //text: "The founder of the project violated the contract, but this did not lead to the loss or freezing of funds for investors.", //Description For Humans
-        string text;    
+        string text;     // is this needed?
         // condition: "Investor funds were not frozen nor lost.",
         string condition;  
         string uri;
@@ -30,6 +31,7 @@ abstract contract Rules {
         // }
         // Effect[3] effects;
         Effects effects;
+        bool negation;  //0 - Commision  1 - Omission
     }
     
     // Effect Object (Changes to Reputation By Type)
@@ -37,9 +39,10 @@ abstract contract Rules {
         // int8 professional;
         // int8 social;
         // int8 personal;
-        Effect professional;
-        Effect social;
+        Effect environment;
         Effect personal;
+        Effect social;
+        Effect professional;
     }
     // Effect Structure
     struct Effect {
@@ -52,23 +55,15 @@ abstract contract Rules {
 
     mapping(uint256 => Rule) private _rules;
 
-    //--- Events
-
-    /// Rule Added
-    //  RuleAdded()
-
-    /// Rule Removed
-    // RuleRemoved()
-
 
     //--- Functions
 
     // constructor() { }
 
-    //Add Rule
-    /// ruleAdd()
+    /// Add Rule
+    //ruleAdd()
 
-    //Remove Rule
+    /// Remove Rule
     //ruleRemove()
 
 
