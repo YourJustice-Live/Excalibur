@@ -22,12 +22,6 @@ import "@openzeppelin/contracts/utils/Context.sol";
 // abstract contract AccessControl is Context, IAccessControl, ERC165 {
 abstract contract Roles is IRoles, ERC165, Context {
     
-    // struct Rule {
-    //     string name;
-    //     string uri;
-    // }
-    // mapping(uint256 => Rule) private _rules;
-
     constructor() {
 
     }
