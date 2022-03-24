@@ -15,13 +15,14 @@ library DataTypes {
     }
     /// Rating Domains
     enum Domain {
+        Environment,
         Personal,
         Community,
         Professional
     }
     /// Rating Categories
     enum Rating {
-        Positive,
-        Negative
+        Negative,
+        Positive
     }
 }
