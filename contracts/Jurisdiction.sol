@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+// import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 // import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";  //Track Token Supply & Check 
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -36,26 +36,25 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
     string public constant override symbol = "YJ_Jurisdiction";
     using Strings for uint256;
     using Counters for Counters.Counter;
-    // Counters.Counter private _tokenIds; //Track Last Token ID
-    Counters.Counter private _caseIds;  //Track Last Case ID
+    // Counters.Counter internal _tokenIds; //Track Last Token ID
+    Counters.Counter internal _caseIds;  //Track Last Case ID
 
     // Contract name
     string public name;
     // Contract symbol
     // string public symbol;
     
-    // mapping(string => uint256) private _roles;     //NFTs as Roles
-    mapping(uint256 => address) private _cases;      // Mapping for Case Contracts
+    // mapping(string => uint256) internal _roles;     //NFTs as Roles
+    mapping(uint256 => address) internal _cases;      // Mapping for Case Contracts
 
-    // mapping(uint256 => string) private _rulesURI;      // Mapping Metadata URIs for Individual Role 
+    // mapping(uint256 => string) internal _rulesURI;      // Mapping Metadata URIs for Individual Role 
 
     //--- Modifiers
-    /* MOVED
-    modifier roleExists(string calldata role) {
-        require(_roleExists(role), "INEXISTENT_ROLE");
+    modifier roleExists(string memory role) {
+        require(_GUIDExists(_stringToBytes32(role)), "INEXISTENT_ROLE");
         _;
     }
-    */
+    
 
     //--- Functions
 
@@ -98,60 +97,79 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
 
     //** Role Functions
 
-
     /// Join a role in current jurisdiction
     function join() external override {
+        _GUIDAssign(_msgSender(), _stringToBytes32("member"));
+        /*
         //Member Token ID
-        uint256 tokenId = _roles["member"];
+        // uint256 tokenId = _roleToId("member");
+        uint256 tokenId = _roleToId(_stringToBytes32("member"));
         //Mint Role Token
         _mint(_msgSender(), tokenId, 1, "");
+        */
     }
 
     /// Leave Role in current jurisdiction
     function leave() external override {
+        _GUIDRemove(_msgSender(), _stringToBytes32("member"));
+        /*
         //Member Token ID
-        uint256 tokenId = _roles["member"];
+        uint256 tokenId = _roleToId("member");
         //Burn
         _burn(_msgSender(), tokenId, 1);
+        */
     }
 
     /// Assign Someone Else to a Role
-    function roleAssign(address account, string calldata role) external override roleExists(role) {
+    function roleAssign(address account, string memory role) external override roleExists(role) {
         //Validate Permissions
         require(
             _msgSender() == account         //Self
             || owner() == _msgSender()      //Owner
-            || balanceOf(_msgSender(), _roles["admin"]) > 0     //Admin Token
+            || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Token
             , "INVALID_PERMISSIONS");
         //Add
-        _roleAssign(account, role);
+        // _roleAssign(account, _stringToBytes32(role));
+        _GUIDAssign(account, _stringToBytes32(role));
     }
 
-    /// Remove Someone Else from a Role
-    function roleRemove(address account, string calldata role) external override roleExists(role) {
-        //Validate Permissions
-        require(
-            _msgSender() == account         //Self
-            || owner() == _msgSender()      //Owner
-            || balanceOf(_msgSender(), _roles["admin"]) > 0     //Admin Token
-            , "INVALID_PERMISSIONS");
-        //Remove
-        _roleRemove(account, role);
+    /// Translate Role to Token ID
+    function _roleToId(string memory role) internal view roleExists(role) returns(uint256) {
+        return _GUIDToId(_stringToBytes32(role));
     }
-
-    /* ROLE MANAGEMENT FUNC MOVED TO ERC1155GUID
-    /* [TBD] - would need to track role IDs
-    /// Create a new Role
-    function roleCreate(string calldata role) public {
-        require(!_roleExists(role), "ROLE_EXISTS");
-        _roleCreate(role);
-    }
-    * /
 
     /// Check if account is assigned to role
     function roleHas(address account, string calldata role) public view override returns (bool) {
-        return (balanceOf(account, _roleToId(role)) > 0);
+        return ERC1155GUID.GUIDExist(account, _stringToBytes32(role));
+        // return (balanceOf(account, _roleToId(_stringToBytes32(role))) > 0);
     }
+
+    /// Remove Someone Else from a Role
+    function roleRemove(address account, string memory role) external override roleExists(role) {
+        //Validate Permissions
+        require(
+            _msgSender() == account         //Self
+            || owner() == _msgSender()      //Owner
+            || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Token
+            , "INVALID_PERMISSIONS");
+        //Remove
+        // _roleRemove(account, _stringToBytes32(role));
+        _GUIDRemove(account, _stringToBytes32(role));
+    }
+
+    /// Translate string Roles to GUID hashes
+    function _stringToBytes32(string memory str) internal pure returns (bytes32){
+        return keccak256(abi.encode(str));
+    }
+
+    /// Create a new Role
+    function _roleCreate(string memory role) internal returns (uint256) {
+        return _GUIDMake(_stringToBytes32(role));
+    }
+
+
+
+    /* ROLE MANAGEMENT FUNC MOVED TO ERC1155GUID
 
     /// Create New Role
     function _roleCreate(string memory role) internal {
@@ -192,7 +210,6 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
     function _roleToId(string calldata role) internal view roleExists(role) returns(uint256) {
         return _roles[role];
     }
-
     */
 
     /**

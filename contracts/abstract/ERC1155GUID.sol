@@ -18,6 +18,7 @@ import "../interfaces/IERC1155GUID.sol";
  * @title ERC1155 + meaningfurl Global Unique Identifiers for each Token ID
  * @dev use GUID as Role or any other meaningful index
  * V1: 
+ * [TODO] Change Role to GUID
  */
 abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
 
@@ -32,13 +33,14 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
     // Contract symbol
     // string public symbol;
     
-    mapping(string => uint256) internal _roles;     //NFTs as Roles
+    // mapping(string => uint256) internal _GUID;     //NFTs as Roles
+    mapping(bytes32 => uint256) internal _GUID;     //NFTs as Roles
 
 
     //--- Modifiers
 
-    modifier roleExists(string calldata role) {
-        require(_roleExists(role), "INEXISTENT_ROLE");
+    modifier GUIDExists(bytes32 guid) {
+        require(_GUIDExists(guid), "INEXISTENT_GUID");
         _;
     }
 
@@ -48,52 +50,47 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
      * @dev See {_setURI}.
      */
     constructor(string memory uri_) ERC1155(uri_) {
-        /*
-        //Set Default Roles
-        _roleCreate("admin");
-        _roleCreate("member");
-        _roleCreate("judge");
-        */
+        
     }
 
     //** GUID/Role Functions
 
     /// Check if account is assigned to role
-    function roleHas(address account, string calldata role) public view override returns (bool) {
-        return (balanceOf(account, _roleToId(role)) > 0);
+    function GUIDExist(address account, bytes32 guid) public view override returns (bool) {
+        return (balanceOf(account, _GUIDToId(guid)) > 0);
     }
 
     /// Create New Role
-    function _roleCreate(string memory role) internal returns (uint256) {
-        // require(!_roleExists(role), "ROLE_EXISTS");
-        // require(_roles[role] == 0, "ROLE_EXISTS");
-        require(_roles[role] == 0, string(abi.encodePacked(role, " role already exists ")));
+    function _GUIDMake(bytes32 guid) internal returns (uint256) {
+        // require(!_GUIDExists(guid), "ROLE_EXISTS");
+        // require(_GUID[guid] == 0, "ROLE_EXISTS");
+        require(_GUID[guid] == 0, string(abi.encodePacked(guid, " GUID already exists")));
         //Assign Token ID
         _tokenIds.increment(); //Start with 1
         uint256 tokenId = _tokenIds.current();
         //Map Role to Token ID
-        _roles[role] = tokenId;
+        _GUID[guid] = tokenId;
         //Event
-        emit RoleCreated(tokenId, role);
+        emit GUIDCreated(tokenId, guid);
         //Return Token ID
         return tokenId;
     }
 
     /// Check if Role Exists
-    function _roleExists(string calldata role) internal view returns (bool) {
-        return (_roles[role] != 0);
+    function _GUIDExists(bytes32 guid) internal view returns (bool) {
+        return (_GUID[guid] != 0);
     }
     
     /// Assign a role in current jurisdiction
-    function _roleAssign(address account, string calldata role) internal roleExists(role) {
-        uint256 tokenId = _roles[role];
+    function _GUIDAssign(address account, bytes32 guid) internal GUIDExists(guid) {
+        uint256 tokenId = _GUID[guid];
         //Mint Role Token
         _mint(account, tokenId, 1, "");
     }
     
     /// Unassign a Role in current jurisdiction
-    function _roleRemove(address account, string calldata role) internal roleExists(role) {
-        uint256 tokenId = _roles[role];
+    function _GUIDRemove(address account, bytes32 guid) internal GUIDExists(guid) {
+        uint256 tokenId = _GUID[guid];
         //Validate
         require(balanceOf(account, tokenId) > 0, "NOT_IN_ROLE");
         //Burn Role Token
@@ -101,8 +98,8 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
     }
 
     /// Translate Role to Token ID
-    function _roleToId(string calldata role) internal view roleExists(role) returns(uint256) {
-        return _roles[role];
+    function _GUIDToId(bytes32 guid) internal view GUIDExists(guid) returns(uint256) {
+        return _GUID[guid];
     }
 
     /**
