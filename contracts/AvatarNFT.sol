@@ -24,6 +24,7 @@ import "./abstract/CommonYJ.sol";
  *  - Assets are non-transferable by owner
  *  - [TODO] Orphan tokens can be claimed
  *  - [TODO] Contract is Updatable
+ *  - [TODO] Should we rename the param "socre" to "score" in the ReputationChange event?
  */
 contract AvatarNFT is CommonYJ, ERC721URIStorage, IERC721Receiver {
     
