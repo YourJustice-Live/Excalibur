@@ -8,15 +8,17 @@ import "./interfaces/IActionRepo.sol";
 // import "./libraries/DataTypes.sol";
 // import "./abstract/Rules.sol";
 import "./abstract/CommonYJ.sol";
+import "./abstract/ERC1155GUID.sol";
+
 
 /**
  * @title ActionRepo Contract -- Event Repository
  */
-contract ActionRepo is IActionRepo, CommonYJ{
+contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     //--- Storage
     //Arbitrary Contract Role 
-    string public constant override symbol = "YJ_EVT";
+    string public constant override symbol = "ACTIONS";
 
     // Contract name
     string public name;
@@ -26,8 +28,8 @@ contract ActionRepo is IActionRepo, CommonYJ{
     address private _jurisdiction;
     //Rule(s)
 
-    // Semantic Event Object
-    struct Evt {
+    // Semantic Action Entity
+    struct Action {
         // id: 1,
         uint256 id;
         // name: "Breach of contract",  //Title
@@ -60,14 +62,6 @@ contract ActionRepo is IActionRepo, CommonYJ{
         string uri; //Additional Info
 
     }
-    struct Confirmation {
-        //     ruling: "judge"|"jury"|"democracy",  //Decision Maker
-        string ruling;
-        //     evidence: true, //Require Evidence
-        bool evidence;
-        //     witness: 1,  //Minimal number of witnesses
-        uint witness;
-    }
     struct SVO {
         //     subject: "founder",     //Accused Role
         string subject;
@@ -77,11 +71,19 @@ contract ActionRepo is IActionRepo, CommonYJ{
         string object;
         string tool; //[TBD]
         //     //Describe an event
-        //     affected: "investor",  //Plaintiff Role (Filing the case)
-        string affected;
+        //     affected: "investors",  //Plaintiff Role (Filing the case)
+        string affected;    //[PONDER] Doest this really belong here? Is that part of the unique combination, or should this be an array, or an eadge? 
+    }
+    struct Confirmation {
+        //     ruling: "judge"|"jury"|"democracy",  //Decision Maker
+        string ruling;
+        //     evidence: true, //Require Evidence
+        bool evidence;
+        //     witness: 1,  //Minimal number of witnesses
+        uint witness;
     }
     // Event Storage     (Unique)
-    mapping(bytes32 => Evt) private _events;
+    mapping(bytes32 => Action) internal _actions;
 
 
     //-- Playground
@@ -102,23 +104,43 @@ contract ActionRepo is IActionRepo, CommonYJ{
 
 
     //--- Functions
-    constructor(address hub) CommonYJ(hub) {
+
+    constructor(address hub) CommonYJ(hub) ERC1155GUID(""){
         name = "YourJustice Event Repo";
-        // symbol = "YJ_EVT";
+        // symbol = "ACTIONS";
     }
 
     /// Generate a Unique Hash for Event
-    function ruleHash(SVO calldata svo) private pure returns (bytes32){
+    function _actionHash(SVO memory svo) internal pure returns (bytes32){
         return bytes32(keccak256(abi.encode(svo.subject, svo.verb, svo.object, svo.tool, svo.affected)));
     }
 
+    /// Store New Action
+    
     /// Register New Event
     function eventAdd(SVO memory svo) external {
+        //Unique Token GUID
+        bytes32 unique = _actionHash(svo);
+        //Create Role
+        uint256 id = _roleCreate(unique);
+        //Store Additional Details
+
 
         //...
 
         // emit ActionAdded(bytes32 indexed id, svo.subject, svo.verb, svo.object, svo.tool, svo.affected);
     }
+
+
+    /* [TBD] - would need to track role IDs
+    /// Create a new Role
+    function roleCreate(string calldata role) public {
+        
+        _roleCreate(role);
+    }
+
+
+
 
     /// 
 

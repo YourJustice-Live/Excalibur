@@ -27,6 +27,7 @@ describe("Protocol", function () {
   let hubContract: Contract;
   let avatarContract: Contract;
   let jurisdictionContract: Contract;
+  let actionContract: Contract;
 
   //Addresses
   let owner: Signer;
@@ -138,6 +139,34 @@ describe("Protocol", function () {
     
   });
 
+  /**
+   * Action Repository
+   */
+  describe("Action Repository", function () {
+    
+      before(async function () {
+        //Deploy Event Repo
+        // const ActionContract = await ethers.getContractFactory("ActionRepo");
+        // actionContract = await ActionContract.deploy(hubContract.address);
+
+        actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
+
+    });
+    
+
+
+    //[DEV]
+    it("TEST", async function () {
+      let test = await actionContract.ruleHashTest();
+      console.warn("*** Test Result: ", test);
+    });
+
+
+  });
+
+  /**
+   * Jurisdiction Contract
+   */
   describe("Jurisdiction", function () {
     
     before(async function () {
