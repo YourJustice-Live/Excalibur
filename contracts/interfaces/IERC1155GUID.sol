@@ -2,18 +2,10 @@
 
 pragma solidity ^0.8.0;
 
-interface IJurisdiction {
-    /// Symbol As Arbitrary contract designation signature
-    function symbol() external view returns (string memory);
-
-    /// Join jurisdiction as member
-    function join() external;
-
-    /// Leave member role in current jurisdiction
-    function leave() external;
+interface IERC1155GUID {
+    //--- Functions 
     
-    /* MOVED TO ERC1155GUID
-    /// Assign Someone to a Role
+   /// Assign Someone to a Role
     function roleAssign(address account, string calldata role) external;
 
     /// Remove Someone Else from a Role
@@ -25,10 +17,8 @@ interface IJurisdiction {
     /// Create a new Role
     // function roleCreate(address account, string calldata role) external;
 
-    
     //--- Events
     
     event RoleCreated(uint256 indexed id, string role);        // Role Added Event? ... Transfer events should cover this...
     event CaseCreated(uint256 indexed id, address contractAddress);
-    */
 }

@@ -8,44 +8,6 @@ import type { IJurisdiction, IJurisdictionInterface } from "../IJurisdiction";
 
 const _abi = [
   {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "id",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "contractAddress",
-        type: "address",
-      },
-    ],
-    name: "CaseCreated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "id",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "string",
-        name: "role",
-        type: "string",
-      },
-    ],
-    name: "RoleCreated",
-    type: "event",
-  },
-  {
     inputs: [],
     name: "join",
     outputs: [],
@@ -55,66 +17,6 @@ const _abi = [
   {
     inputs: [],
     name: "leave",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "role",
-        type: "string",
-      },
-    ],
-    name: "roleAssign",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "role",
-        type: "string",
-      },
-    ],
-    name: "roleHas",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "role",
-        type: "string",
-      },
-    ],
-    name: "roleRemove",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

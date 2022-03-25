@@ -4,7 +4,6 @@
 import {
   BaseContract,
   BigNumber,
-  BigNumberish,
   BytesLike,
   CallOverrides,
   ContractTransaction,
@@ -13,7 +12,7 @@ import {
   Signer,
   utils,
 } from "ethers";
-import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
+import { FunctionFragment, Result } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
@@ -22,57 +21,19 @@ export interface IJurisdictionInterface extends utils.Interface {
   functions: {
     "join()": FunctionFragment;
     "leave()": FunctionFragment;
-    "roleAssign(address,string)": FunctionFragment;
-    "roleHas(address,string)": FunctionFragment;
-    "roleRemove(address,string)": FunctionFragment;
     "symbol()": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "join", values?: undefined): string;
   encodeFunctionData(functionFragment: "leave", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "roleAssign",
-    values: [string, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "roleHas",
-    values: [string, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "roleRemove",
-    values: [string, string]
-  ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "join", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "leave", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "roleAssign", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "roleHas", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "roleRemove", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
 
-  events: {
-    "CaseCreated(uint256,address)": EventFragment;
-    "RoleCreated(uint256,string)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "CaseCreated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RoleCreated"): EventFragment;
+  events: {};
 }
-
-export type CaseCreatedEvent = TypedEvent<
-  [BigNumber, string],
-  { id: BigNumber; contractAddress: string }
->;
-
-export type CaseCreatedEventFilter = TypedEventFilter<CaseCreatedEvent>;
-
-export type RoleCreatedEvent = TypedEvent<
-  [BigNumber, string],
-  { id: BigNumber; role: string }
->;
-
-export type RoleCreatedEventFilter = TypedEventFilter<RoleCreatedEvent>;
 
 export interface IJurisdiction extends BaseContract {
   contractName: "IJurisdiction";
@@ -110,24 +71,6 @@ export interface IJurisdiction extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    roleAssign(
-      account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    roleHas(
-      account: string,
-      role: string,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    roleRemove(
-      account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     symbol(overrides?: CallOverrides): Promise<[string]>;
   };
 
@@ -139,24 +82,6 @@ export interface IJurisdiction extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  roleAssign(
-    account: string,
-    role: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  roleHas(
-    account: string,
-    role: string,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  roleRemove(
-    account: string,
-    role: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   symbol(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
@@ -164,43 +89,10 @@ export interface IJurisdiction extends BaseContract {
 
     leave(overrides?: CallOverrides): Promise<void>;
 
-    roleAssign(
-      account: string,
-      role: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    roleHas(
-      account: string,
-      role: string,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    roleRemove(
-      account: string,
-      role: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     symbol(overrides?: CallOverrides): Promise<string>;
   };
 
-  filters: {
-    "CaseCreated(uint256,address)"(
-      id?: BigNumberish | null,
-      contractAddress?: null
-    ): CaseCreatedEventFilter;
-    CaseCreated(
-      id?: BigNumberish | null,
-      contractAddress?: null
-    ): CaseCreatedEventFilter;
-
-    "RoleCreated(uint256,string)"(
-      id?: BigNumberish | null,
-      role?: null
-    ): RoleCreatedEventFilter;
-    RoleCreated(id?: BigNumberish | null, role?: null): RoleCreatedEventFilter;
-  };
+  filters: {};
 
   estimateGas: {
     join(
@@ -208,24 +100,6 @@ export interface IJurisdiction extends BaseContract {
     ): Promise<BigNumber>;
 
     leave(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    roleAssign(
-      account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    roleHas(
-      account: string,
-      role: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    roleRemove(
-      account: string,
-      role: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -238,24 +112,6 @@ export interface IJurisdiction extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     leave(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    roleAssign(
-      account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    roleHas(
-      account: string,
-      role: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    roleRemove(
-      account: string,
-      role: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
