@@ -15,7 +15,7 @@ import "../interfaces/IERC1155GUID.sol";
 
 
 /**
- * @title ERC1155 + Global Unique Identifier for each Token ID
+ * @title ERC1155 + meaningfurl Global Unique Identifiers for each Token ID
  * @dev use GUID as Role or any other meaningful index
  * V1: 
  */
@@ -56,15 +56,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
         */
     }
 
-    //** Role Functions
-
-    /* [TBD] - would need to track role IDs
-    /// Create a new Role
-    function roleCreate(string calldata role) public {
-        require(!_roleExists(role), "ROLE_EXISTS");
-        _roleCreate(role);
-    }
-    */
+    //** GUID/Role Functions
 
     /// Check if account is assigned to role
     function roleHas(address account, string calldata role) public view override returns (bool) {
@@ -72,7 +64,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
     }
 
     /// Create New Role
-    function _roleCreate(string memory role) internal {
+    function _roleCreate(string memory role) internal returns (uint256) {
         // require(!_roleExists(role), "ROLE_EXISTS");
         // require(_roles[role] == 0, "ROLE_EXISTS");
         require(_roles[role] == 0, string(abi.encodePacked(role, " role already exists ")));
@@ -83,8 +75,9 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
         _roles[role] = tokenId;
         //Event
         emit RoleCreated(tokenId, role);
+        //Return Token ID
+        return tokenId;
     }
-
 
     /// Check if Role Exists
     function _roleExists(string calldata role) internal view returns (bool) {

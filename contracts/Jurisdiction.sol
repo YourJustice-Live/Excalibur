@@ -47,7 +47,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
     // mapping(string => uint256) private _roles;     //NFTs as Roles
     mapping(uint256 => address) private _cases;      // Mapping for Case Contracts
 
-    // mapping(uint256 => string) private _rulesURI;      // Mapping for Rule/Tile URIs
+    // mapping(uint256 => string) private _rulesURI;      // Mapping Metadata URIs for Individual Role 
 
     //--- Modifiers
     /* MOVED
