@@ -21,14 +21,18 @@ import "./Case.sol";
 
 /**
  * @title Jurisdiction Contract
+ * @dev Retains Group Members in Roles
  * V1: Role NFTs
- * V2:  
  * - Mints Member NFTs
+ * - One for each
+ * - All members are the same
  * - [TODO] Rules...
  * - [TODO] Deploys Cases
  * - [TODO] Token URIs for Roles
  * - [TODO] Contract URI
  * - [TODO] Validation: Make Sure Account has an Avatar NFT -- Assign Avatars instead of Accounts
+ * V2:  
+ * - [TODO] NFT Trackers - Track the owner of the Avatar NFT
  */
 // contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
 contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
@@ -100,24 +104,11 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
     /// Join a role in current jurisdiction
     function join() external override {
         _GUIDAssign(_msgSender(), _stringToBytes32("member"));
-        /*
-        //Member Token ID
-        // uint256 tokenId = _roleToId("member");
-        uint256 tokenId = _roleToId(_stringToBytes32("member"));
-        //Mint Role Token
-        _mint(_msgSender(), tokenId, 1, "");
-        */
     }
 
     /// Leave Role in current jurisdiction
     function leave() external override {
         _GUIDRemove(_msgSender(), _stringToBytes32("member"));
-        /*
-        //Member Token ID
-        uint256 tokenId = _roleToId("member");
-        //Burn
-        _burn(_msgSender(), tokenId, 1);
-        */
     }
 
     /// Assign Someone Else to a Role
@@ -166,51 +157,6 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
     function _roleCreate(string memory role) internal returns (uint256) {
         return _GUIDMake(_stringToBytes32(role));
     }
-
-
-
-    /* ROLE MANAGEMENT FUNC MOVED TO ERC1155GUID
-
-    /// Create New Role
-    function _roleCreate(string memory role) internal {
-        // require(!_roleExists(role), "ROLE_EXISTS");
-        // require(_roles[role] == 0, "ROLE_EXISTS");
-        require(_roles[role] == 0, string(abi.encodePacked(role, " role already exists ")));
-        //Assign Token ID
-        _tokenIds.increment(); //Start with 1
-        uint256 tokenId = _tokenIds.current();
-        //Map Role to Token ID
-        _roles[role] = tokenId;
-        //Event
-        emit RoleCreated(tokenId, role);
-    }
-    
-    /// Check if Role Exists
-    function _roleExists(string calldata role) internal view returns (bool) {
-        return (_roles[role] != 0);
-    }
-    
-    /// Assign a role in current jurisdiction
-    function _roleAssign(address account, string calldata role) internal roleExists(role) {
-        uint256 tokenId = _roles[role];
-        //Mint Role Token
-        _mint(account, tokenId, 1, "");
-    }
-    
-    /// Unassign a Role in current jurisdiction
-    function _roleRemove(address account, string calldata role) internal roleExists(role) {
-        uint256 tokenId = _roles[role];
-        //Validate
-        require(balanceOf(account, tokenId) > 0, "NOT_IN_ROLE");
-        //Burn Role Token
-        _burn(account, tokenId, 1);
-    }
-
-    /// Translate Role to Token ID
-    function _roleToId(string calldata role) internal view roleExists(role) returns(uint256) {
-        return _roles[role];
-    }
-    */
 
     /**
     * @dev Hook that is called before any token transfer. This includes minting and burning, as well as batched variants.
