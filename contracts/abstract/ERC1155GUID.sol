@@ -56,7 +56,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
     //** GUID/Role Functions
 
     /// Check if account is assigned to role
-    function GUIDExist(address account, bytes32 guid) public view override returns (bool) {
+    function GUIDHas(address account, bytes32 guid) public view override returns (bool) {
         return (balanceOf(account, _GUIDToId(guid)) > 0);
     }
 
@@ -64,7 +64,8 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
     function _GUIDMake(bytes32 guid) internal returns (uint256) {
         // require(!_GUIDExists(guid), "ROLE_EXISTS");
         // require(_GUID[guid] == 0, "ROLE_EXISTS");
-        require(_GUID[guid] == 0, string(abi.encodePacked(guid, " GUID already exists")));
+        // require(_GUID[guid] == 0, string(abi.encodePacked(guid, " GUID already exists")));
+        require(_GUIDExists(guid) == false, string(abi.encodePacked(guid, " GUID already exists")));
         //Assign Token ID
         _tokenIds.increment(); //Start with 1
         uint256 tokenId = _tokenIds.current();
@@ -83,7 +84,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
     
     /// Assign a role in current jurisdiction
     function _GUIDAssign(address account, bytes32 guid) internal GUIDExists(guid) {
-        uint256 tokenId = _GUID[guid];
+        uint256 tokenId = _GUIDToId(guid);  //_GUID[guid];
         //Mint Role Token
         _mint(account, tokenId, 1, "");
     }
@@ -99,6 +100,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
 
     /// Translate Role to Token ID
     function _GUIDToId(bytes32 guid) internal view GUIDExists(guid) returns(uint256) {
+    // function _GUIDToId(bytes32 guid) internal view returns(uint256) {
         return _GUID[guid];
     }
 

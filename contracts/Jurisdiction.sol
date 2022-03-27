@@ -131,7 +131,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
 
     /// Check if account is assigned to role
     function roleHas(address account, string calldata role) public view override returns (bool) {
-        return ERC1155GUID.GUIDExist(account, _stringToBytes32(role));
+        return ERC1155GUID.GUIDHas(account, _stringToBytes32(role));
         // return (balanceOf(account, _roleToId(_stringToBytes32(role))) > 0);
     }
 

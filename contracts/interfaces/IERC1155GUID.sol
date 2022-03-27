@@ -6,7 +6,7 @@ interface IERC1155GUID {
     //--- Functions 
     
     /// Check if account is assigned to role
-    function GUIDExist(address account, bytes32 guid) external view returns (bool);
+    function GUIDHas(address account, bytes32 guid) external view returns (bool);
     
     /// Create a new Role
     // function roleCreate(address account, string calldata role) external;
