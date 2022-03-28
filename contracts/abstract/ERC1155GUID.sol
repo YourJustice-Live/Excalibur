@@ -15,7 +15,7 @@ import "../interfaces/IERC1155GUID.sol";
 
 
 /**
- * @title ERC1155 + meaningfurl Global Unique Identifiers for each Token ID
+ * @title 2D ERC1155 -- Members + Groups (Meaningful Global Unique Identifiers for each Token ID)
  * @dev use GUID as Role or any other meaningful index
  * V1: 
  * [TODO] Change Role to GUID

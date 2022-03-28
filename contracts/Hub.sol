@@ -20,6 +20,7 @@ contract Hub is Ownable {
 
     // Arbitrary contract designation signature
     string public constant role = "YJHub";
+    // string public constant symbol = "YJHub"; //TODO: Use THis
 
     //--- Storage
     // address internal _CONFIG;    //Configuration Contract
