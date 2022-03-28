@@ -173,10 +173,10 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
         if (to != address(0)) {
             for (uint256 i = 0; i < ids.length; ++i) {
-                uint256 id = ids[i];
-                uint256 amount = amounts[i];
                 //Validate - Max of 1 Per Account
-                require(balanceOf(_msgSender(), id) == 0, "ALREADY_ASSIGNED_TO_ROLE");
+                uint256 id = ids[i];
+                require(balanceOf(to, id) == 0, "ALREADY_ASSIGNED_TO_ROLE");
+                uint256 amount = amounts[i];
                 require(amount == 1, "ONE_TOKEN_MAX");
             }
         }
