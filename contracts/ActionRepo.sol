@@ -5,7 +5,7 @@ import "hardhat/console.sol";
 
 // import {DataTypes} from './libraries/DataTypes.sol';
 import "./interfaces/IActionRepo.sol";
-// import "./libraries/DataTypes.sol";
+import "./libraries/DataTypes.sol";
 // import "./abstract/Rules.sol";
 import "./abstract/CommonYJ.sol";
 import "./abstract/ERC1155GUID.sol";
@@ -15,7 +15,7 @@ import "./abstract/ERC1155GUID.sol";
  * @title History Retention
  * @dev Event Repository -- Reains Unique Events and Their Apperance Throught History
  * 2D - Compound GUID + Additional Data & URI
- * [TBD] 3D - Individual Instances of Action as NFTs + Event Details (Time, etc')
+ * [TBD] 3D - Individual Instances of Action (Incidents) as NFTs + Event Details (Time, Case no.,  etc')
  */
 contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
@@ -31,78 +31,14 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     address private _jurisdiction;
     //Rule(s)
 
-    // Semantic Action Entity
-    struct Action {
-        // id: 1,
-        // uint256 id;  //Outside
-
-        // name: "Breach of contract",  //Title
-        string name;
-     
-        // text: "The founder of the project must comply with the terms of the contract with investors",  //Text Description
-        string text;
-
-        // entities:{
-        //     //Describe an event
-        //     affected: "investor",  //Plaintiff Role (Filing the case)
-        //     subject: "founder",     //Accused Role
-        //     action: "breach",
-        //     object: "contract",
-        // },
-        SVO entities;
-        
-        // confirmation:{ //Confirmation Methods [WIP]
-        //     //judge: true,
-        //     ruling: "judge"|"jury"|"democracy",  //Decision Maker
-        //     evidence: true, //Require Evidence
-        //     witness: 1,  //Minimal number of witnesses
-        // },
-        Confirmation confirmation;
-
-        // requirements:{
-        //     witness: "Blockchain Expert"
-        // }
-        // string requirements;
-        string uri; //Additional Info
-    }
-
-    struct SVO {    //Action
-        //     subject: "founder",     //Accused Role
-        string subject;
-        //     action: "breach",
-        string verb;
-        //     object: "contract",
-        string object;
-        string tool; //[TBD]
-        //     //Describe an event
-        //     affected: "investors",  //Plaintiff Role (Filing the case)
-        string affected;    //[PONDER] Doest this really belong here? Is that part of the unique combination, or should this be an array, or an eadge? 
-        
-    }
-    struct ActionData {
-        // name: "Breach of contract",  //Title
-        // string name;   //On URI
-        // text: "The founder of the project must comply with the terms of the contract with investors",  //Text Description
-        // string text;   //On URI
-        string uri; //Misc Additional Info
-        Confirmation confirmation;
-    }
-    struct Confirmation {
-        //     ruling: "judge"|"jury"|"democracy",  //Decision Maker
-        string ruling;
-        //     evidence: true, //Require Evidence
-        bool evidence;
-        //     witness: 1,  //Minimal number of witnesses
-        uint witness;
-    }
     // Event Storage     (Unique Concepts)
     // mapping(bytes32 => Action) internal _actions;
-    mapping(uint256 => Action) internal _actions;
+    mapping(uint256 => DataTypes.Action) internal _actions;
     
 
-    // mapping(uint256 => SVO) internal _actionsTest;
-    mapping(bytes32 => SVO) public actionsTest;
-    mapping(uint256 => ActionData) internal _actionData;
+    // mapping(uint256 => DataTypes.SVO) internal _actionsTest;
+    mapping(bytes32 => DataTypes.SVO) public actionsTest;
+    mapping(uint256 => DataTypes.RoleData) internal _RoleData;
 
     mapping(uint256 => string) internal _uri;
 
@@ -116,33 +52,32 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     }
 
     /// Generate a Unique Hash for Event
-    function _actionHash(SVO memory svo) internal pure returns (bytes32) {
+    function _actionHash(DataTypes.SVO memory svo) internal pure returns (bytes32) {
         return bytes32(keccak256(abi.encode(svo.subject, svo.verb, svo.object, svo.tool, svo.affected)));
     }
 
     /// Register New Action
-    function actionAdd(SVO memory svo) external returns (bytes32) {
+    function actionAdd(DataTypes.SVO memory svo) external returns (bytes32) {
         //TODO: Validate
 
         console.log("actionAdd");
 
         //Store Additional Details
         return _actionAdd(svo);
-        // _actionAdd(svo);
     }
 
     /// Set Action's Metadata URI
-    function actionSetURI(bytes32 guid, string memory uri) external {
+    function actionSetURI(bytes32 guid, string memory uri) external override {
         _uri[_GUIDToId(guid)] = uri;
     }
 
     /// Set Action's Data
-    function actionSetData(bytes32 guid, ActionData memory data) external {
-        _actionData[_GUIDToId(guid)] = data;
+    function actionSetData(bytes32 guid, DataTypes.RoleData memory data) external override {
+        _RoleData[_GUIDToId(guid)] = data;
     }
 
     /// Store New Action
-    function _actionAdd(SVO memory svo) internal returns (bytes32) {
+    function _actionAdd(DataTypes.SVO memory svo) internal returns (bytes32) {
         console.log("_actionAdd");
 
         //Unique Token GUID
@@ -172,22 +107,19 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
         return guid;
     }
 
-
-
-    function actionGet(bytes32 guid) public view returns (SVO memory){
+    /// Get Action by GUID
+    function actionGet(bytes32 guid) public view override returns (DataTypes.SVO memory){
         return _actionGet(guid);
     }
 
     /// Get Action by GUID
-    // function _actionGet(bytes32 guid) public view GUIDExists(guid) returns (SVO memory){
-    function _actionGet(bytes32 guid) public view returns (SVO memory){
-        // uint256 id = _GUIDToId(guid);
-        // return actionsTest[id];
-
-        console.log("Action Return SVO: ", actionsTest[guid].subject);
-
-        actionsTest[guid];
+    // function _actionGet(bytes32 guid) internal view GUIDExists(guid) returns (DataTypes.SVO memory){
+    function _actionGet(bytes32 guid) internal view returns (DataTypes.SVO memory){
+        // return actionsTest[_GUIDToId(guid)];
+        return actionsTest[guid];
     }
+
+
 
 
     /* [TBD] - would need to track role IDs
@@ -233,7 +165,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     //-- Playground
 
     function ruleHashTest() public view returns ( bytes32){
-        SVO memory testSVO;
+        DataTypes.SVO memory testSVO;
         testSVO.subject = "xxx";
 
         //Unique Token GUID
