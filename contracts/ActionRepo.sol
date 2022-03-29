@@ -33,14 +33,12 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     // Event Storage     (Unique Concepts)
     // mapping(bytes32 => Action) internal _actions;
-    mapping(uint256 => DataTypes.Action) internal _actions;
-    
+    // mapping(uint256 => DataTypes.Action) internal _actions;
+    mapping(bytes32 => DataTypes.SVO) internal _actions;            //Primary Data
+    // mapping(bytes32 => DataTypes.SVO) public actionsTest;
+    mapping(uint256 => DataTypes.RoleData) internal _RoleData;      //Additional Data
 
-    // mapping(uint256 => DataTypes.SVO) internal _actionsTest;
-    mapping(bytes32 => DataTypes.SVO) public actionsTest;
-    mapping(uint256 => DataTypes.RoleData) internal _RoleData;
-
-    mapping(uint256 => string) internal _uri;
+    // mapping(uint256 => string) internal _uri;
 
 
 
@@ -57,24 +55,49 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     }
 
     /// Register New Action
-    function actionAdd(DataTypes.SVO memory svo) external returns (bytes32) {
+    // function actionAdd(DataTypes.SVO memory svo) external returns (bytes32) {
+    function actionAdd(DataTypes.SVO memory svo, DataTypes.Confirmation memory confirmation, string memory uri) public override returns (bytes32) {
         //TODO: Validate
 
-        console.log("actionAdd");
+        // console.log("actionAdd");
 
         //Store Additional Details
-        return _actionAdd(svo);
+        // return _actionAdd(svo);
+        bytes32 guid = actionAdd(svo, confirmation, uri);
+        //Set Additional Data
+        _actionSetConfirmation(guid, confirmation);
+        _actionSetURI(guid, uri);
+        //return GUID
+        return guid;
+    }
+
+    /// Update URI for Action
+    function actionSetURI(bytes32 guid, string memory uri) external override {
+        _actionSetURI(guid, uri);
+    }
+
+    /// Update Confirmation Methof for Action
+    function actionSetConfirmation(bytes32 guid, DataTypes.Confirmation memory confirmation) external override {
+        _actionSetConfirmation(guid, confirmation);
     }
 
     /// Set Action's Metadata URI
-    function actionSetURI(bytes32 guid, string memory uri) external override {
-        _uri[_GUIDToId(guid)] = uri;
+    function _actionSetURI(bytes32 guid, string memory uri) internal {
+        // _uri[_GUIDToId(guid)] = uri;
+        _RoleData[_GUIDToId(guid)].uri = uri;
+        emit URI(guid, uri);
+    }
+
+    /// Set Action's Confirmation Object
+    function _actionSetConfirmation(bytes32 guid, DataTypes.Confirmation memory confirmation) internal {
+        _RoleData[_GUIDToId(guid)].confirmation = confirmation;
+        emit Confirmation(guid, confirmation);
     }
 
     /// Set Action's Data
-    function actionSetData(bytes32 guid, DataTypes.RoleData memory data) external override {
-        _RoleData[_GUIDToId(guid)] = data;
-    }
+    // function actionSetData(bytes32 guid, DataTypes.RoleData memory data) external override {
+    //     _RoleData[_GUIDToId(guid)] = data;
+    // }
 
     /// Store New Action
     function _actionAdd(DataTypes.SVO memory svo) internal returns (bytes32) {
@@ -87,23 +110,21 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
         console.log("guid: ");
         console.logBytes32(guid);
 
-
         //TODO: Validate 
         require(_GUIDExists(guid) == false, "Action Already Exists");
         //Create Action
         uint256 id = _GUIDMake(guid);
 
         console.log("New Action id: ", id);
-
         console.log("New Action SVO: ", svo.subject);
 
-        // //Map Additional Data
-        actionsTest[guid] = svo;
+        //Map Additional Data
+        _actions[guid] = svo;
 
-        // //Event
+        //Event
         emit ActionAdded(guid, svo.subject, svo.verb, svo.object, svo.tool, svo.affected);
 
-        // //Return GUID
+        //Return GUID
         return guid;
     }
 
@@ -115,8 +136,8 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     /// Get Action by GUID
     // function _actionGet(bytes32 guid) internal view GUIDExists(guid) returns (DataTypes.SVO memory){
     function _actionGet(bytes32 guid) internal view returns (DataTypes.SVO memory){
-        // return actionsTest[_GUIDToId(guid)];
-        return actionsTest[guid];
+        // return _actions[_GUIDToId(guid)];
+        return _actions[guid];
     }
 
 
