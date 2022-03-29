@@ -8,6 +8,9 @@ interface IRules {
     
     //--- Events
 
+    /// Action Repository (HISTORY) Set
+    event ActionRepoSet(address actionRepo);
+
     /// Rule Added
     event RuleAdded(uint256 indexed id, DataTypes.Rule rule);
 
@@ -15,5 +18,6 @@ interface IRules {
     event RuleRemoved(uint256 indexed id);
 
     /// Rule Removed
-    // RuleChanged(uint256 indexed id);
+    event RuleChanged(uint256 indexed id, DataTypes.Rule rule);
+
 }
