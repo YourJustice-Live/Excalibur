@@ -50,7 +50,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     }
 
     /// Generate a Unique Hash for Event
-    function _actionHash(DataTypes.SVO memory svo) internal pure returns (bytes32) {
+    function actionHash(DataTypes.SVO memory svo) public pure override returns (bytes32) {
         return bytes32(keccak256(abi.encode(svo.subject, svo.verb, svo.object, svo.tool, svo.affected)));
     }
 
@@ -63,7 +63,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
         //Store Additional Details
         // return _actionAdd(svo);
-        bytes32 guid = actionAdd(svo, confirmation, uri);
+        bytes32 guid = _actionAdd(svo);
         //Set Additional Data
         _actionSetConfirmation(guid, confirmation);
         _actionSetURI(guid, uri);
@@ -104,7 +104,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
         console.log("_actionAdd");
 
         //Unique Token GUID
-        bytes32 guid = _actionHash(svo);
+        bytes32 guid = actionHash(svo);
         
         // bytes32ToString
         console.log("guid: ");
@@ -116,13 +116,13 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
         uint256 id = _GUIDMake(guid);
 
         console.log("New Action id: ", id);
-        console.log("New Action SVO: ", svo.subject);
+        // console.log("New Action SVO: ", svo.subject);
 
         //Map Additional Data
         _actions[guid] = svo;
 
         //Event
-        emit ActionAdded(guid, svo.subject, svo.verb, svo.object, svo.tool, svo.affected);
+        emit ActionAdded(id, guid, svo.subject, svo.verb, svo.object, svo.tool, svo.affected);
 
         //Return GUID
         return guid;
@@ -190,7 +190,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
         testSVO.subject = "xxx";
 
         //Unique Token GUID
-        bytes32 unique = _actionHash(testSVO);
+        bytes32 unique = actionHash(testSVO);
 
 
 
