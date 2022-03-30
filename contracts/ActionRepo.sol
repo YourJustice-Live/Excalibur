@@ -46,7 +46,11 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     constructor(address hub) CommonYJ(hub) ERC1155GUID(""){
         name = "YourJustice Event Repo";
-        // symbol = "ACTIONS";
+    }
+
+    /// ERC165 - Supported Interfaces
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == type(IActionRepo).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /// Generate a Unique Hash for Event
