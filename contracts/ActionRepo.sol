@@ -85,7 +85,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     function _actionSetURI(bytes32 guid, string memory uri) internal {
         // _uri[_GUIDToId(guid)] = uri;
         _RoleData[_GUIDToId(guid)].uri = uri;
-        emit URI(guid, uri);
+        emit ActionURI(guid, uri);
     }
 
     /// Set Action's Confirmation Object
@@ -93,11 +93,6 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
         _RoleData[_GUIDToId(guid)].confirmation = confirmation;
         emit Confirmation(guid, confirmation);
     }
-
-    /// Set Action's Data
-    // function actionSetData(bytes32 guid, DataTypes.RoleData memory data) external override {
-    //     _RoleData[_GUIDToId(guid)] = data;
-    // }
 
     /// Store New Action
     function _actionAdd(DataTypes.SVO memory svo) internal returns (bytes32) {
@@ -138,6 +133,16 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     function _actionGet(bytes32 guid) internal view returns (DataTypes.SVO memory){
         // return _actions[_GUIDToId(guid)];
         return _actions[guid];
+    }
+
+    /// Get Action's URI
+    function actionGetURI(bytes32 guid) public view override returns (string memory){
+        return _RoleData[_GUIDToId(guid)].uri;
+    }
+
+    /// Get Action's URI
+    function actionGetConfirmation(bytes32 guid) public view override returns (DataTypes.Confirmation memory){
+        return _RoleData[_GUIDToId(guid)].confirmation;
     }
 
 
@@ -184,33 +189,6 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
 
     //-- Playground
-
-    function ruleHashTest() public view returns ( bytes32){
-        DataTypes.SVO memory testSVO;
-        testSVO.subject = "xxx";
-
-        //Unique Token GUID
-        bytes32 unique = actionHash(testSVO);
-
-
-
-        // bytes32ToString
-        console.log("unique");
-        console.logBytes32(unique);
-
-        // string memory uniqueSTR = bytes32ToString(unique);  //�♫����uho�Y����k%{o��¶�<K���↕i�&
-        // string memory uniqueSTR = string(abi.encodePacked(unique));  //�♫����uho�Y����k%{o��¶�<K���↕i�&
-        // console.log("uniqueSTR");
-        // console.logString(uniqueSTR);
-        // return uniqueSTR;
-
-        // return unique;
-        // return bytes(abi.encode(testSVO.subject, testSVO.verb, testSVO.object, testSVO.affected));
-        return bytes32(keccak256(abi.encode(testSVO.subject, testSVO.verb, testSVO.object, testSVO.affected)));
-        // return  bytes(abi.encode("aa","bb", "cc", "cc", "cc"));
-        // return  bytes(abi.encodePacked("aa","bb", "cc", "cc", "cc"));
-
-    }
 
 
     function testBytes(bytes memory foo) public view returns (bytes memory){

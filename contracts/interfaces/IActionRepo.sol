@@ -26,10 +26,11 @@ interface IActionRepo {
     /// Get Action by GUID
     function actionGet(bytes32 guid) external view returns (DataTypes.SVO memory);
 
-    /// Set Action's Data
-    // function actionSetData(bytes32 guid, DataTypes.RoleData memory data) external;
-
-    /// Store 
+    /// Get Action's URI
+    function actionGetURI(bytes32 guid) external view returns (string memory);
+    
+    /// Get Action's URI
+    function actionGetConfirmation(bytes32 guid) external view returns (DataTypes.Confirmation memory);
 
     //--- Events
     /// Action Added
@@ -37,7 +38,7 @@ interface IActionRepo {
     /// Action Removed (No such thing)
     // event ActionRemoved(bytes32 indexed id);
     /// Action URI Updated
-    event URI(bytes32 indexed guid, string uri);
+    event ActionURI(bytes32 indexed guid, string uri);
     /// Action URI Updated
     event Confirmation(bytes32 indexed guid, DataTypes.Confirmation confirmation);      //[TEST] Is it right to emit structs in events?
 }
