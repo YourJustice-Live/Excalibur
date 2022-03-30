@@ -137,32 +137,74 @@ describe("Protocol", function () {
       expect(await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain + 1, repCall.rating)).to.equal(0);
     });
     
-  });
+  }); //Avatar
+
+
 
   /**
    * Action Repository
    */
   describe("Action Repository", function () {
-    
-      before(async function () {
-        //Deploy Event Repo
-        // const ActionContract = await ethers.getContractFactory("ActionRepo");
-        // actionContract = await ActionContract.deploy(hubContract.address);
-
-        actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
-
+  
+    before(async function () {
+      //Deploy Action Repo / History Contract
+      // const ActionContract = await ethers.getContractFactory("ActionRepo");
+      // actionContract = await ActionContract.deploy(hubContract.address);
+      actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
     });
-    
+  
+    it("Should store Actions", async function () {
 
+      // let dataObj = ethers.utils.hexlify({ length: 2, "0": 1, "1": 2 });
+      // let arrObj = ethers.utils.hexlify([1, 2, 3, 4]);
+      // console.warn("*** dataObj: ", dataObj, ethers.utils.arrayify(dataObj));
+      // console.warn("*** arrObj: ", arrObj, ethers.utils.arrayify(arrObj));
 
-    //[DEV]
-    it("TEST", async function () {
-      let test = await actionContract.ruleHashTest();
-      console.warn("*** Test Result: ", test);
+      let action = {
+        subject: "founder",     //Accused Role
+        verb: "breach",
+        object: "contract",
+        tool: "",
+        affected: "investor",  //Plaintiff / Beneficiary
+      };
+      let confirmation = {
+        ruling: "judge",  //Decision Maker
+        evidence: true, //Require Evidence
+        witness: 1,  //Minimal number of witnesses
+      };
+      let uri = "TEST_URI";
+
+      // let actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2';//await actionContract.callStatic.actionAdd(action);
+      // let actionGUID = await actionContract.callStatic.actionAdd(action); //Simulate
+      let tx = await actionContract.actionAdd(action, confirmation, uri);
+      await tx.wait();
+
+      let actionGUID = await actionContract.actionHash(action); //Gets hash if exists or not
+      console.warn("actionGUID:", actionGUID);
+
+      //Expect Added Event
+      await expect(tx).to.emit(actionContract, 'ActionAdded').withArgs(1, actionGUID, action.subject, action.verb, action.object, action.tool, action.affected);
+      // await expect(tx).to.emit(actionContract, 'URI').withArgs(actionGUID, uri);
+      await expect(tx).to.emit(actionContract, 'Confirmation');//.withArgs(actionGUID, confirmation);
+
+      //Fetch Action's Struct
+      let actionRet = await actionContract.actionGet(actionGUID);
+      
+      
+      // console.warn("actionGet:", actionRet);
+      // expect(Object.values(actionRet)).to.eql(Object.values(action));
+      expect(actionRet).to.include.members(Object.values(action));
+      // expect(actionRet).to.eql(action);  //Fails
+      // expect(actionRet).to.include(action); //Fails
+      // expect(actionRet).to.own.include(action); //Fails
+
+      //Additional Rule Data
+      expect(await actionContract.actionGetURI(actionGUID)).to.equal(uri);
+      // expect(await actionContract.actionGetConfirmation(actionGUID)).to.include.members(["judge", true]);    //TODO: Find a better way to check this
+      
     });
 
-
-  });
+  }); //Action Repository
 
   /**
    * Jurisdiction Contract
@@ -172,7 +214,11 @@ describe("Protocol", function () {
     before(async function () {
         //Deploy Jurisdiction
         const JurisdictionContract = await ethers.getContractFactory("Jurisdiction");
-        jurisdictionContract = await JurisdictionContract.deploy(hubContract.address);
+        jurisdictionContract = await JurisdictionContract.deploy(hubContract.address, actionContract.address);
+
+        //TODO: Write it more like this
+        this.jurisdiction = jurisdictionContract;
+        // console.log("jurisdiction: ", this.jurisdiction);
     });
 
     it("Users can join as a member", async function () {
@@ -212,6 +258,7 @@ describe("Protocol", function () {
 
       let testerAddr = await tester.getAddress();
       let adminAddr = await admin.getAddress();
+      this.adminAddr = adminAddr;
 
       //Check Before
       expect(await jurisdictionContract.roleHas(testerAddr, "judge")).to.equal(false);
@@ -221,7 +268,7 @@ describe("Protocol", function () {
         jurisdictionContract.connect(tester2).roleAssign(testerAddr, "judge")
       ).to.be.revertedWith("INVALID_PERMISSIONS");
       
-      //Assign Admin
+      //Assign Judge
       await jurisdictionContract.connect(admin).roleAssign(testerAddr, "judge");
 
       //Check After
@@ -229,6 +276,47 @@ describe("Protocol", function () {
 
     });
     
-  });
+    it("Should store Rules", async function () {
+      let actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2';//await actionContract.callStatic.actionAdd(action);
+      let rule = {
+        // uint256 about;    //About What (Token URI +? Contract Address)
+        about: actionGUID, //"0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2",
+        // about: 1,
+        // string uri;     //Text, Conditions & additional data
+        uri: "ADDITIONAL_DATA_URI",
+        // Effect Object (Describes Changes to Reputation By Type)
+        effects:{
+          // int8 professional;
+          professional: -5,
+          // int8 social;
+          social: 5,
+          // int8 personal;
+          personal: 0,
+        },
+        // bool negation;  //false - Commision  true - Omission
+        negation: false,
+      };
+    
+
+      let tx = await jurisdictionContract.connect(admin).ruleAdd(rule);
+      // wait until the transaction is mined
+      await tx.wait();
+      // console.log("Rule Added", tx);
+ 
+      // expect(await jurisdictionContract.ruleAdd(actionContract.address)).to.equal("Hello, world!");
+      let ruleData = await jurisdictionContract.ruleGet(1);
+      
+      // console.log("Rule Getter:", typeof ruleData, ruleData);   //some kind of object array crossbread
+      // console.log("Rule Getter Effs:", ruleData.effects);  //V
+      // console.log("Rule Getter:", JSON.stringify(ruleData)); //As array. No Keys
+      //Expect Event
+      await expect(tx).to.emit(jurisdictionContract, 'RuleAdded').withArgs(1, rule.about, rule.uri, rule.negation);
+      
+      // await expect(ruleData).to.include.members(Object.values(rule));
+
+      
+    });
+
+  }); //Jurisdiction
 
 });
