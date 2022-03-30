@@ -6,6 +6,9 @@ import "../libraries/DataTypes.sol";
 
 interface IRules {
     
+    /// Expose Action Repo Address
+    function actionRepo() external view returns (address);
+
     ///Get Rule
     function ruleGet(uint256 id) external view returns (DataTypes.Rule memory);
 

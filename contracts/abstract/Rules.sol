@@ -51,6 +51,11 @@ contract Rules is IRules, Opinions {
         emit ActionRepoSet(actionRepo);
     }
 
+    /// Expose Action Repo Address
+    function actionRepo() external view override returns (address) {
+        return address(_actionRepo);
+    }
+
     /// Add Rule
     function _ruleAdd(DataTypes.Rule memory rule) internal returns (uint256) {
         //Add New Rule
