@@ -39,6 +39,6 @@ interface IActionRepo {
     // event ActionRemoved(bytes32 indexed id);
     /// Action URI Updated
     event ActionURI(bytes32 indexed guid, string uri);
-    /// Action URI Updated
-    event Confirmation(bytes32 indexed guid, DataTypes.Confirmation confirmation);      //[TEST] Is it right to emit structs in events?
+    /// Action Confirmation  Updated
+    event Confirmation(bytes32 indexed guid, string ruling, bool evidence, uint witness);
 }

@@ -36,7 +36,7 @@ contract Rules is IRules, Opinions {
     }
 
     /// Get Rule
-    function ruleGet(uint256 id) public view returns (DataTypes.Rule memory) {
+    function ruleGet(uint256 id) public view override returns (DataTypes.Rule memory) {
         return _rules[id];
     }
 
@@ -44,7 +44,7 @@ contract Rules is IRules, Opinions {
     function _setActionsContract(address actionRepo) internal {
         require(address(_actionRepo) == address(0), "HISTORY Contract Already Set");
         //String Match - Validate Contract's Designation        //TODO: Maybe Look into Checking the Supported Interface
-        require(keccak256(abi.encodePacked(IActionRepo(actionRepo).symbol())) == keccak256(abi.encodePacked("HISTORY")), "Expecting HISTORY Contract");
+        require(keccak256(abi.encodePacked(IActionRepo(actionRepo).symbol())) == keccak256(abi.encodePacked("YJ_HISTORY")), "Expecting HISTORY Contract");
         //Set
         _actionRepo = IActionRepo(actionRepo);
         //Event
@@ -59,7 +59,7 @@ contract Rules is IRules, Opinions {
         //Set
         _rules[id] = rule;
         //Event
-        emit RuleAdded(id, rule);
+        emit RuleAdded(id, rule.about, rule.uri, rule.negation);
         return id;
     }
 
@@ -75,8 +75,7 @@ contract Rules is IRules, Opinions {
         //Set
         _rules[id] = rule;
         //Event
-        emit RuleChanged(id, rule);
+        emit RuleChanged(id, rule.about, rule.uri, rule.negation);
     }
-
 
 }

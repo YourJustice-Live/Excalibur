@@ -21,7 +21,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     //--- Storage
     //Arbitrary Contract Role 
-    string public constant override symbol = "HISTORY";
+    string public constant override symbol = "YJ_HISTORY";
 
     // Contract name
     string public name;
@@ -91,34 +91,25 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     /// Set Action's Confirmation Object
     function _actionSetConfirmation(bytes32 guid, DataTypes.Confirmation memory confirmation) internal {
         _RoleData[_GUIDToId(guid)].confirmation = confirmation;
-        emit Confirmation(guid, confirmation);
+        emit Confirmation(guid, confirmation.ruling, confirmation.evidence, confirmation.witness);
     }
 
     /// Store New Action
     function _actionAdd(DataTypes.SVO memory svo) internal returns (bytes32) {
-        console.log("_actionAdd");
-
         //Unique Token GUID
         bytes32 guid = actionHash(svo);
-        
-        // bytes32ToString
-        console.log("guid: ");
-        console.logBytes32(guid);
-
-        //TODO: Validate 
+        //Validate 
         require(_GUIDExists(guid) == false, "Action Already Exists");
         //Create Action
         uint256 id = _GUIDMake(guid);
 
-        console.log("New Action id: ", id);
+        // console.log("New Action id: ", id);
         // console.log("New Action SVO: ", svo.subject);
 
         //Map Additional Data
         _actions[guid] = svo;
-
         //Event
         emit ActionAdded(id, guid, svo.subject, svo.verb, svo.object, svo.tool, svo.affected);
-
         //Return GUID
         return guid;
     }
@@ -144,8 +135,6 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     function actionGetConfirmation(bytes32 guid) public view override returns (DataTypes.Confirmation memory){
         return _RoleData[_GUIDToId(guid)].confirmation;
     }
-
-
 
 
     /* [TBD] - would need to track role IDs
@@ -174,7 +163,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
             mstore(add(result, 0x20), source)
         }
     }
-    */
+    /// 
     function bytes32ToString(bytes32 _bytes32) public pure returns (string memory) {
         uint8 i = 0;
         while(i < 32 && _bytes32[i] != 0) {
@@ -186,7 +175,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
         }
         return string(bytesArray);
     }
-
+    */
 
     //-- Playground
 

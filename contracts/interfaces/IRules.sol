@@ -6,18 +6,21 @@ import "../libraries/DataTypes.sol";
 
 interface IRules {
     
+    ///Get Rule
+    function ruleGet(uint256 id) external view returns (DataTypes.Rule memory);
+
     //--- Events
 
     /// Action Repository (HISTORY) Set
     event ActionRepoSet(address actionRepo);
 
     /// Rule Added
-    event RuleAdded(uint256 indexed id, DataTypes.Rule rule);
+    event RuleAdded(uint256 indexed id, bytes32 about, string uri, bool negation);
 
     /// Rule Removed
     event RuleRemoved(uint256 indexed id);
 
     /// Rule Removed
-    event RuleChanged(uint256 indexed id, DataTypes.Rule rule);
+    event RuleChanged(uint256 indexed id, bytes32 about, string uri, bool negation);
 
 }

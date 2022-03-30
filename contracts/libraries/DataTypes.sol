@@ -111,7 +111,6 @@ library DataTypes {
         // condition: "Investor funds were not frozen nor lost.",
         // string condition;  
         string uri;     //Test & Conditions
-        
         // effect: { //Reputation Change
         //     profiessional:-2,
         //     social: -4
