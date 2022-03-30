@@ -27,7 +27,7 @@ import "./Case.sol";
  * - Mints Member NFTs
  * - One for each
  * - All members are the same
- * - [TODO] Rules...
+ * - Rules
  * - [TODO] Deploys Cases
  * - [TODO] Token URIs for Roles
  * - [TODO] Contract URI

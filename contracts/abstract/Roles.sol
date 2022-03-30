@@ -42,13 +42,17 @@ abstract contract Roles is IRoles, ERC165, Context {
     mapping(string => RoleData) private _roles;
     mapping(address => mapping(bytes4 => string[])) private _actionsToRoles;
     
+
+    //TODO: Validate that account hold one of the role in Array
     /// @notice Modifier that checks that an account has a specific role. Reverts
     /// with a standardized message including the required role.
     // modifier onlyRole(string memory role) {
+    // modifier onlyRole(array roles) {
     //     _checkRole(role, msg.sender);
     //     _;
     // }
     */
+    
     
     //--- OZ  https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/AccessControl.sol
 
