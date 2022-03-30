@@ -14,6 +14,7 @@ import "./interfaces/IJurisdiction.sol";
 import "./libraries/DataTypes.sol";
 import "./abstract/ERC1155GUID.sol";
 import "./abstract/Rules.sol";
+// import "./abstract/Opinions.sol";
 import "./abstract/CommonYJ.sol";
 
 import "./Case.sol";
@@ -64,7 +65,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
 
     // constructor(address hub) CommonYJ(hub) ERC1155(string memory uri_){
     // constructor(address hub) CommonYJ(hub) ERC1155(""){
-    constructor(address hub) CommonYJ(hub) ERC1155GUID(""){
+    constructor(address hub, address actionRepo) CommonYJ(hub) ERC1155GUID("") Rules(actionRepo){
         name = "Anti-Scam Jurisdiction";
         // symbol = "YJ_J1";
         //Set Default Roles
@@ -75,7 +76,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
 
     //** Case Functions
 
-
+    /*
     /// Make a new Case
     function caseMake(string calldata name_) public returns (uint256, address) {
         //TODO: Validate Caller Permissions
@@ -98,7 +99,8 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
         //Return
         return (caseId, address(newCase));
     }
-
+    */
+    
     //** Role Functions
 
     /// Join a role in current jurisdiction
@@ -130,7 +132,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
     }
 
     /// Check if account is assigned to role
-    function roleHas(address account, string calldata role) public view override returns (bool) {
+    function roleHas(address account, string memory role) public view override returns (bool) {
         return ERC1155GUID.GUIDHas(account, _stringToBytes32(role));
         // return (balanceOf(account, _roleToId(_stringToBytes32(role))) > 0);
     }
@@ -180,6 +182,24 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
                 require(amount == 1, "ONE_TOKEN_MAX");
             }
         }
+    }
+
+    //--- Rules
+
+    /// Add Rule
+    function ruleAdd(DataTypes.Rule memory rule) public returns (uint256) {
+        //Validate Caller's Permissions
+        require(roleHas(_msgSender(), "admin"), "Admin Only");
+        //Add Rule
+        return _ruleAdd(rule);
+    }
+    
+    /// Update Rule
+    function ruleUpdate(uint256 id, DataTypes.Rule memory rule) external {
+        //Validate Caller's Permissions
+        require(roleHas(_msgSender(), "admin"), "Admin Only");
+        //Update Rule
+        _ruleUpdate(id, rule);
     }
 
     /// Get Token URI

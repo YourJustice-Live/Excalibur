@@ -106,8 +106,6 @@ library DataTypes {
         //eventId: 1, 
         // uint256 about;    //About What (Token URI +? Contract Address)
         bytes32 about;    //About What (Action's GUID)
-        
-
         //text: "The founder of the project violated the contract, but this did not lead to the loss or freezing of funds for investors.", //Description For Humans
         // string text;
         // condition: "Investor funds were not frozen nor lost.",
