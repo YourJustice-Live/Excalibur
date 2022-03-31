@@ -18,10 +18,7 @@ interface IRules {
     event ActionRepoSet(address actionRepo);
 
     /// Rule Added
-    event RuleAdded(uint256 indexed id, bytes32 about, string uri, bool negation);
-
-    /// Rule Changed
-    event RuleChanged(uint256 indexed id, bytes32 about, string uri, bool negation);
+    event Rule(uint256 indexed id, bytes32 about, string uri, bool negation);
 
     /// Rule Removed
     event RuleRemoved(uint256 indexed id);

@@ -64,7 +64,7 @@ contract Rules is IRules, Opinions {
         //Set
         _rules[id] = rule;
         //Event
-        emit RuleAdded(id, rule.about, rule.uri, rule.negation);
+        emit Rule(id, rule.about, rule.uri, rule.negation);
         emit RuleEffects(id, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
         return id;
     }
@@ -81,7 +81,7 @@ contract Rules is IRules, Opinions {
         //Set
         _rules[id] = rule;
         //Event
-        emit RuleChanged(id, rule.about, rule.uri, rule.negation);
+        emit Rule(id, rule.about, rule.uri, rule.negation);
         emit RuleEffects(id, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
     }
 
