@@ -30,7 +30,31 @@ library DataTypes {
     }
     
 
-    //--- Actuins
+    //--- Cases
+    //Case Lifecycle
+    // - Draft
+    // - Filed / Open -- Confirmation/Discussion (Evidence, Witnesses, etc’)
+    //X - Waiting for additional evidence
+    // - Pending - Awaiting verdict
+    // - Decision/Verdict (Judge, Jury, vote, etc’)
+    // - Action / Remedy - Reward / Punishment / Compensation
+    // - [Appeal
+    // - [Enforcement]
+    // - Closed
+    // - Cancelled (Denied)
+    enum CaseStage {
+        Draft,
+        Open,
+        Pending,
+        Verdict,
+        Action,
+        Appeal,
+        Enforcment,
+        Closed,
+        Cancelled
+    }
+
+    //--- Actions
 
     // Semantic Action Entity
     struct Action {

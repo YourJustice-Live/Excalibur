@@ -14,6 +14,13 @@ import "./abstract/CommonYJ.sol";
  */
 contract Case is ICase, CommonYJ{
 
+
+    //-- Rule Reference (in a Case)
+    // {
+    // 	ruleId: 1, 
+    // 	jurisdictionId: 1
+    // }
+
     //--- Storage
 
     // Contract name
@@ -22,6 +29,10 @@ contract Case is ICase, CommonYJ{
     string public symbol;
     //Jurisdiction
     address private _jurisdiction;
+
+    //Stage (Case Lifecycle)
+    DataTypes.CaseStage public stage;
+
     //Rule(s)
 
 
@@ -41,4 +52,15 @@ contract Case is ICase, CommonYJ{
         symbol = symbol_;
     }
 
+    /// TODO: Add Post (Type:Comment, Evidence, Decleration, etc')
+    
+    /**
+     * Post - Owner can Post
+     */
+    // function post(uint256 token_id, string calldata uri) public {
+    function post(address account, string calldata uri) public {
+        //Event
+        // emit Post(uri, token_id);
+        // emit Post(uri, account);
+    }
 }
