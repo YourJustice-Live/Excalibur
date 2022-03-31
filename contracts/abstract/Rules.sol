@@ -31,8 +31,8 @@ contract Rules is IRules, Opinions {
 
     //--- Functions
 
-    constructor(address actionRepo) {
-        _setActionsContract(actionRepo);
+    constructor(address actionRepo_) {
+        _setActionsContract(actionRepo_);
     }
 
     /// Get Rule
@@ -65,6 +65,7 @@ contract Rules is IRules, Opinions {
         _rules[id] = rule;
         //Event
         emit RuleAdded(id, rule.about, rule.uri, rule.negation);
+        emit RuleEffects(id, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
         return id;
     }
 
@@ -81,6 +82,7 @@ contract Rules is IRules, Opinions {
         _rules[id] = rule;
         //Event
         emit RuleChanged(id, rule.about, rule.uri, rule.negation);
+        emit RuleEffects(id, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
     }
 
 }

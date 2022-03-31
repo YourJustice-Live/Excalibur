@@ -146,9 +146,10 @@ library DataTypes {
     
     // Effect Object (Changes to Reputation By Type)
     struct Effects {
-        int8 professional;
-        int8 social;
+        int8 environmental;
         int8 personal;
+        int8 social;
+        int8 professional;
         // Effect environment;
         // Effect personal;
         // Effect social;

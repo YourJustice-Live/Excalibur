@@ -20,10 +20,12 @@ interface IRules {
     /// Rule Added
     event RuleAdded(uint256 indexed id, bytes32 about, string uri, bool negation);
 
+    /// Rule Changed
+    event RuleChanged(uint256 indexed id, bytes32 about, string uri, bool negation);
+
     /// Rule Removed
     event RuleRemoved(uint256 indexed id);
 
-    /// Rule Removed
-    event RuleChanged(uint256 indexed id, bytes32 about, string uri, bool negation);
-
+    /// Rule's Effects
+    event RuleEffects(uint256 indexed id, int8 environmental, int8 personal, int8 social, int8 professional);
 }
