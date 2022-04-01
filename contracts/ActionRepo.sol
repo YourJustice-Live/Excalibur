@@ -55,7 +55,8 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     /// Generate a Unique Hash for Event
     function actionHash(DataTypes.SVO memory svo) public pure override returns (bytes32) {
-        return bytes32(keccak256(abi.encode(svo.subject, svo.verb, svo.object, svo.tool, svo.affected)));
+        // return bytes32(keccak256(abi.encode(svo.subject, svo.verb, svo.object, svo.tool, svo.affected)));
+        return bytes32(keccak256(abi.encode(svo.subject, svo.verb, svo.object, svo.tool)));
     }
 
     /// Register New Action
@@ -73,6 +74,14 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
         _actionSetURI(guid, uri);
         //return GUID
         return guid;
+    }
+
+    /// Register New Actions in a Batch
+    function actionAddBatch(DataTypes.SVO[] memory svos, DataTypes.Confirmation[] memory confirmations, string[] memory uris) public override returns (bytes32) {
+        require(svos.length == confirmations.length && svos.length == uris.length, "Length Mismatch");
+        for (uint256 i = 0; i < svos.length; ++i) {
+            actionAdd(svos[i], confirmations[i], uris[i]);
+        }
     }
 
     /// Update URI for Action
@@ -113,7 +122,8 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
         //Map Additional Data
         _actions[guid] = svo;
         //Event
-        emit ActionAdded(id, guid, svo.subject, svo.verb, svo.object, svo.tool, svo.affected);
+        // emit ActionAdded(id, guid, svo.subject, svo.verb, svo.object, svo.tool, svo.affected);
+        emit ActionAdded(id, guid, svo.subject, svo.verb, svo.object, svo.tool);
         //Return GUID
         return guid;
     }

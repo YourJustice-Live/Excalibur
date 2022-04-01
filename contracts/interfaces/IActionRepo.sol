@@ -16,7 +16,10 @@ interface IActionRepo {
     /// Register New Action
     // function actionAdd(DataTypes.SVO memory svo) external returns (bytes32);
     function actionAdd(DataTypes.SVO memory svo, DataTypes.Confirmation memory confirmation, string memory uri) external returns (bytes32);
-    
+
+    /// Register New Actions in a Batch
+    function actionAddBatch(DataTypes.SVO[] memory svos, DataTypes.Confirmation[] memory confirmations, string[] memory uris) external returns (bytes32);
+        
     /// Update URI for Action
     function actionSetURI(bytes32 guid, string memory uri) external;
 
@@ -34,7 +37,8 @@ interface IActionRepo {
 
     //--- Events
     /// Action Added
-    event ActionAdded(uint256 indexed id, bytes32 indexed guid, string subject, string verb, string object, string tool, string affected);
+    // event ActionAdded(uint256 indexed id, bytes32 indexed guid, string subject, string verb, string object, string tool, string affected);
+    event ActionAdded(uint256 indexed id, bytes32 indexed guid, string subject, string verb, string object, string tool);
     /// Action Removed (No such thing)
     // event ActionRemoved(bytes32 indexed id);
     /// Action URI Updated

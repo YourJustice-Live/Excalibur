@@ -17,8 +17,8 @@ interface IRules {
     /// Action Repository (HISTORY) Set
     event ActionRepoSet(address actionRepo);
 
-    /// Rule Added
-    event Rule(uint256 indexed id, bytes32 about, string uri, bool negation);
+    /// Rule Added or Changed
+    event Rule(uint256 indexed id, bytes32 about, string affected, string uri, bool negation);
 
     /// Rule Removed
     event RuleRemoved(uint256 indexed id);

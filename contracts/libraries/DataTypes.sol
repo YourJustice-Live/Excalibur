@@ -91,7 +91,7 @@ library DataTypes {
         string uri; //Additional Info
     }
 
-    struct SVO {    //Action's Core (Immutable)
+    struct SVO {    //Action's Core (System Role Mapping) (Immutable)
         //     subject: "founder",     //Accused Role
         string subject;
         //     action: "breach",
@@ -101,8 +101,7 @@ library DataTypes {
         string tool; //[TBD]
         //     //Describe an event
         //     affected: "investors",  //Plaintiff Role (Filing the case)
-        string affected;    //[PONDER] Doest this really belong here? Is that part of the unique combination, or should this be an array, or an eadge? 
-        
+        // string affected;    //[PONDER] Doest this really belong here? Is that part of the unique combination, or should this be an array, or an eadge?      //MOVED TO Rule
     }
     struct RoleData {
         // name: "Breach of contract",  //Title
@@ -142,6 +141,10 @@ library DataTypes {
         // Effect[3] effects;
         Effects effects;
         bool negation;  //0 - Commision  1 - Omission
+
+        // affected: "investors",  //Plaintiff Role (Filing the case)
+        string affected;    //Moved Here
+
     }
     
     // Effect Object (Changes to Reputation By Type)
