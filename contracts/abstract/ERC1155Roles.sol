@@ -2,13 +2,17 @@
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
-import "../interfaces/IRoles.sol";
+
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
+import "./ERC1155GUID.sol";
+import "../interfaces/IERC1155Roles.sol";
+
 
 /**
- * @title Role Controls
- * To Extend Cases
+ * @title Sub-Groups with Role NFTs
+ * @dev ERC1155 using GUID as Role
+ * To Extend Cases & Jutisdictions
  * - [TODO] Hold Roles
  * - [TODO] Assign Roles
  * ---- 
@@ -20,9 +24,24 @@ import "@openzeppelin/contracts/utils/Context.sol";
  *  OZ Access Control  https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/AccessControl.sol
  */
 // abstract contract AccessControl is Context, IAccessControl, ERC165 {
-abstract contract Roles is IRoles, ERC165, Context {
+// abstract contract ERC1155Roles is IERC1155Roles, ERC165, Context {
+abstract contract ERC1155Roles is IERC1155Roles, ERC1155GUID {
     
-    constructor() {
+
+    //--- Storage
+
+    // Contract name
+    string public name;
+    // Contract symbol
+    string public symbol;
+
+    //--- Functions
+
+    constructor(string memory name_, string memory symbol_, string memory uri) ERC1155GUID(uri) {
+        name = name_;
+        symbol = symbol_;
+
+        //TODO: Moving Over all GUID as Role Functions
 
     }
 
@@ -30,8 +49,9 @@ abstract contract Roles is IRoles, ERC165, Context {
      * @dev See {IERC165-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IRoles).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IERC1155Roles).interfaceId || super.supportsInterface(interfaceId);
     }
+
 
     /* SNIPPETS START */
     
@@ -52,7 +72,7 @@ abstract contract Roles is IRoles, ERC165, Context {
     //     _;
     // }
     */
-    
+
     
     //--- OZ  https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/AccessControl.sol
 
