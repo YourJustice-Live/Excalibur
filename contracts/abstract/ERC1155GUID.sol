@@ -47,6 +47,13 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
     //--- Functions
 
     /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == type(IERC1155GUID).interfaceId || super.supportsInterface(interfaceId);
+    }
+
+    /**
      * @dev See {_setURI}.
      */
     constructor(string memory uri_) ERC1155(uri_) {
