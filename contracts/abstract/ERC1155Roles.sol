@@ -96,6 +96,7 @@ abstract contract ERC1155Roles is IERC1155Roles, ERC1155GUID {
 
     /// Translate string Roles to GUID hashes
     function _stringToBytes32(string memory str) internal pure returns (bytes32){
+        require(bytes(str).length <= 32, "String is too long. Max 32 chars");
         return keccak256(abi.encode(str));
     }
 
