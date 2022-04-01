@@ -41,14 +41,14 @@ contract Rules is IRules, Opinions {
     }
 
     /// Set Actions Contract
-    function _setActionsContract(address actionRepo) internal {
+    function _setActionsContract(address actionRepo_) internal {
         require(address(_actionRepo) == address(0), "HISTORY Contract Already Set");
         //String Match - Validate Contract's Designation        //TODO: Maybe Look into Checking the Supported Interface
-        require(keccak256(abi.encodePacked(IActionRepo(actionRepo).symbol())) == keccak256(abi.encodePacked("YJ_HISTORY")), "Expecting HISTORY Contract");
+        require(keccak256(abi.encodePacked(IActionRepo(actionRepo_).symbol())) == keccak256(abi.encodePacked("YJ_HISTORY")), "Expecting HISTORY Contract");
         //Set
-        _actionRepo = IActionRepo(actionRepo);
+        _actionRepo = IActionRepo(actionRepo_);
         //Event
-        emit ActionRepoSet(actionRepo);
+        emit ActionRepoSet(actionRepo_);
     }
 
     /// Expose Action Repo Address
