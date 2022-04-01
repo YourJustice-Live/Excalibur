@@ -5,7 +5,7 @@ import "hardhat/console.sol";
 
 // import {DataTypes} from './libraries/DataTypes.sol';
 import "./interfaces/ICase.sol";
-import "./libraries/DataTypes.sol";
+// import "./libraries/DataTypes.sol";
 import "./abstract/ERC1155Roles.sol";
 import "./abstract/Rules.sol";
 import "./abstract/CommonYJ.sol";

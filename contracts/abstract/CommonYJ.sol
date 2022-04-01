@@ -6,6 +6,7 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 // import "../interfaces/IConfig.sol";
 import "../interfaces/IHub.sol";
+import "../libraries/DataTypes.sol";
 
 /**
  * Common Protocol Functions

@@ -9,9 +9,8 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 
-// import {DataTypes} from './libraries/DataTypes.sol';
 import "./interfaces/IJurisdiction.sol";
-import "./libraries/DataTypes.sol";
+// import "./libraries/DataTypes.sol";
 // import "./abstract/ERC1155GUID.sol";
 import "./abstract/ERC1155Roles.sol";
 import "./abstract/Rules.sol";
