@@ -165,7 +165,7 @@ describe("Protocol", function () {
         verb: "breach",
         object: "contract",
         tool: "",
-        affected: "investor",  //Plaintiff / Beneficiary
+        
       };
       let confirmation = {
         ruling: "judge",  //Decision Maker
@@ -183,7 +183,7 @@ describe("Protocol", function () {
       console.warn("actionGUID:", actionGUID);
 
       //Expect Added Event
-      await expect(tx).to.emit(actionContract, 'ActionAdded').withArgs(1, actionGUID, action.subject, action.verb, action.object, action.tool, action.affected);
+      await expect(tx).to.emit(actionContract, 'ActionAdded').withArgs(1, actionGUID, action.subject, action.verb, action.object, action.tool);
       // await expect(tx).to.emit(actionContract, 'URI').withArgs(actionGUID, uri);
       await expect(tx).to.emit(actionContract, 'Confirmation');//.withArgs(actionGUID, confirmation);
 
@@ -281,11 +281,14 @@ describe("Protocol", function () {
       let rule = {
         // uint256 about;    //About What (Token URI +? Contract Address)
         about: actionGUID, //"0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2",
+        affected: "investor",  //Plaintiff / Beneficiary
         // about: 1,
         // string uri;     //Text, Conditions & additional data
         uri: "ADDITIONAL_DATA_URI",
         // Effect Object (Describes Changes to Reputation By Type)
         effects:{
+          // int8 environmental;
+          environmental: 0,
           // int8 professional;
           professional: -5,
           // int8 social;
@@ -310,7 +313,8 @@ describe("Protocol", function () {
       // console.log("Rule Getter Effs:", ruleData.effects);  //V
       // console.log("Rule Getter:", JSON.stringify(ruleData)); //As array. No Keys
       //Expect Event
-      await expect(tx).to.emit(jurisdictionContract, 'RuleAdded').withArgs(1, rule.about, rule.uri, rule.negation);
+      await expect(tx).to.emit(jurisdictionContract, 'Rule').withArgs(1, rule.about, rule.affected, rule.uri, rule.negation);
+      await expect(tx).to.emit(jurisdictionContract, 'RuleEffects').withArgs(1, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
       
       // await expect(ruleData).to.include.members(Object.values(rule));
 
