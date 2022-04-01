@@ -12,6 +12,12 @@ interface IRules {
     ///Get Rule
     function ruleGet(uint256 id) external view returns (DataTypes.Rule memory);
 
+    /// Update Confirmation Method for Action
+    function confirmationSet(uint256 id, DataTypes.Confirmation memory confirmation) external;
+
+    /// Get Rule's Confirmation Method
+    function confirmationGet(uint256 id) external view returns (DataTypes.Confirmation memory);
+
     //--- Events
 
     /// Action Repository (HISTORY) Set
@@ -25,4 +31,8 @@ interface IRules {
 
     /// Rule's Effects
     event RuleEffects(uint256 indexed id, int8 environmental, int8 personal, int8 social, int8 professional);
+
+    /// Action Confirmation Change
+    event Confirmation(uint256 indexed id, string ruling, bool evidence, uint witness);
+
 }

@@ -70,7 +70,7 @@ describe("Protocol", function () {
     });
     
     it("Can mint only one", async function () {
-      let test_uri = "TEST_URI";
+      let test_uri = "ipfs://QmQxkoWcpFgMa7bCzxaANWtSt43J1iMgksjNnT4vM1Apd7"; //"TEST_URI";
 
       let tx = await avatarContract.connect(tester).mint(test_uri);
       tx.wait();
@@ -167,16 +167,17 @@ describe("Protocol", function () {
         tool: "",
         
       };
-      let confirmation = {
-        ruling: "judge",  //Decision Maker
-        evidence: true, //Require Evidence
-        witness: 1,  //Minimal number of witnesses
-      };
+      // let confirmation = {
+      //   ruling: "judge",  //Decision Maker
+      //   evidence: true, //Require Evidence
+      //   witness: 1,  //Minimal number of witnesses
+      // };
       let uri = "TEST_URI";
 
       // let actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2';//await actionContract.callStatic.actionAdd(action);
       // let actionGUID = await actionContract.callStatic.actionAdd(action); //Simulate
-      let tx = await actionContract.actionAdd(action, confirmation, uri);
+      // let tx = await actionContract.actionAdd(action, confirmation, uri);
+      let tx = await actionContract.actionAdd(action, uri);
       await tx.wait();
 
       let actionGUID = await actionContract.actionHash(action); //Gets hash if exists or not
@@ -185,7 +186,7 @@ describe("Protocol", function () {
       //Expect Added Event
       await expect(tx).to.emit(actionContract, 'ActionAdded').withArgs(1, actionGUID, action.subject, action.verb, action.object, action.tool);
       // await expect(tx).to.emit(actionContract, 'URI').withArgs(actionGUID, uri);
-      await expect(tx).to.emit(actionContract, 'Confirmation');//.withArgs(actionGUID, confirmation);
+      // await expect(tx).to.emit(actionContract, 'Confirmation');//.withArgs(actionGUID, confirmation);
 
       //Fetch Action's Struct
       let actionRet = await actionContract.actionGet(actionGUID);
@@ -299,22 +300,29 @@ describe("Protocol", function () {
         // bool negation;  //false - Commision  true - Omission
         negation: false,
       };
-    
+      let confirmation = {
+        ruling: "judge",  //Decision Maker
+        evidence: true, //Require Evidence
+        witness: 1,  //Minimal number of witnesses
+      };
 
-      let tx = await jurisdictionContract.connect(admin).ruleAdd(rule);
+
+      let tx = await jurisdictionContract.connect(admin).ruleAdd(rule, confirmation);
       // wait until the transaction is mined
       await tx.wait();
       // console.log("Rule Added", tx);
- 
+
+      //Expect Event
+      await expect(tx).to.emit(jurisdictionContract, 'Rule').withArgs(1, rule.about, rule.affected, rule.uri, rule.negation);
+      await expect(tx).to.emit(jurisdictionContract, 'RuleEffects').withArgs(1, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
+      await expect(tx).to.emit(jurisdictionContract, 'Confirmation').withArgs(1, confirmation.ruling, confirmation.evidence, confirmation.witness);
+
       // expect(await jurisdictionContract.ruleAdd(actionContract.address)).to.equal("Hello, world!");
       let ruleData = await jurisdictionContract.ruleGet(1);
       
       // console.log("Rule Getter:", typeof ruleData, ruleData);   //some kind of object array crossbread
       // console.log("Rule Getter Effs:", ruleData.effects);  //V
       // console.log("Rule Getter:", JSON.stringify(ruleData)); //As array. No Keys
-      //Expect Event
-      await expect(tx).to.emit(jurisdictionContract, 'Rule').withArgs(1, rule.about, rule.affected, rule.uri, rule.negation);
-      await expect(tx).to.emit(jurisdictionContract, 'RuleEffects').withArgs(1, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
       
       // await expect(ruleData).to.include.members(Object.values(rule));
 

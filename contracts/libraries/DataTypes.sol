@@ -103,6 +103,7 @@ library DataTypes {
         //     affected: "investors",  //Plaintiff Role (Filing the case)
         // string affected;    //[PONDER] Doest this really belong here? Is that part of the unique combination, or should this be an array, or an eadge?      //MOVED TO Rule
     }
+    /* DEPRECATED
     struct RoleData {
         // name: "Breach of contract",  //Title
         // string name;   //On URI
@@ -111,14 +112,7 @@ library DataTypes {
         string uri; //Misc Additional Info
         Confirmation confirmation;
     }
-    struct Confirmation {
-        //     ruling: "judge"|"jury"|"democracy",  //Decision Maker
-        string ruling;
-        //     evidence: true, //Require Evidence
-        bool evidence;
-        //     witness: 1,  //Minimal number of witnesses
-        uint witness;
-    }
+    */
 
     //--- Rules
     
@@ -129,7 +123,7 @@ library DataTypes {
         //eventId: 1, 
 
         // uint256 about;    //About What (Token URI +? Contract Address)
-        bytes32 action;    //About What (Action's GUID)
+        bytes32 about;    //About What (Action's GUID)      //TODO: Maybe Call This 'action'? 
 
         // affected: "investors",  //Plaintiff Role (Filing the case)
         string affected;    //Moved Here
@@ -172,6 +166,23 @@ library DataTypes {
         // Confidence/Strictness: [?]
     }
     */    
+    //Rule Confirmation Method
+    struct Confirmation {
+        //     ruling: "judge"|"jury"|"democracy",  //Decision Maker
+        string ruling;
+        //     evidence: true, //Require Evidence
+        bool evidence;
+        //     witness: 1,  //Minimal number of witnesses
+        uint witness;
+    }
+
+    //--- Case Data
+
+    //Rule Reference
+    struct RuleRef {
+        address jurisdiction;
+        uint256 ruleId;
+    }
 
 }
 

@@ -27,7 +27,9 @@ contract Rules is IRules {
     IActionRepo internal _actionRepo;   //Action Repository Contract (HISTORY)
 
     mapping(uint256 => DataTypes.Rule) internal _rules;
-
+    //Additional Rule Data
+    mapping(uint256 => DataTypes.Confirmation) internal _ruleConfirmation;
+    // mapping(uint256 => string) internal _uri;
 
     //--- Functions
 
@@ -84,5 +86,23 @@ contract Rules is IRules {
         emit Rule(id, rule.about, rule.affected, rule.uri, rule.negation);
         emit RuleEffects(id, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
     }
+
+    /// Get Rule's Confirmation Method
+    function confirmationGet(uint256 id) public view override returns (DataTypes.Confirmation memory){
+        return _ruleConfirmation[id];
+    }
+
+    /// Update Confirmation Method for Action
+    function confirmationSet(uint256 id, DataTypes.Confirmation memory confirmation) external override {
+        //TODO: Validate Caller's Permissions
+        _confirmationSet(id, confirmation);
+    }
+    
+    /// Set Action's Confirmation Object
+    function _confirmationSet(uint256 id, DataTypes.Confirmation memory confirmation) internal {
+        _ruleConfirmation[id] = confirmation;
+        emit Confirmation(id, confirmation.ruling, confirmation.evidence, confirmation.witness);
+    }
+
 
 }
