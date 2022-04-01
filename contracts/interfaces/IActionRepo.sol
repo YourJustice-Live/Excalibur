@@ -18,7 +18,7 @@ interface IActionRepo {
     function actionAdd(DataTypes.SVO memory svo, DataTypes.Confirmation memory confirmation, string memory uri) external returns (bytes32);
 
     /// Register New Actions in a Batch
-    function actionAddBatch(DataTypes.SVO[] memory svos, DataTypes.Confirmation[] memory confirmations, string[] memory uris) external returns (bytes32);
+    function actionAddBatch(DataTypes.SVO[] memory svos, DataTypes.Confirmation[] memory confirmations, string[] memory uris) external returns (bytes32[] memory);
         
     /// Update URI for Action
     function actionSetURI(bytes32 guid, string memory uri) external;

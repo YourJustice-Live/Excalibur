@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 
-// import {DataTypes} from './libraries/DataTypes.sol';
 import "./interfaces/IActionRepo.sol";
 import "./libraries/DataTypes.sol";
 // import "./abstract/Rules.sol";
@@ -77,11 +76,13 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     }
 
     /// Register New Actions in a Batch
-    function actionAddBatch(DataTypes.SVO[] memory svos, DataTypes.Confirmation[] memory confirmations, string[] memory uris) public override returns (bytes32) {
+    function actionAddBatch(DataTypes.SVO[] memory svos, DataTypes.Confirmation[] memory confirmations, string[] memory uris) public override returns (bytes32[] memory) {
         require(svos.length == confirmations.length && svos.length == uris.length, "Length Mismatch");
+        bytes32[] memory guids;
         for (uint256 i = 0; i < svos.length; ++i) {
-            actionAdd(svos[i], confirmations[i], uris[i]);
+            guids[i] = actionAdd(svos[i], confirmations[i], uris[i]);
         }
+        return guids;
     }
 
     /// Update URI for Action
