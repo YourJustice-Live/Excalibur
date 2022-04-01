@@ -63,7 +63,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     constructor(address hub, address actionRepo) CommonYJ(hub) ERC1155Roles("") Rules(actionRepo){
         name = "Anti-Scam Jurisdiction";
         // symbol = "YJ_J1";
-        //Set Default Roles
+        //Init Default Jurisdiction Roles
         _roleCreate("admin");
         _roleCreate("member");
         _roleCreate("judge");
@@ -167,11 +167,14 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     //--- Rules
 
     /// Add Rule
-    function ruleAdd(DataTypes.Rule memory rule) public returns (uint256) {
+    function ruleAdd(DataTypes.Rule memory rule, DataTypes.Confirmation memory confirmation) public returns (uint256) {
         //Validate Caller's Permissions
         require(roleHas(_msgSender(), "admin"), "Admin Only");
         //Add Rule
-        return _ruleAdd(rule);
+        uint256 id = _ruleAdd(rule);
+        //Set Confirmations
+        _confirmationSet(id, confirmation);
+        return id;
     }
     
     /// Update Rule
