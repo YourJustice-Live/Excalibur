@@ -76,7 +76,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     }
 
     /// Register New Actions in a Batch
-    function actionAddBatch(DataTypes.SVO[] memory svos, DataTypes.Confirmation[] memory confirmations, string[] memory uris) public override returns (bytes32[] memory) {
+    function actionAddBatch(DataTypes.SVO[] memory svos, DataTypes.Confirmation[] memory confirmations, string[] memory uris) external override returns (bytes32[] memory) {
         require(svos.length == confirmations.length && svos.length == uris.length, "Length Mismatch");
         bytes32[] memory guids;
         for (uint256 i = 0; i < svos.length; ++i) {
