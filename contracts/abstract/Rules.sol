@@ -11,8 +11,8 @@ import "../interfaces/IActionRepo.sol";
 
 
 /**
- * Rules Contract
- * To Extend or Be Used by Jurisdictions
+ * @title Rules Contract 
+ * @dev To Extend or Be Used by Jurisdictions
  * - Hold, Update, Delete & Serve Rules
  * - Single immutable Action Repo
  */
