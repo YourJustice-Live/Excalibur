@@ -127,24 +127,28 @@ library DataTypes {
         // string name;
         // string uri;
         //eventId: 1, 
+
         // uint256 about;    //About What (Token URI +? Contract Address)
-        bytes32 about;    //About What (Action's GUID)
+        bytes32 action;    //About What (Action's GUID)
+
+        // affected: "investors",  //Plaintiff Role (Filing the case)
+        string affected;    //Moved Here
+
+        bool negation;  //0 - Commision  1 - Omission
+
         //text: "The founder of the project violated the contract, but this did not lead to the loss or freezing of funds for investors.", //Description For Humans
         // string text;
         // condition: "Investor funds were not frozen nor lost.",
         // string condition;  
         string uri;     //Test & Conditions
+
         // effect: { //Reputation Change
         //     profiessional:-2,
         //     social: -4
         // }
         // Effect[3] effects;
         Effects effects;
-        bool negation;  //0 - Commision  1 - Omission
-
-        // affected: "investors",  //Plaintiff Role (Filing the case)
-        string affected;    //Moved Here
-
+        // consequence:[{ func:'repAdd', param:5 }],    //TBD?
     }
     
     // Effect Object (Changes to Reputation By Type)
