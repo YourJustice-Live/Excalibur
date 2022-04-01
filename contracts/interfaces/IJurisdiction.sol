@@ -2,7 +2,12 @@
 
 pragma solidity ^0.8.0;
 
+import "../libraries/DataTypes.sol";
+
 interface IJurisdiction {
+    
+    //--- Functions
+
     /// Symbol As Arbitrary contract designation signature
     function symbol() external view returns (string memory);
 
@@ -20,6 +25,16 @@ interface IJurisdiction {
     
     /// Create a new Role
     // function roleCreate(address account, string calldata role) external;
+
+
+    //-- Rule Func.
+
+    /// Create New Rule
+    function ruleAdd(DataTypes.Rule memory rule, DataTypes.Confirmation memory confirmation) external returns (uint256);
+
+    /// Update Rule
+    function ruleUpdate(uint256 id, DataTypes.Rule memory rule) external;
+    
 
     //--- Events
     

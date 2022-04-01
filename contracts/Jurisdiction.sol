@@ -166,8 +166,8 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
 
     //--- Rules
 
-    /// Add Rule
-    function ruleAdd(DataTypes.Rule memory rule, DataTypes.Confirmation memory confirmation) public returns (uint256) {
+    /// Create New Rule
+    function ruleAdd(DataTypes.Rule memory rule, DataTypes.Confirmation memory confirmation) public override returns (uint256) {
         //Validate Caller's Permissions
         require(roleHas(_msgSender(), "admin"), "Admin Only");
         //Add Rule
@@ -178,7 +178,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     }
     
     /// Update Rule
-    function ruleUpdate(uint256 id, DataTypes.Rule memory rule) external {
+    function ruleUpdate(uint256 id, DataTypes.Rule memory rule) external override {
         //Validate Caller's Permissions
         require(roleHas(_msgSender(), "admin"), "Admin Only");
         //Update Rule
