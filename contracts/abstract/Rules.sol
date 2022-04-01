@@ -5,7 +5,7 @@ pragma experimental ABIEncoderV2;    //https://docs.soliditylang.org/en/v0.5.2/a
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "../libraries/DataTypes.sol";
-import "./Opinions.sol";
+// import "./Opinions.sol";
 import "../interfaces/IRules.sol";
 import "../interfaces/IActionRepo.sol";
 
@@ -17,7 +17,7 @@ import "../interfaces/IActionRepo.sol";
  * - Single immutable Action Repo
  */
 // abstract contract Rules is IRules, Opinions {
-contract Rules is IRules, Opinions {
+contract Rules is IRules {
     
     //--- Storage
 
