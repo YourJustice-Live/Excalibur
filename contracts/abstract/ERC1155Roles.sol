@@ -31,18 +31,23 @@ abstract contract ERC1155Roles is IERC1155Roles, ERC1155GUID {
     //--- Storage
 
     // Contract name
-    string public name;
+    // string public name;
     // Contract symbol
-    string public symbol;
+    // string public symbol;
+
+    //--- Modifiers
+    modifier roleExists(string memory role) {
+        require(_GUIDExists(_stringToBytes32(role)), "INEXISTENT_ROLE");
+        _;
+    }
+    
 
     //--- Functions
 
-    constructor(string memory name_, string memory symbol_, string memory uri) ERC1155GUID(uri) {
-        name = name_;
-        symbol = symbol_;
-
-        //TODO: Moving Over all GUID as Role Functions
-
+    // constructor(string memory name_, string memory symbol_, string memory uri) ERC1155GUID(uri) {
+    constructor(string memory uri) ERC1155GUID(uri) {
+        // name = name_;
+        // symbol = symbol_;
     }
 
     /**
@@ -51,6 +56,57 @@ abstract contract ERC1155Roles is IERC1155Roles, ERC1155GUID {
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return interfaceId == type(IERC1155Roles).interfaceId || super.supportsInterface(interfaceId);
     }
+
+    //** Role Functions
+
+    /// Check if account is assigned to role
+    function roleHas(address account, string memory role) public view override returns (bool) {
+        // return ERC1155GUID.GUIDHas(account, _stringToBytes32(role));
+        return GUIDHas(account, _stringToBytes32(role));
+        // return (balanceOf(account, _roleToId(_stringToBytes32(role))) > 0);
+    }
+
+    /// Join a role in current jurisdiction
+    // function join() external override {
+    //     _GUIDAssign(_msgSender(), _stringToBytes32("member"));
+    // }
+
+    // /// Leave Role in current jurisdiction
+    // function leave() external override {
+    //     _GUIDRemove(_msgSender(), _stringToBytes32("member"));
+    // }
+
+    /// Assign Someone Else to a Role
+    function _roleAssign(address account, string memory role) internal roleExists(role) {
+        _GUIDAssign(account, _stringToBytes32(role));
+        //TODO: Role Assigned Event?
+    }
+
+
+    /// Remove Someone Else from a Role
+    function _roleRemove(address account, string memory role) internal roleExists(role) {
+        _GUIDRemove(account, _stringToBytes32(role));
+        //TODO: Role Removed Event?
+    }
+
+    /// Translate Role to Token ID
+    function _roleToId(string memory role) internal view roleExists(role) returns(uint256) {
+        return _GUIDToId(_stringToBytes32(role));
+    }
+
+    /// Translate string Roles to GUID hashes
+    function _stringToBytes32(string memory str) internal pure returns (bytes32){
+        return keccak256(abi.encode(str));
+    }
+
+    /// Create a new Role
+    function _roleCreate(string memory role) internal returns (uint256) {
+        return _GUIDMake(_stringToBytes32(role));
+    }
+
+
+
+
 
 
     /* SNIPPETS START */

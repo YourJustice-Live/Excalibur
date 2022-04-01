@@ -21,13 +21,6 @@ interface IJurisdiction {
     /// Create a new Role
     // function roleCreate(address account, string calldata role) external;
 
-    /// Check if account is assigned to role
-    function roleHas(address account, string calldata role) external view returns (bool);
-    
     //--- Events
-    /// New Role Added
-    event RoleCreated(uint256 indexed id, string role);        // Role Added Event? ... Transfer events should cover this...
-
-    /// New Case Created
-    event CaseCreated(uint256 indexed id, address contractAddress);
+    
 }

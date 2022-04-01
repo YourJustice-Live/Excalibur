@@ -12,7 +12,8 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 // import {DataTypes} from './libraries/DataTypes.sol';
 import "./interfaces/IJurisdiction.sol";
 import "./libraries/DataTypes.sol";
-import "./abstract/ERC1155GUID.sol";
+// import "./abstract/ERC1155GUID.sol";
+import "./abstract/ERC1155Roles.sol";
 import "./abstract/Rules.sol";
 // import "./abstract/Opinions.sol";
 import "./abstract/CommonYJ.sol";
@@ -36,7 +37,8 @@ import "./Case.sol";
  * - [TODO] NFT Trackers - Track the owner of the Avatar NFT
  */
 // contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
-contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
+// contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
+contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     //--- Storage
     string public constant override symbol = "YJ_Jurisdiction";
     using Strings for uint256;
@@ -54,18 +56,12 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
 
     // mapping(uint256 => string) internal _rulesURI;      // Mapping Metadata URIs for Individual Role 
 
-    //--- Modifiers
-    modifier roleExists(string memory role) {
-        require(_GUIDExists(_stringToBytes32(role)), "INEXISTENT_ROLE");
-        _;
-    }
-    
-
+  
     //--- Functions
 
     // constructor(address hub) CommonYJ(hub) ERC1155(string memory uri_){
     // constructor(address hub) CommonYJ(hub) ERC1155(""){
-    constructor(address hub, address actionRepo) CommonYJ(hub) ERC1155GUID("") Rules(actionRepo){
+    constructor(address hub, address actionRepo) CommonYJ(hub) ERC1155Roles("") Rules(actionRepo){
         name = "Anti-Scam Jurisdiction";
         // symbol = "YJ_J1";
         //Set Default Roles
@@ -122,20 +118,10 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
             || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Token
             , "INVALID_PERMISSIONS");
         //Add
-        // _roleAssign(account, _stringToBytes32(role));
-        _GUIDAssign(account, _stringToBytes32(role));
+        _roleAssign(account, role);
+        // _GUIDAssign(account, _stringToBytes32(role));
     }
 
-    /// Translate Role to Token ID
-    function _roleToId(string memory role) internal view roleExists(role) returns(uint256) {
-        return _GUIDToId(_stringToBytes32(role));
-    }
-
-    /// Check if account is assigned to role
-    function roleHas(address account, string memory role) public view override returns (bool) {
-        return ERC1155GUID.GUIDHas(account, _stringToBytes32(role));
-        // return (balanceOf(account, _roleToId(_stringToBytes32(role))) > 0);
-    }
 
     /// Remove Someone Else from a Role
     function roleRemove(address account, string memory role) external override roleExists(role) {
@@ -146,19 +132,14 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
             || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Token
             , "INVALID_PERMISSIONS");
         //Remove
-        // _roleRemove(account, _stringToBytes32(role));
-        _GUIDRemove(account, _stringToBytes32(role));
+        _roleRemove(account, role);
+        // _GUIDRemove(account, _stringToBytes32(role));
     }
 
-    /// Translate string Roles to GUID hashes
-    function _stringToBytes32(string memory str) internal pure returns (bytes32){
-        return keccak256(abi.encode(str));
-    }
 
-    /// Create a new Role
-    function _roleCreate(string memory role) internal returns (uint256) {
-        return _GUIDMake(_stringToBytes32(role));
-    }
+
+
+
 
     /**
     * @dev Hook that is called before any token transfer. This includes minting and burning, as well as batched variants.
