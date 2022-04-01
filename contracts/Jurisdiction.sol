@@ -10,6 +10,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 
 import "./interfaces/IJurisdiction.sol";
+import "./interfaces/IRules.sol";
 // import "./libraries/DataTypes.sol";
 // import "./abstract/ERC1155GUID.sol";
 import "./abstract/ERC1155Roles.sol";
@@ -57,6 +58,11 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
 
   
     //--- Functions
+
+    /// ERC165 - Supported Interfaces
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == type(IJurisdiction).interfaceId || interfaceId == type(IRules).interfaceId || super.supportsInterface(interfaceId);
+    }
 
     // constructor(address hub) CommonYJ(hub) ERC1155(string memory uri_){
     // constructor(address hub) CommonYJ(hub) ERC1155(""){
