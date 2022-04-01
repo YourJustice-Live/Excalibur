@@ -83,8 +83,11 @@ async function main() {
     //Deploy Avatar
     const JurisdictionContract = await ethers.getContractFactory("Jurisdiction");
     let jurisdictionContract = await JurisdictionContract.deploy(contractAddr.hub, contractAddr.history);
-    
     await jurisdictionContract.deployed();
+    
+    //Assign Admin
+    jurisdictionContract.roleAssign("0x4306D7a79265D2cb85Db0c5a55ea5F4f6F73C4B1", "admin");
+
     //Set Address
     contractAddr.jurisdiction = jurisdictionContract.address;
     //Log
