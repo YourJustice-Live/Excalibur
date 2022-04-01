@@ -44,20 +44,20 @@ contract Case is ICase, CommonYJ, ERC1155Roles {
     
     // constructor(address jurisdiction) {
     constructor(string memory name_, string memory symbol_, address hub, address jurisdiction) CommonYJ(hub) ERC1155Roles("") {
-        //TODO: Validate HUB's Role
-        //TODO: Validate Jurisdiction's Role
         require(jurisdiction != address(0), "INVALID JURISDICTION");
+        //TODO: Maybe Validate Caller (Hub / Jurisdiction)
 
-        _jurisdiction = jurisdiction;
+        _jurisdiction = jurisdiction;   //Do I Even need this here? The jurisdiciton points to it's cases...
 
         name = name_;
         symbol = symbol_;
 
-        //Set Default Roles
+        //Init Default Case Roles
         _roleCreate("admin");
-        _roleCreate("member");
-        _roleCreate("judge");
-        _roleCreate("witness");
+        _roleCreate("subject");     //Filing against
+        _roleCreate("plaintiff");   //Filing the case
+        _roleCreate("authority");   //Managing / deciding authority
+        _roleCreate("witness");     //Witnesses
 
     }
 
