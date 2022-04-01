@@ -10,8 +10,8 @@ const contractAddr = {
   config:"0xe42a960537e1fB2F39361b6cffFa6CeD6162752b",
   hub:"0xdd2e3c7d34ea7f5876bf7a05775106968b80ba83",
   avatar:"0xAb4B21d7651b1484986E1D2790b125be8b6c460B",
-  history:"0x274e54BFFDbb94442FC8Df155d47b42BEF90c76B",
-  jurisdiction:"0x621B529DF2a13ADaaf9962180f29694ad137bBCA",
+  history:"0x550AB560c34F122665beC8B40897B800913D0F4d", //V2
+  jurisdiction:"",
 };
 
 async function main() {
