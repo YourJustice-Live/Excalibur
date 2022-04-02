@@ -41,6 +41,15 @@ abstract contract ERC1155Roles is IERC1155Roles, ERC1155GUID {
         _;
     }
     
+    /// Validate that account hold one of the role in Array
+    modifier onlyRole(string[] calldata roles) {
+        bool hasRole;
+        for (uint256 i = 0; i < roles.length; ++i) {
+            if(roleHas(_msgSender(), roles[i])) hasRole = true;
+        }
+        require(hasRole, "ROLE:INVALID_PERMISSION");
+        _;
+    }
 
     //--- Functions
 
