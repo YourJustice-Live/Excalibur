@@ -42,7 +42,8 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     //--- Functions
 
-    constructor(address hub) CommonYJ(hub) ERC1155GUID(""){
+    // constructor(address hub) CommonYJ(hub) ERC1155GUID(""){
+    constructor(address hub) CommonYJ(hub) ERC1155(""){
         name = "YourJustice Event Repo";
     }
 

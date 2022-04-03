@@ -53,11 +53,12 @@ abstract contract ERC1155Roles is IERC1155Roles, ERC1155GUID {
 
     //--- Functions
 
+    
     // constructor(string memory name_, string memory symbol_, string memory uri) ERC1155GUID(uri) {
-    constructor(string memory uri) ERC1155GUID(uri) {
+    // constructor(string memory uri) ERC1155GUID(uri) {
         // name = name_;
         // symbol = symbol_;
-    }
+    // }
 
     /**
      * @dev See {IERC165-supportsInterface}.

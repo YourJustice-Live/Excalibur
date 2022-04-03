@@ -56,9 +56,9 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
     /**
      * @dev See {_setURI}.
      */
-    constructor(string memory uri_) ERC1155(uri_) {
+    // constructor(string memory uri_) ERC1155(uri_) {
         
-    }
+    // }
 
     //** GUID/Role Functions
 

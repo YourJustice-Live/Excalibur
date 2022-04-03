@@ -42,9 +42,11 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     //--- Storage
     string public constant override symbol = "YJ_Jurisdiction";
     using Strings for uint256;
+
     using Counters for Counters.Counter;
     // Counters.Counter internal _tokenIds; //Track Last Token ID
     Counters.Counter internal _caseIds;  //Track Last Case ID
+    
 
     // Contract name
     string public name;
@@ -66,7 +68,8 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
 
     // constructor(address hub) CommonYJ(hub) ERC1155(string memory uri_){
     // constructor(address hub) CommonYJ(hub) ERC1155(""){
-    constructor(address hub, address actionRepo) CommonYJ(hub) ERC1155Roles("") Rules(actionRepo){
+    // constructor(address hub, address actionRepo) CommonYJ(hub) ERC1155Roles("") Rules(actionRepo){
+    constructor(address hub, address actionRepo) CommonYJ(hub) ERC1155("") Rules(actionRepo){
         name = "Anti-Scam Jurisdiction";
         // symbol = "YJ_J1";
         //Init Default Jurisdiction Roles
@@ -77,19 +80,34 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
 
     //** Case Functions
 
-    /*
+    
     /// Make a new Case
-    function caseMake(string calldata name_) public returns (uint256, address) {
+    function caseMake(string calldata name_, DataTypes.RoleMappingInput[] calldata roleMapping) public returns (uint256, address) {
         //TODO: Validate Caller Permissions
+
+        //Rules
+
+        //Role Mapping
+        // Account -> Role + Rule Mapping??
+        // DataTypes.RoleMappingInput[] memory roleMapping;
 
         //Assign Case ID
         _caseIds.increment(); //Start with 1
         uint256 caseId = _caseIds.current();
 
+        /* Oversized Contract - Moved to YJ_Hub
         //Make
         // MetaCoin metaCoin = new MetaCoin(metaCoinOwner, initialBalance);
-        Case newCase = new Case(name_, string(abi.encodePacked("YJ_", caseId.toString())), _getHub(), address(this));
-
+        Case newCase = new Case( 
+            name_, 
+            string(abi.encodePacked("YJ_CASE", caseId.toString())), 
+            _getHub(), 
+            // address(this),
+            roleMapping
+        );
+        */
+        
+    /*
         //Remember
         // metaCoinAddresses.push(metaCoin);
         _cases[caseId] = address(newCase);
@@ -99,8 +117,16 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
         emit CaseCreated(caseId, address(newCase));
         //Return
         return (caseId, address(newCase));
-    }
     */
+
+        return (caseId, address(0));    //[DEV]
+    }
+    
+
+    /// Get Case Address by Case ID
+    function getCaseById(uint256 caseId) public view returns (address) {
+        return _cases[caseId];
+    }
     
     //** Role Functions
 
