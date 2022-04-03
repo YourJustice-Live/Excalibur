@@ -12,9 +12,9 @@ library DataTypes {
 
     /// NFT Identifiers
     struct Entity {
-        address hash;
+        address account;
         uint256 id;
-        //uint256 chain;
+        uint256 chain;
     }
     /// Rating Domains
     enum Domain {
@@ -182,8 +182,14 @@ library DataTypes {
     struct RuleRef {
         address jurisdiction;
         uint256 ruleId;
+        Entity affected;
     }
-
+    
+    //Role Name Input Struct
+    struct RoleMappingInput {
+        string role;
+        string name;
+    }
 }
 
 
