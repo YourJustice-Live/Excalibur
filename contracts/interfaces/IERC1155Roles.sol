@@ -18,6 +18,4 @@ interface IERC1155Roles {
     /// New Role Created
     event RoleCreated(uint256 indexed id, string role);
 
-    /// New Case Created
-    event CaseCreated(uint256 indexed id, address contractAddress);
 }

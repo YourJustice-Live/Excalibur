@@ -37,5 +37,7 @@ interface IJurisdiction {
     
 
     //--- Events
-    
+
+    /// New Case Created
+    event CaseCreated(uint256 indexed id, address contractAddress);    
 }
