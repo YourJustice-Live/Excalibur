@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/utils/Counters.sol";
-// import "./libraries/DataTypes.sol";
+import "./libraries/DataTypes.sol";
 // import "./abstract/ERC1155Roles.sol";
 import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/ERC1155RolesUpgradable.sol";
@@ -48,22 +48,20 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         string memory name_, 
         string memory symbol_, 
         address hub 
-        // DataTypes.RoleMappingInput[] memory roleNames
+        , DataTypes.RuleRef[] memory addRules
+        , DataTypes.InputRole[] memory assignRoles
+
     ) public override initializer {
         // require(jurisdiction != address(0), "INVALID JURISDICTION");
         // _jurisdiction = msg.sender;   //Do I Even need this here? The jurisdiciton points to it's cases...
-        
+
+        //Initializers        
         // __ERC1155_init("");
         // __Ownable_init();
         __ERC1155RolesUpgradable_init("");
         __CommonYJ_init(hub);
-    /*
-        // roleName
-        for (uint256 i = 0; i < roleNames.length; ++i) {
-            // roleName[roleNames[i].role] = roleNames[i].name;
-            _entityMap(roleNames[i].role, roleNames[i].name);
-        }
-    */
+
+        //State
         name = name_;
         symbol = symbol_;
 
@@ -78,6 +76,18 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         //Auto-Set Creator as Admin
         _roleAssign(tx.origin, "admin");
         _roleAssign(tx.origin, "plaintiff");
+
+        //Assign Roles
+        for (uint256 i = 0; i < assignRoles.length; ++i) {
+            _roleAssign(assignRoles[i].account, assignRoles[i].role);
+        }
+
+        //Add Rules
+        for (uint256 i = 0; i < addRules.length; ++i) {
+            // _ruleAdd(addRules[i].jurisdiction, addRules[i].ruleId, addRules[i].affected);
+            _ruleAdd(addRules[i].jurisdiction, addRules[i].ruleId);
+        }
+
     }
     
     /// Assign to a Role
@@ -127,6 +137,8 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     // function post(uint256 token_id, string calldata uri) public {
     function post(string calldata entRole, string calldata postRole, string calldata uri) external onlyRole(entRole) {
         //Validate: Holds a Role (any) in case  onlyRole([]) [X]
+        
+        //TODO: Validate Stage
 
         //Event
         emit Post(_msgSender(), entRole, postRole, uri);
@@ -143,8 +155,20 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
     // }
 
+    //--- State Changers
+    
+    /// TODO: File the Case (Validate & Open Discussion)  --> Open
+    // function stageFile(){}
+
+    /// Case Wait For Verdict  --> Pending
+    // function stageWaitForVerdict() {}
+
+    /// Case Stage: Place Verdict  --> Closed
+    // function stageVerdict() onlyRole("judge") {}
+
 
     //--- Dev Playground [WIP]
+
 
     /// Set Role's Name Mapping
     // function _ruleRefSet(string memory role_, string memory name_) internal {
@@ -153,19 +177,23 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
     /// Add Rule Reference
     // function ruleAdd(address jurisdiction_, uint256 ruleId_, DataTypes.Entity calldata affected_) external {
-    function ruleAdd(address jurisdiction_, uint256 ruleId_, string calldata affected_) external {
+    // function ruleAdd(address jurisdiction_, uint256 ruleId_, string memory affected_) external {
+    function ruleAdd(address jurisdiction_, uint256 ruleId_) external {
         //TODO: Validate Jurisdiciton implements IRules (ERC165)
 
         //Validate
-        require (msg.sender == address(_HUB) || roleHas(_msgSender(), "admin") || owner() == _msgSender(), "EXPECTED HUB OR ADMIN");
+        // require (msg.sender == address(_HUB) || roleHas(_msgSender(), "admin") || owner() == _msgSender(), "EXPECTED HUB OR ADMIN");
+        require (_msgSender() == address(_HUB) || roleHas(_msgSender(), "admin") || owner() == _msgSender(), "EXPECTED HUB OR ADMIN");
 
         //Run
-        _ruleAdd(jurisdiction_, ruleId_, affected_);
+        // _ruleAdd(jurisdiction_, ruleId_, affected_);
+        _ruleAdd(jurisdiction_, ruleId_);
     }
 
     /// Add Relevant Rule Reference 
     // function _ruleAdd(address jurisdiction_, uint256 ruleId_, DataTypes.Entity calldata affected_) internal {
-    function _ruleAdd(address jurisdiction_, uint256 ruleId_, string calldata affected_) internal {
+    // function _ruleAdd(address jurisdiction_, uint256 ruleId_, string memory affected_) internal {
+    function _ruleAdd(address jurisdiction_, uint256 ruleId_) internal {
         //Assign Rule Reference ID
         _ruleIds.increment(); //Start with 1
         uint256 ruleId = _ruleIds.current();
@@ -173,23 +201,9 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         //New Rule
         _rules[ruleId].jurisdiction = jurisdiction_;
         _rules[ruleId].ruleId = ruleId_;
-        _rules[ruleId].affected = affected_;
-        
-        // RuleRef {
-        //     address jurisdiction;
-        //     uint256 ruleId;
-        //     Entity affected: {
-        //         address account;
-        //         uint256 id;
-        //         uint256 chain;
-        //     }
-        // }
+        // _rules[ruleId].affected = affected_;
 
-        //Assign Affected to a Role? 
-
-        // _roleMapping["witness"].name = "witness";   //?
-        // _roleMapping["subject"].name = "seller";
-        // _roleMapping["subject"].name = "seller";
+        //TODO: Get Rule, Get Affected & Add as new Role if Doesn't Exist
     }
 
     //--- [DEV] Entity Mapping
