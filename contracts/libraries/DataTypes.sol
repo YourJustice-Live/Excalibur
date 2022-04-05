@@ -186,11 +186,27 @@ library DataTypes {
         // Entity affected;
     }
     
+    //-- Inputs
+    
+    //Rule Input Struct (Same as RuleRef)
+    // struct InputRule {
+    //     address jurisdiction;
+    //     uint256 ruleId;
+    //     string affected;
+    // }
+
+    //Role Input Struct
+    struct InputRole {
+        address account;
+        string role;
+    }
+    
     //Role Name Input Struct
     struct RoleMappingInput {
         string role;
         string name;
     }
+
 }
 
 
