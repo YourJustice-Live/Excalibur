@@ -213,4 +213,11 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     // }
     */
     
+    /**
+     * @dev Contract URI
+     *  https://docs.opensea.io/docs/contract-level-metadata
+     */
+    function contractURI() public view returns (string memory) {
+        return _contract_uri;
+    }
 }
