@@ -19,13 +19,10 @@ import "./abstract/ERC1155GUID.sol";
 contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     //--- Storage
-    //Arbitrary Contract Role 
-    string public constant override symbol = "YJ_HISTORY";
-
     // Contract name
     string public name;
-    // Contract symbol
-    // string public symbol;
+    //Arbitrary Contract Role 
+    string public constant override symbol = "YJ_HISTORY";
     //Jurisdiction
     address private _jurisdiction;
     //Rule(s)
@@ -44,7 +41,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     // constructor(address hub) CommonYJ(hub) ERC1155GUID(""){
     constructor(address hub) CommonYJ(hub) ERC1155(""){
-        name = "YourJustice Event Repo";
+        name = "YourJustice: Semantic Action Repo";
     }
 
     /// ERC165 - Supported Interfaces
