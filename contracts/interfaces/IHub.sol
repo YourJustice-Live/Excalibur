@@ -2,6 +2,8 @@
 
 pragma solidity ^0.8.0;
 
+import "../libraries/DataTypes.sol";
+
 interface IHub {
     /// Arbitrary contract designation signature
     function role() external view returns (string memory);
@@ -10,6 +12,9 @@ interface IHub {
     function owner() external view returns (address);
     
     /// Make a new Case
-    function caseMake(string calldata name_) external returns (address);
+    // function caseMake(string calldata name_) external returns (address);
+    // function caseMake(string calldata name_, DataTypes.RuleRef[] memory addRules) external returns (address);
+    function caseMake(string calldata name_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external returns (address);
+
     
 }

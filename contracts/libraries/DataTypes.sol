@@ -181,8 +181,8 @@ library DataTypes {
     //Rule Reference
     struct RuleRef {
         address jurisdiction;
-        uint256 ruleId;
-        string affected;        //Affected Role. E.g. "investor"
+        uint ruleId;
+        // string affected;        //Affected Role. E.g. "investor"     //In Rule
         // Entity affected;
     }
     

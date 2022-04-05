@@ -11,6 +11,9 @@ interface IJurisdiction {
     /// Symbol As Arbitrary contract designation signature
     function symbol() external view returns (string memory);
 
+    /// Contract URI
+    function contractURI() external view returns (string memory);
+
     /// Join jurisdiction as member
     function join() external;
 
@@ -26,6 +29,7 @@ interface IJurisdiction {
     /// Create a new Role
     // function roleCreate(address account, string calldata role) external;
 
+    // function caseMake(string calldata name_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) public returns (uint256, address);
 
     //-- Rule Func.
 

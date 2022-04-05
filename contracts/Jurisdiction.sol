@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
+
 import "hardhat/console.sol";
 
 // import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
@@ -30,10 +31,11 @@ import "./Case.sol";
  * - One for each
  * - All members are the same
  * - Rules
- * - [TODO] Deploys Cases
+ * - Creates new Cases
+ * - Contract URI
  * - [TODO] Token URIs for Roles
- * - [TODO] Contract URI
  * - [TODO] Validation: Make Sure Account has an Avatar NFT -- Assign Avatars instead of Accounts
+ * - [TODO] Rules are Unique
  * V2:  
  * - [TODO] NFT Trackers - Track the owner of the Avatar NFT
  */
@@ -53,7 +55,9 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     string public name;
     // Contract symbol
     // string public symbol;
-    
+    //Contract URI
+    string internal _contract_uri;
+
     // mapping(string => uint256) internal _roles;     //NFTs as Roles
     mapping(uint256 => address) internal _cases;      // Mapping for Case Contracts
 
@@ -86,7 +90,8 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     // function caseMake(string calldata name_, DataTypes.RoleMappingInput[] memory roleMapping) public returns (uint256, address) {
     // function caseMake(string calldata name_, string calldata affected_) public returns (uint256, address) {
     // function caseMake(string calldata name_) public returns (uint256, address) {
-    function caseMake(string calldata name_) public returns (uint256, address) {
+    // function caseMake(string calldata name_, DataTypes.RuleRef[] calldata addRules) public returns (uint256, address) {
+    function caseMake(string calldata name_, DataTypes.RuleRef[] calldata addRules, DataTypes.InputRole[] calldata assignRoles) public returns (uint256, address) {
         //TODO: Validate Caller Permissions
 
         //Rules
@@ -99,8 +104,9 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
         _caseIds.increment(); //Start with 1
         uint256 caseId = _caseIds.current();
 
-        address caseContract = _HUB.caseMake(name_);
-        
+        // address caseContract = _HUB.caseMake(name_, addRules);
+        address caseContract = _HUB.caseMake(name_, addRules, assignRoles);
+
         //Remember
         _cases[caseId] = caseContract;
         
@@ -212,4 +218,11 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     //     return _tokenURIs[token_id];
     // }
 
+   /**
+     * @dev Contract URI
+     *  https://docs.opensea.io/docs/contract-level-metadata
+     */
+    function contractURI() public view override returns (string memory) {
+        return _contract_uri;
+    }
 }

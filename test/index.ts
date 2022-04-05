@@ -40,25 +40,30 @@ describe("Protocol", function () {
 
 
   before(async function () {
-      //Deploy Config
-      const ConfigContract = await ethers.getContractFactory("Config");
-      configContract = await ConfigContract.deploy();
+    //Deploy Config
+    const ConfigContract = await ethers.getContractFactory("Config");
+    configContract = await ConfigContract.deploy();
 
-      //Deploy Case Implementation
-      this.caseContract = await ethers.getContractFactory("Case").then(res => res.deploy());
+    //Deploy Case Implementation
+    this.caseContract = await ethers.getContractFactory("Case").then(res => res.deploy());
 
-      //Deploy Hub
-      // const HubContract = await ethers.getContractFactory("Hub");
-      // hubContract = await HubContract.deploy(configContract.address);
-      hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.caseContract.address));
+    //Deploy Hub
+    // const HubContract = await ethers.getContractFactory("Hub");
+    // hubContract = await HubContract.deploy(configContract.address);
+    hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.caseContract.address));
 
-      //Deploy Avatar
-      // const AvatarContract = await ethers.getContractFactory("AvatarNFT");
-      // avatarContract = await AvatarContract.deploy(hubContract.address);
-      avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract.address));
+    //Deploy Avatar
+    // const AvatarContract = await ethers.getContractFactory("AvatarNFT");
+    // avatarContract = await AvatarContract.deploy(hubContract.address);
+    avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract.address));
 
-      //Populate Accounts
-      [owner, admin, tester, tester2, tester3, ...addrs] = await ethers.getSigners();
+    //Populate Accounts
+    [owner, admin, tester, tester2, tester3, ...addrs] = await ethers.getSigners();
+    //Addresses
+    this.adminAddr = await admin.getAddress();
+    this.testerAddr = await tester.getAddress();
+    this.tester2Addr = await tester2.getAddress();
+    this.tester3Addr = await tester3.getAddress();
   })
 
   describe("Config", function () {
@@ -160,18 +165,11 @@ describe("Protocol", function () {
     });
   
     it("Should store Actions", async function () {
-
-      // let dataObj = ethers.utils.hexlify({ length: 2, "0": 1, "1": 2 });
-      // let arrObj = ethers.utils.hexlify([1, 2, 3, 4]);
-      // console.warn("*** dataObj: ", dataObj, ethers.utils.arrayify(dataObj));
-      // console.warn("*** arrObj: ", arrObj, ethers.utils.arrayify(arrObj));
-
       let action = {
         subject: "founder",     //Accused Role
         verb: "breach",
         object: "contract",
         tool: "",
-        
       };
       // let confirmation = {
       //   ruling: "judge",  //Decision Maker
@@ -187,7 +185,7 @@ describe("Protocol", function () {
       await tx.wait();
 
       let actionGUID = await actionContract.actionHash(action); //Gets hash if exists or not
-      console.warn("actionGUID:", actionGUID);
+      // console.log("actionGUID:", actionGUID);
 
       //Expect Added Event
       await expect(tx).to.emit(actionContract, 'ActionAdded').withArgs(1, actionGUID, action.subject, action.verb, action.object, action.tool);
@@ -197,8 +195,7 @@ describe("Protocol", function () {
       //Fetch Action's Struct
       let actionRet = await actionContract.actionGet(actionGUID);
       
-      
-      // console.warn("actionGet:", actionRet);
+      // console.log("actionGet:", actionRet);
       // expect(Object.values(actionRet)).to.eql(Object.values(action));
       expect(actionRet).to.include.members(Object.values(action));
       // expect(actionRet).to.eql(action);  //Fails
@@ -223,7 +220,7 @@ describe("Protocol", function () {
         const JurisdictionContract = await ethers.getContractFactory("Jurisdiction");
         jurisdictionContract = await JurisdictionContract.deploy(hubContract.address, actionContract.address);
 
-        //TODO: Write it more like this
+        //TODO: Maybe Write it like this
         this.jurisdiction = jurisdictionContract;
         // console.log("jurisdiction: ", this.jurisdiction);
     });
@@ -285,6 +282,11 @@ describe("Protocol", function () {
     
     it("Should store Rules", async function () {
       let actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2';//await actionContract.callStatic.actionAdd(action);
+      let confirmation = {
+        ruling: "judge",  //Decision Maker
+        evidence: true, //Require Evidence
+        witness: 1,  //Minimal number of witnesses
+      };
       let rule = {
         // uint256 about;    //About What (Token URI +? Contract Address)
         about: actionGUID, //"0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2",
@@ -306,14 +308,31 @@ describe("Protocol", function () {
         // bool negation;  //false - Commision  true - Omission
         negation: false,
       };
-      let confirmation = {
-        ruling: "judge",  //Decision Maker
-        evidence: true, //Require Evidence
-        witness: 1,  //Minimal number of witnesses
+      let rule2 = {
+        // uint256 about;    //About What (Token URI +? Contract Address)
+        about: actionGUID, //"0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2",
+        affected: "god",  //Plaintiff / Beneficiary
+        // about: 1,
+        // string uri;     //Text, Conditions & additional data
+        uri: "ADDITIONAL_DATA_URI",
+        // Effect Object (Describes Changes to Reputation By Type)
+        effects:{
+          // int8 environmental;
+          environmental: -10,
+          // int8 professional;
+          professional: 0,
+          // int8 social;
+          social: 0,
+          // int8 personal;
+          personal: 0,
+        },
+        // bool negation;  //false - Commision  true - Omission
+        negation: false,
       };
-
-
+     
+      //Add Rule
       let tx = await jurisdictionContract.connect(admin).ruleAdd(rule, confirmation);
+
       // wait until the transaction is mined
       await tx.wait();
       // console.log("Rule Added", tx);
@@ -323,22 +342,27 @@ describe("Protocol", function () {
       await expect(tx).to.emit(jurisdictionContract, 'RuleEffects').withArgs(1, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
       await expect(tx).to.emit(jurisdictionContract, 'Confirmation').withArgs(1, confirmation.ruling, confirmation.evidence, confirmation.witness);
 
+      //Add Another Rule
+      let tx2 = await jurisdictionContract.connect(admin).ruleAdd(rule2, confirmation);
+            
+      //Expect Event
+      await expect(tx2).to.emit(jurisdictionContract, 'Rule').withArgs(2, rule2.about, rule2.affected, rule2.uri, rule2.negation);
+      await expect(tx2).to.emit(jurisdictionContract, 'RuleEffects').withArgs(2, rule2.effects.environmental, rule2.effects.personal, rule2.effects.social, rule2.effects.professional);
+      await expect(tx2).to.emit(jurisdictionContract, 'Confirmation').withArgs(2, confirmation.ruling, confirmation.evidence, confirmation.witness);
+
       // expect(await jurisdictionContract.ruleAdd(actionContract.address)).to.equal("Hello, world!");
-      let ruleData = await jurisdictionContract.ruleGet(1);
+      // let ruleData = await jurisdictionContract.ruleGet(1);
       
       // console.log("Rule Getter:", typeof ruleData, ruleData);   //some kind of object array crossbread
       // console.log("Rule Getter Effs:", ruleData.effects);  //V
       // console.log("Rule Getter:", JSON.stringify(ruleData)); //As array. No Keys
       
       // await expect(ruleData).to.include.members(Object.values(rule));
-
     });
     
-
   }); //Jurisdiction
 
-
- /**
+  /**
    * Case Contract
    */
   describe("Case", function () {
@@ -347,11 +371,24 @@ describe("Protocol", function () {
     it("Should be Created (by Jurisdiction)", async function () {
     
       let caseName = "Test Case #1";
-      // let affected = "investor";
+      let ruleRefArr = [
+        {
+          jurisdiction: jurisdictionContract.address, 
+          ruleId: 1,
+        }
+      ];
+      let roleRefArr = [
+        {
+          role: "subject",
+          account: this.tester2Addr, 
+        }
+      ];
+      // console.log("Make Case With Params:", ruleRefArr, roleRefArr);
 
       // actionContract = await ethers.getContractFactory("Case").then(res => res.deploy(hubContract.address));
 
-      let tx = await jurisdictionContract.connect(admin).caseMake(caseName);
+      // let tx = await jurisdictionContract.connect(admin).caseMake(caseName, ruleRefArr);
+      let tx = await jurisdictionContract.connect(admin).caseMake(caseName, ruleRefArr, roleRefArr);
 
       let caseAddr = await jurisdictionContract.getCaseById(1);
       expect(caseAddr).to.be.properAddress;
@@ -365,34 +402,31 @@ describe("Protocol", function () {
       
       //Expect Event
       await expect(tx).to.emit(jurisdictionContract, 'CaseCreated').withArgs(1, caseAddr);
+
     });
 
     it("Should Auto-Appoint creator as Admin", async function () {
-      let adminAddr = await admin.getAddress();
-      //Check
-      expect(await this.caseContract.roleHas(adminAddr, "admin")).to.equal(true);
+      expect(await this.caseContract.roleHas(this.adminAddr, "admin")).to.equal(true);
+    });
+
+    it("Tester should be in the subject role", async function () {
+      expect(await this.caseContract.roleHas(this.tester2Addr, "subject")).to.equal(true);
     });
 
     it("Should Add Rules", async function () {
-
       
       // let roleMapping = [
       //   {subject:"investor"}
       // ];
-      let rule = {
+      let ruleRef = {
         jurisdiction: jurisdictionContract.address, 
-        id: 1, 
-        affected: "investor",
-        // affected: {
-        //   account: 
-        //   id: 
-        //   chain: 
-        // }
+        id: 2, 
+        // affected: "investor",
       };
-      await this.caseContract.ruleAdd(rule.jurisdiction,  rule.id, rule.affected);
+      // await this.caseContract.ruleAdd(ruleRef.jurisdiction,  ruleRef.id, ruleRef.affected);
+      await this.caseContract.ruleAdd(ruleRef.jurisdiction,  ruleRef.id);
 
     });
-
 
   }); //Case
     

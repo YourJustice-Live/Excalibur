@@ -2,12 +2,16 @@
 
 pragma solidity ^0.8.0;
 
+import "../libraries/DataTypes.sol";
+
 interface ICase {
     
     //-- Functions
 
     /// Initialize
-    function initialize(string memory name_, string memory symbol_, address hub ) external ;
+    // function initialize(string memory name_, string memory symbol_, address hub) external ;
+    // function initialize(string memory name_, string memory symbol_, address hub, DataTypes.RuleRef[] memory addRules) external ;
+    function initialize(string memory name_, string memory symbol_, address hub, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external ;
 
     /// Assign Someone to a Role
     function roleAssign(address account, string calldata role) external;

@@ -84,8 +84,13 @@ contract Hub is IHub, Ownable {
     }
 
     //--- Factory 
+
     /// Make a new Case
-    function caseMake(string calldata name_) public override returns (address) {
+    function caseMake(
+        string calldata name_
+        , DataTypes.RuleRef[] memory addRules
+        , DataTypes.InputRole[] memory assignRoles
+    ) public override returns (address) {
         //TODO: Validate Caller Permissions
 
         //Rules
@@ -98,17 +103,6 @@ contract Hub is IHub, Ownable {
         // _caseIds.increment(); //Start with 1
         // uint256 caseId = _caseIds.current();
 
-        /*
-        //Make
-        // MetaCoin metaCoin = new MetaCoin(metaCoinOwner, initialBalance);
-        Case newCase = new Case( 
-            name_, 
-            string(abi.encodePacked("YJ_CASE", caseId.toString())), 
-            _getHub(), 
-            // address(this),
-            roleMapping
-        );
-        */
         //Validate
         require(beaconCase != address(0), "Case Beacon Missing");
         //Deploy
@@ -119,7 +113,10 @@ contract Hub is IHub, Ownable {
                 ICase( payable(address(0)) ).initialize.selector,
                 name_,          //Name
                 "YJ_CASE",      //Symbol
-                address(this)   //Hub
+                address(this),   //Hub
+                 
+                addRules
+                , assignRoles
             )
 
             // abi.encodeWithSignature("initialize(string memory, string memory, address)", name_, "YJ_CASE", address(this))
@@ -127,11 +124,14 @@ contract Hub is IHub, Ownable {
         // console.log("Hub Addr1", msg.sender);
         // console.log("Hub Addr2", _msgSender());
         // console.log("Hub Addr3", tx.origin);
+        // ICase(address(newCaseProxy)).roleAssign(tx.origin, "admin");
 
         //Return
         return address(newCaseProxy);
     }
     
+    //-- Upgrades
+
     /// Upgrade Case Beacon Implementation
     function upgradeCaseBeacon(address _newImplementation) public onlyOwner {
         //TODO: Validate? 
