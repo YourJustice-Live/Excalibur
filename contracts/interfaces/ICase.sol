@@ -15,6 +15,7 @@ interface ICase {
     //--- Events
 
     /// Post
-    event Post(address indexed account, string role, string uri);
+    // event Post(address indexed account, string role, string uri);
+    event Post(address indexed account, string entRole, string postRole, string uri);
 
 }

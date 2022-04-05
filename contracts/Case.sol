@@ -44,13 +44,11 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
     //--- Functions
     
-    // constructor(
     function initialize (
         string memory name_, 
         string memory symbol_, 
         address hub 
         // DataTypes.RoleMappingInput[] memory roleNames
-    // ) CommonYJ(hub) ERC1155Roles("") {
     ) public override initializer {
         // require(jurisdiction != address(0), "INVALID JURISDICTION");
         // _jurisdiction = msg.sender;   //Do I Even need this here? The jurisdiciton points to it's cases...
@@ -123,13 +121,15 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     }
     */
 
-    /// Add Post (role:comment/evidence/decleration/etc')
+    /// Add Post 
+    /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
+    /// @param postRole i.e. post type (role:comment/evidence/decleration/etc')
     // function post(uint256 token_id, string calldata uri) public {
-    function post(address account, string calldata role, string calldata uri) public {
-        //Validate: Holds a Role in case
+    function post(string calldata entRole, string calldata postRole, string calldata uri) external onlyRole(entRole) {
+        //Validate: Holds a Role (any) in case  onlyRole([]) [X]
 
         //Event
-        emit Post(account, role, uri);
+        emit Post(_msgSender(), entRole, postRole, uri);
         // emit Post(token_id, uri);
     }
 

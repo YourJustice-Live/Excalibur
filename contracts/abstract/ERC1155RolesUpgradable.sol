@@ -37,7 +37,7 @@ abstract contract ERC1155RolesUpgradable is IERC1155Roles, ERC1155GUIDUpgradable
     }
     
     /// Validate that account hold one of the role in Array
-    modifier onlyRole(string[] calldata roles) {
+    modifier onlyRoles(string[] calldata roles) {
         bool hasRole;
         for (uint256 i = 0; i < roles.length; ++i) {
             if(roleHas(_msgSender(), roles[i])) hasRole = true;
@@ -45,7 +45,11 @@ abstract contract ERC1155RolesUpgradable is IERC1155Roles, ERC1155GUIDUpgradable
         require(hasRole, "ROLE:INVALID_PERMISSION");
         _;
     }
-
+    /// Validate that account hold one of the role in Array
+    modifier onlyRole(string calldata role) {
+        require(roleHas(_msgSender(), role), "ROLE:INVALID_PERMISSION");
+        _;
+    }
     //--- Functions
 
    /**
