@@ -27,7 +27,7 @@ abstract contract CommonYJ is ICommonYJ, Ownable {
     }
 
     /// Inherit owner from Protocol's config
-    function owner() public view override(ICommonYJ, Ownable) returns (address) {
+    function owner() public view override (ICommonYJ, Ownable) returns (address) {
         return _HUB.owner();
     }
 
