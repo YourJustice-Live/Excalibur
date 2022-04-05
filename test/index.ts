@@ -28,6 +28,7 @@ describe("Protocol", function () {
   let avatarContract: Contract;
   let jurisdictionContract: Contract;
   let actionContract: Contract;
+  let caseContract: Contract;
 
   //Addresses
   let owner: Signer;
@@ -43,13 +44,18 @@ describe("Protocol", function () {
       const ConfigContract = await ethers.getContractFactory("Config");
       configContract = await ConfigContract.deploy();
 
+      //Deploy Case Implementation
+      this.caseContract = await ethers.getContractFactory("Case").then(res => res.deploy());
+
       //Deploy Hub
-      const HubContract = await ethers.getContractFactory("Hub");
-      hubContract = await HubContract.deploy(configContract.address);
+      // const HubContract = await ethers.getContractFactory("Hub");
+      // hubContract = await HubContract.deploy(configContract.address);
+      hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.caseContract.address));
 
       //Deploy Avatar
-      const AvatarContract = await ethers.getContractFactory("AvatarNFT");
-      avatarContract = await AvatarContract.deploy(hubContract.address);
+      // const AvatarContract = await ethers.getContractFactory("AvatarNFT");
+      // avatarContract = await AvatarContract.deploy(hubContract.address);
+      avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract.address));
 
       //Populate Accounts
       [owner, admin, tester, tester2, tester3, ...addrs] = await ethers.getSigners();
@@ -326,9 +332,68 @@ describe("Protocol", function () {
       
       // await expect(ruleData).to.include.members(Object.values(rule));
 
-      
     });
+    
 
   }); //Jurisdiction
 
+
+ /**
+   * Case Contract
+   */
+  describe("Case", function () {
+    
+
+    it("Should be Created (by Jurisdiction)", async function () {
+    
+      let caseName = "Test Case #1";
+      // let affected = "investor";
+
+      // actionContract = await ethers.getContractFactory("Case").then(res => res.deploy(hubContract.address));
+
+      let tx = await jurisdictionContract.connect(admin).caseMake(caseName);
+
+      let caseAddr = await jurisdictionContract.getCaseById(1);
+      expect(caseAddr).to.be.properAddress;
+      
+      //Case Contract
+      this.caseContract = await ethers.getContractFactory("Case").then(res => res.attach(caseAddr));
+
+      // console.log("case", this.caseContract);
+      // console.log("jurisdiction's Make Case TX:", tx);
+      // console.log("jurisdiction's Case #1:", caseAddr);
+      
+      //Expect Event
+      await expect(tx).to.emit(jurisdictionContract, 'CaseCreated').withArgs(1, caseAddr);
+    });
+
+    it("Should Auto-Appoint creator as Admin", async function () {
+      let adminAddr = await admin.getAddress();
+      //Check
+      expect(await this.caseContract.roleHas(adminAddr, "admin")).to.equal(true);
+    });
+
+    it("Should Add Rules", async function () {
+
+      
+      // let roleMapping = [
+      //   {subject:"investor"}
+      // ];
+      let rule = {
+        jurisdiction: jurisdictionContract.address, 
+        id: 1, 
+        affected: "investor",
+        // affected: {
+        //   account: 
+        //   id: 
+        //   chain: 
+        // }
+      };
+      await this.caseContract.ruleAdd(rule.jurisdiction,  rule.id, rule.affected);
+
+    });
+
+
+  }); //Case
+    
 });
