@@ -11,6 +11,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./interfaces/IJurisdiction.sol";
 import "./interfaces/IRules.sol";
+import "./interfaces/ICase.sol";
 // import "./libraries/DataTypes.sol";
 // import "./abstract/ERC1155GUID.sol";
 import "./abstract/ERC1155Roles.sol";
@@ -82,9 +83,15 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
 
     
     /// Make a new Case
-    function caseMake(string calldata name_, DataTypes.RoleMappingInput[] calldata roleMapping) public returns (uint256, address) {
+    // function caseMake(string calldata name_, DataTypes.RoleMappingInput[] memory roleMapping) public returns (uint256, address) {
+    // function caseMake(string calldata name_, string calldata affected_) public returns (uint256, address) {
+    // function caseMake(string calldata name_) public returns (uint256, address) {
+    function caseMake(string calldata name_) public returns (uint256, address) {
         //TODO: Validate Caller Permissions
 
+        // console.log("J Addr1", msg.sender);
+        // console.log("J Addr2", _msgSender());
+        
         //Rules
 
         //Role Mapping
@@ -95,31 +102,15 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
         _caseIds.increment(); //Start with 1
         uint256 caseId = _caseIds.current();
 
-        /* Oversized Contract - Moved to YJ_Hub
-        //Make
-        // MetaCoin metaCoin = new MetaCoin(metaCoinOwner, initialBalance);
-        Case newCase = new Case( 
-            name_, 
-            string(abi.encodePacked("YJ_CASE", caseId.toString())), 
-            _getHub(), 
-            // address(this),
-            roleMapping
-        );
-        */
+        address caseContract = _HUB.caseMake(name_);
         
-    /*
         //Remember
-        // metaCoinAddresses.push(metaCoin);
-        _cases[caseId] = address(newCase);
-
+        _cases[caseId] = caseContract;
+        
         //Event
-        // emit MetaCoinCreated(metaCoin);
-        emit CaseCreated(caseId, address(newCase));
-        //Return
-        return (caseId, address(newCase));
-    */
-
-        return (caseId, address(0));    //[DEV]
+        emit CaseCreated(caseId, caseContract);
+        
+        return (caseId, caseContract);
     }
     
 
@@ -146,7 +137,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
         require(
             _msgSender() == account         //Self
             || owner() == _msgSender()      //Owner
-            || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Token
+            || roleHas(_msgSender(), "admin")    //Admin Role
             , "INVALID_PERMISSIONS");
         //Add
         _roleAssign(account, role);
