@@ -54,7 +54,6 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     /// Generate a Unique Hash for Event
     function actionHash(DataTypes.SVO memory svo) public pure override returns (bytes32) {
-        // return bytes32(keccak256(abi.encode(svo.subject, svo.verb, svo.object, svo.tool, svo.affected)));
         return bytes32(keccak256(abi.encode(svo.subject, svo.verb, svo.object, svo.tool)));
     }
 
@@ -63,13 +62,9 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     function actionAdd(DataTypes.SVO memory svo, string memory uri) public override returns (bytes32) {
         //TODO: Validate
 
-        // console.log("actionAdd");
-
         //Store Additional Details
-        // return _actionAdd(svo);
         bytes32 guid = _actionAdd(svo);
         //Set Additional Data
-        // _actionSetConfirmation(guid, confirmation);  //MOVED Confirmation to Rules
         _actionSetURI(guid, uri);
         //return GUID
         return guid;
@@ -129,7 +124,6 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
         //Map Additional Data
         _actions[guid] = svo;
         //Event
-        // emit ActionAdded(id, guid, svo.subject, svo.verb, svo.object, svo.tool, svo.affected);
         emit ActionAdded(id, guid, svo.subject, svo.verb, svo.object, svo.tool);
         //Return GUID
         return guid;
@@ -152,30 +146,5 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
         // return _RoleData[_GUIDToId(guid)].uri;
         return _uri[_GUIDToId(guid)];
     }
-
-
-    /* [TBD] - would need to track role IDs
-    
-    /// Create a new Role
-    function roleCreate(string calldata role) public {
-        
-        _roleCreate(role);
-    }
-    */
-
-    //-- Playground
-
-
-    function testBytes(bytes memory foo) public view returns (bytes memory){
-        console.log("Bytes:");
-        console.logBytes(foo);
-        return foo;
-    }
-
-    function name2() public view returns (string memory){
-        return name;
-    }
-
-
 
 }
