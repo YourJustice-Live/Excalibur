@@ -88,8 +88,6 @@ contract Hub is IHub, Ownable {
     function caseMake(string calldata name_) public override returns (address) {
         //TODO: Validate Caller Permissions
 
-console.log("HUB - Make Case()");
-
         //Rules
 
         //Role Mapping
@@ -119,19 +117,19 @@ console.log("HUB - Make Case()");
 
             abi.encodeWithSelector(
                 ICase( payable(address(0)) ).initialize.selector,
-                name_, 
-                "YJ_CASE", 
-                address(this)
+                name_,          //Name
+                "YJ_CASE",      //Symbol
+                address(this)   //Hub
             )
 
             // abi.encodeWithSignature("initialize(string memory, string memory, address)", name_, "YJ_CASE", address(this))
         );
+        // console.log("Hub Addr1", msg.sender);
+        // console.log("Hub Addr2", _msgSender());
+        // console.log("Hub Addr3", tx.origin);
 
-        
         //Return
         return address(newCaseProxy);
-
-        // return address(0);  //[DEV]
     }
     
     /// Upgrade Case Beacon Implementation

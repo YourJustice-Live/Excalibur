@@ -89,9 +89,6 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     function caseMake(string calldata name_) public returns (uint256, address) {
         //TODO: Validate Caller Permissions
 
-        // console.log("J Addr1", msg.sender);
-        // console.log("J Addr2", _msgSender());
-        
         //Rules
 
         //Role Mapping
