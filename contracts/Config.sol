@@ -3,13 +3,14 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./interfaces/IConfig.sol";
+// import "./interfaces/IConfig.sol";
 
 /**
  * Global Configuration Contract
  * - He who owns the config owns the protocol
  */
-contract Config is IConfig, Ownable {
+contract Config is Ownable {
+// contract Config is IConfig, Ownable {
 
     //-- Storage
     
@@ -18,6 +19,10 @@ contract Config is IConfig, Ownable {
     
     //Treasury
     address private _treasury;
+
+    //-- Events
+
+    event TreasurySet(address treasury);
 
     //-- Functions 
         
