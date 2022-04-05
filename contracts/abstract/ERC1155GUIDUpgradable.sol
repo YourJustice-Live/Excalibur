@@ -83,6 +83,10 @@ abstract contract ERC1155GUIDUpgradable is IERC1155GUID, ERC1155Upgradeable {
         // require(_GUID[guid] == 0, "ROLE_EXISTS");
         // require(_GUID[guid] == 0, string(abi.encodePacked(guid, " GUID already exists")));
         require(_GUIDExists(guid) == false, string(abi.encodePacked(guid, " GUID already exists")));
+
+        // console.log("_GUIDMake");
+        // console.logBytes32(guid);
+
         //Assign Token ID
         _tokenIds.increment(); //Start with 1
         uint256 tokenId = _tokenIds.current();
