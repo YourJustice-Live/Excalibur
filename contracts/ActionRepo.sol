@@ -84,31 +84,9 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     /// Set Action's Metadata URI
     function _actionSetURI(bytes32 guid, string memory uri) internal {
-        // _uri[_GUIDToId(guid)] = uri;
-        // _RoleData[_GUIDToId(guid)].uri = uri;
         _uri[_GUIDToId(guid)] = uri;
         emit ActionURI(guid, uri);
     }
-
-    /* Moved Confirmation to Rules
-    
-    /// Update Confirmation Method for Action
-    function actionSetConfirmation(bytes32 guid, DataTypes.Confirmation memory confirmation) external override {
-            _actionSetConfirmation(guid, confirmation);
-    }
-
-    /// Set Action's Confirmation Object
-    function _actionSetConfirmation(bytes32 guid, DataTypes.Confirmation memory confirmation) internal {
-        _RoleData[_GUIDToId(guid)].confirmation = confirmation;
-        emit Confirmation(guid, confirmation.ruling, confirmation.evidence, confirmation.witness);
-    }
-
-    /// Get Action's URI
-    function actionGetConfirmation(bytes32 guid) public view override returns (DataTypes.Confirmation memory){
-        return _RoleData[_GUIDToId(guid)].confirmation;
-    }
-
-    */
     
     /// Store New Action
     function _actionAdd(DataTypes.SVO memory svo) internal returns (bytes32) {
