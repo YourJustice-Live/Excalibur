@@ -18,8 +18,14 @@ interface ICase {
 
     //--- Events
 
-    /// Post
+    /// Case Stage Change
+    event Stage(DataTypes.CaseStage stage);
+
+    /// Post Verdict
+    event Verdict(string uri, address account);
+
+    /// General Post / Evidence, etc'
     // event Post(address indexed account, string role, string uri);
-    event Post(address indexed account, string entRole, string postRole, string uri);
+    event Post(address indexed account, string indexed entRole, string postRole, string uri);
 
 }

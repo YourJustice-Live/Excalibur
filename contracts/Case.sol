@@ -1,14 +1,14 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./libraries/DataTypes.sol";
 // import "./abstract/ERC1155Roles.sol";
 import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/ERC1155RolesUpgradable.sol";
-import "./abstract/Rules.sol";
+// import "./abstract/Rules.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IRules.sol";
 // import "./interfaces/IJurisdiction.sol";
@@ -99,7 +99,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
             // || msg.sender == address(_HUB)   //Through the Hub
             , "INVALID_PERMISSIONS");
 
-        console.log("Case Role Assign:", role);
+        // console.log("Case Role Assign:", role);
 
         //Add
         _roleAssign(account, role);
@@ -135,18 +135,17 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
     /// @param postRole i.e. post type (role:comment/evidence/decleration/etc')
     // function post(uint256 token_id, string calldata uri) public {
-    function post(string calldata entRole, string calldata postRole, string calldata uri) external onlyRole(entRole) {
-        //Validate: Holds a Role (any) in case  onlyRole([]) [X]
-        
-        //TODO: Validate Stage
-
-        //Event
+    function post(string calldata entRole, string calldata postRole, string calldata uri) external {
+        //Validate: Sender Holds The Entity-Role 
+        require(roleHas(_msgSender(), entRole), "ROLE:INVALID_PERMISSION");
+        //Validate Stage
+        require(stage < DataTypes.CaseStage.Closed, "STAGE:CASE_CLOSED");
+        //Post Event
         emit Post(_msgSender(), entRole, postRole, uri);
-        // emit Post(token_id, uri);
     }
 
     
-    /// Fetch Role Mapping (entity name to slot name)
+    /// TODO: Fetch Role Mapping (entity name to slot name)
     // function getRoleMapping(string role) internal view returns (bool){
         
         //From Rule
@@ -157,14 +156,50 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
     //--- State Changers
     
-    /// TODO: File the Case (Validate & Open Discussion)  --> Open
-    // function stageFile(){}
+    /// File the Case (Validate & Open Discussion)  --> Open
+    function stageFile() public {
+        
+        //TODO: Validate Caller
+        
+        require(stage == DataTypes.CaseStage.Draft, "STAGE:DRAFT_ONLY");
+
+        //TODO: Validate Evidence & Witnesses
+
+        //Case is now Open
+        _setStage(DataTypes.CaseStage.Open);
+    }
 
     /// Case Wait For Verdict  --> Pending
-    // function stageWaitForVerdict() {}
+    function stageWaitForVerdict() public {
+        
+        //TODO: Validate Caller
+        
+        require(stage == DataTypes.CaseStage.Open, "STAGE:OPEN_ONLY");
+        //Case is now Waiting for Verdict
+        _setStage(DataTypes.CaseStage.Verdict);
+    }
 
     /// Case Stage: Place Verdict  --> Closed
-    // function stageVerdict() onlyRole("judge") {}
+    function stageVerdict(string calldata uri) public {
+        require(roleHas(_msgSender(), "judge") , "ROLE:JUDGE_ONLY");
+        require(stage == DataTypes.CaseStage.Verdict, "STAGE:VERDICT_ONLY");
+
+        //Case is now Closed
+        _setStage(DataTypes.CaseStage.Closed);
+        //Verdict Event
+        emit Verdict(uri, _msgSender());
+    }
+
+    /// Change Case Stage
+    function _setStage(DataTypes.CaseStage stage_) internal {
+        //Set Stage
+        stage = stage_;
+        //Stage Change Event
+        emit Stage(stage);
+    }
+    // function nextStage(string calldata uri) public {
+        // if (sha3(myEnum) == sha3("Bar")) return MyEnum.Bar;
+    // }
 
 
     //--- Dev Playground [WIP]
@@ -206,32 +241,12 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         //TODO: Get Rule, Get Affected & Add as new Role if Doesn't Exist
     }
 
-    //--- [DEV] Entity Mapping
-    /*
-    //[role] => {Entity entity, name:roleName}
-    //[subject] => {Entity entity, name:'Seller'}
-    mapping(uint256 => RoleMapping) internal _roleMapping;      // Mapping Roles to Entities
-    struct RoleMapping {
-        DataTypes.Entity entity;
-        string name;
-    //     Entity subject;
-    //     // Entity plaintif;
-    //     Entity affected;
-    //     entity witness;
-    }
-    // struct Entity{
-    //     address account; //Contract
-    //     uint256 id; //token ID
-    //     uint256 chain; //Chain ID
-    //     // string role;    //Textual Role [witness/]
-    // }
-    */
-    
     /**
      * @dev Contract URI
      *  https://docs.opensea.io/docs/contract-level-metadata
-     */
+     
     function contractURI() public view returns (string memory) {
         return _contract_uri;
     }
+    */
 }
