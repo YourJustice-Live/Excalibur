@@ -157,7 +157,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     //--- State Changers
     
     /// File the Case (Validate & Open Discussion)  --> Open
-    function stageFile() public {
+    function stageFile() public override {
         
         //TODO: Validate Caller
         
@@ -170,7 +170,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     }
 
     /// Case Wait For Verdict  --> Pending
-    function stageWaitForVerdict() public {
+    function stageWaitForVerdict() public override {
         
         //TODO: Validate Caller
         
@@ -180,7 +180,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     }
 
     /// Case Stage: Place Verdict  --> Closed
-    function stageVerdict(string calldata uri) public {
+    function stageVerdict(string calldata uri) public override {
         require(roleHas(_msgSender(), "judge") , "ROLE:JUDGE_ONLY");
         require(stage == DataTypes.CaseStage.Verdict, "STAGE:VERDICT_ONLY");
 
@@ -190,7 +190,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         emit Verdict(uri, _msgSender());
 
         //TODO: Update Avatar's Reputation
-        
+
     }
 
     /// Change Case Stage

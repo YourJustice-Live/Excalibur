@@ -16,6 +16,15 @@ interface ICase {
     /// Assign Someone to a Role
     function roleAssign(address account, string calldata role) external;
 
+    /// File the Case (Validate & Open Discussion)  --> Open
+    function stageFile() external;
+
+    /// Case Wait For Verdict  --> Pending
+    function stageWaitForVerdict() external;
+
+    /// Case Stage: Place Verdict  --> Closed
+    function stageVerdict(string calldata uri) external;
+
     //--- Events
 
     /// Case Stage Change
