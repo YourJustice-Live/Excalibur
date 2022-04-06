@@ -3,48 +3,39 @@
 The Excalibur Protocol is an on-chain justice system, carefully designed to imitate the same innate human social structures that the traditional justice system is based on. 
 
 
+## Overview
 
-## Advanced Sample Hardhat Project
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+## Technical info
 
-Try running some of the following tasks:
+### .env file
 
-```shell
+Create an .env file and fill in your infura API key and the private key of the account which will send the deployment transaction.
 
-npx hardhat size-contracts
-npx hardhat test
-npx hardhat run scripts/deploy.ts --network rinkeby
-
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
-
-# Etherscan verification
-
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
-
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
 
 ```shell
-hardhat run --network ropsten scripts/deploy.ts
+
+INFURA_KEY = 
+PRIVATE_KEY = 
+ETHERSCAN_API_KEY = 
+
 ```
 
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
+
+### Getting Startsd
+
+- Install environemnt: `npm install`
+- Run tests: `npx hardhat test`
+- Check contract size: `npx hardhat size-contracts`
+- Deploy (to rinkeby): `npx hardhat run scripts/deploy.ts --network rinkeby`
+- Compile contracts: `npx hardhat compile`
+- Cleanup: `npx hardhat clean`
+
+### Etherscan verification
+
+Enter your Etherscan API key into the .env file and run the following command 
+(replace `DEPLOYED_CONTRACT_ADDRESS` with the contract's address ans "Hello, Hardhat!" with the parameters you sent the contract upon deployment:
 
 ```shell
 npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
