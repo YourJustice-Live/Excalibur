@@ -1,5 +1,7 @@
 # The Excalibur Protocol
 
+The Excalibur Protocol is an on-chain justice system, carefully designed to imitate the same innate human social structures that the traditional justice system is based on. 
+
 
 
 ## Advanced Sample Hardhat Project
@@ -11,15 +13,18 @@ The project comes with a sample contract, a test for that contract, a sample scr
 Try running some of the following tasks:
 
 ```shell
+
+npx hardhat size-contracts
+npx hardhat test
+npx hardhat run scripts/deploy.ts --network rinkeby
+
 npx hardhat accounts
 npx hardhat compile
 npx hardhat clean
-npx hardhat test
 npx hardhat node
 npx hardhat help
 REPORT_GAS=true npx hardhat test
 npx hardhat coverage
-npx hardhat run scripts/deploy.ts
 TS_NODE_FILES=true npx ts-node scripts/deploy.ts
 npx eslint '**/*.{js,ts}'
 npx eslint '**/*.{js,ts}' --fix
