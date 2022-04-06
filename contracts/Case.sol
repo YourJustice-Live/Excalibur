@@ -105,6 +105,15 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         _roleAssign(account, role);
     }
 
+    // roleAssign()
+
+    // roleRequest() => Event [Communication]
+
+    // roleOffer() (Upon Reception)
+
+    // roleAccept()
+
+
     /// Check if Reference ID exists
     function ruleRefExist(uint256 ruleRefId) internal view returns (bool){
         return (_rules[ruleRefId].jurisdiction != address(0) && _rules[ruleRefId].ruleId != 0);
