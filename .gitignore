@@ -1,8 +1,9 @@
 node_modules
+typechain-types
 .env
 coverage
 coverage.json
-/typechain-types
+package-lock.json
 
 #Hardhat files
 cache
