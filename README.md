@@ -1,13 +1,18 @@
 # The Excalibur Protocol
 
-The Excalibur Protocol is an on-chain justice system, carefully designed to imitate the same innate human social structures that the traditional justice system is based on. 
 
 
 ## Overview
 
-- [Docs](https://www.notion.so/yourjustice/Smart-Contracts-b9b89738497647b4beb3c353284f49b1)
+The Excalibur Protocol is an on-chain justice system, carefully designed to imitate the same innate human social structures that the traditional justice system is based on. 
+
 
 ## Technical info
+
+- [Docs](https://www.notion.so/yourjustice/Smart-Contracts-b9b89738497647b4beb3c353284f49b1)
+
+
+## Getting Startsd
 
 ### .env file
 
@@ -23,7 +28,7 @@ ETHERSCAN_API_KEY =
 ```
 
 
-### Getting Startsd
+### Some Basic Commands
 
 - Install environemnt: `npm install`
 - Run tests: `npx hardhat test`
