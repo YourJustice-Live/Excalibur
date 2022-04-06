@@ -2,12 +2,12 @@
 pragma solidity ^0.8.0;
 pragma experimental ABIEncoderV2;    //https://docs.soliditylang.org/en/v0.5.2/abi-spec.html?highlight=abiencoderv2
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
+
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "../libraries/DataTypes.sol";
-// import "./Opinions.sol";
 import "../interfaces/IRules.sol";
 import "../interfaces/IActionRepo.sol";
+import "../libraries/DataTypes.sol";
 
 
 /**

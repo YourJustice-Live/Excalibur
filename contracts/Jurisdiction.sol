@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 // import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 // import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";  //Track Token Supply & Check 
@@ -144,7 +144,6 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
             , "INVALID_PERMISSIONS");
         //Add
         _roleAssign(account, role);
-        // _GUIDAssign(account, _stringToBytes32(role));
     }
 
 
@@ -158,12 +157,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
             , "INVALID_PERMISSIONS");
         //Remove
         _roleRemove(account, role);
-        // _GUIDRemove(account, _stringToBytes32(role));
     }
-
-
-
-
 
 
     /**

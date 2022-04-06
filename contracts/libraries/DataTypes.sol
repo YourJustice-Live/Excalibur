@@ -45,7 +45,6 @@ library DataTypes {
     enum CaseStage {
         Draft,
         Open,
-        Pending,
         Verdict,
         Action,
         Appeal,
@@ -181,7 +180,7 @@ library DataTypes {
     //Rule Reference
     struct RuleRef {
         address jurisdiction;
-        uint ruleId;
+        uint256 ruleId;
         // string affected;        //Affected Role. E.g. "investor"     //In Rule
         // Entity affected;
     }

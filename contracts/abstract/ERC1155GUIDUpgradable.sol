@@ -2,7 +2,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 // import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 // import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155PausableUpgradeable.sol";
@@ -14,11 +14,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol
 // import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
-// import "./Rules.sol";
-// import "./CommonYJ.sol";
 import "../interfaces/IERC1155GUID.sol";
-
-
 
 /**
  * @title 2D ERC1155 -- Members + Groups (Meaningful Global Unique Identifiers for each Token ID)
@@ -83,10 +79,6 @@ abstract contract ERC1155GUIDUpgradable is IERC1155GUID, ERC1155Upgradeable {
         // require(_GUID[guid] == 0, "ROLE_EXISTS");
         // require(_GUID[guid] == 0, string(abi.encodePacked(guid, " GUID already exists")));
         require(_GUIDExists(guid) == false, string(abi.encodePacked(guid, " GUID already exists")));
-
-        // console.log("_GUIDMake");
-        // console.logBytes32(guid);
-
         //Assign Token ID
         _tokenIds.increment(); //Start with 1
         uint256 tokenId = _tokenIds.current();
@@ -124,32 +116,5 @@ abstract contract ERC1155GUIDUpgradable is IERC1155GUID, ERC1155Upgradeable {
     // function _GUIDToId(bytes32 guid) internal view returns(uint256) {
         return _GUID[guid];
     }
-
-    /**
-    * @dev Hook that is called before any token transfer. This includes minting and burning, as well as batched variants.
-    *  - Max of Single Token for each account
-    
-    function _beforeTokenTransfer(
-        address operator,
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
-    ) internal virtual override {
-        super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
-        if (to != address(0)) {
-            for (uint256 i = 0; i < ids.length; ++i) {
-                uint256 id = ids[i];
-                uint256 amount = amounts[i];
-                //Validate - Max of 1 Per Account
-                require(balanceOf(_msgSender(), id) == 0, "ALREADY_ASSIGNED_TO_ROLE");
-                require(amount == 1, "ONE_TOKEN_MAX");
-            }
-        }
-    }
-    */
-
-    
 
 }
