@@ -21,6 +21,11 @@ describe("Greeter", function () {
 });
 */
 
+
+//Test Data
+let test_uri = "ipfs://QmQxkoWcpFgMa7bCzxaANWtSt43J1iMgksjNnT4vM1Apd7"; //"TEST_URI";
+
+
 describe("Protocol", function () {
   //Contract Instances
   let configContract: Contract;
@@ -332,7 +337,6 @@ describe("Protocol", function () {
      
       //Add Rule
       let tx = await jurisdictionContract.connect(admin).ruleAdd(rule, confirmation);
-
       // wait until the transaction is mined
       await tx.wait();
       // console.log("Rule Added", tx);
@@ -414,10 +418,6 @@ describe("Protocol", function () {
     });
 
     it("Should Add Rules", async function () {
-      
-      // let roleMapping = [
-      //   {subject:"investor"}
-      // ];
       let ruleRef = {
         jurisdiction: jurisdictionContract.address, 
         id: 2, 
@@ -425,7 +425,63 @@ describe("Protocol", function () {
       };
       // await this.caseContract.ruleAdd(ruleRef.jurisdiction,  ruleRef.id, ruleRef.affected);
       await this.caseContract.ruleAdd(ruleRef.jurisdiction,  ruleRef.id);
+    });
 
+    
+    it("Should Post", async function () {
+      let post = {
+        entRole:"subject",
+        postRole:"evidence", 
+        uri:test_uri,
+      }
+      //Post
+      let tx = await this.caseContract.connect(tester2).post(post.entRole, post.postRole, post.uri);
+      // wait until the transaction is mined
+      await tx.wait();
+      //Expect Event
+      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, post.entRole, post.postRole, post.uri);
+    });
+
+    it("Should Open Case", async function () {
+      //File Case
+      let tx = await this.caseContract.connect(tester2).stageFile();
+      //Expect State Event
+      await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(1);
+    });
+
+    it("Should Wait for Verdict Stage", async function () {
+      //File Case
+      let tx = await this.caseContract.connect(tester2).stageWaitForVerdict();
+      //Expect State Event
+      await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(2);
+    });
+
+    it("Should Wait for judge", async function () {
+      //File Case
+      //Expect Failure
+      await expect(
+        this.caseContract.connect(tester2).stageVerdict(test_uri)
+      ).to.be.revertedWith("ROLE:JUDGE_ONLY");
+
+    });
+
+    it("Should Appoint Judge", async function () {
+      //Assign Admin
+      // await this.caseContract.roleAssign(this.tester3Addr, "judge");
+      await this.caseContract.connect(admin).roleAssign(this.tester3Addr, "judge");
+      //Expect Mint/Transfer Event
+      // await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(2);  
+      //Check After
+      expect(await this.caseContract.roleHas(this.tester3Addr, "judge")).to.equal(true);
+    });
+    
+    it("Should Accept Verdict URI & Close Case", async function () {
+      //Submit Verdict & Close Case
+      let tx = await this.caseContract.connect(tester3).stageVerdict(test_uri);
+      //Expect Verdict Event
+      await expect(tx).to.emit(this.caseContract, 'Verdict').withArgs(test_uri, this.tester3Addr);
+      //Expect State Event
+      await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(6);
     });
 
   }); //Case
