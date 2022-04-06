@@ -188,6 +188,9 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         _setStage(DataTypes.CaseStage.Closed);
         //Verdict Event
         emit Verdict(uri, _msgSender());
+
+        //TODO: Update Avatar's Reputation
+        
     }
 
     /// Change Case Stage
