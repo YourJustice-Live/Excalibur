@@ -7,36 +7,22 @@ import { ethers } from "hardhat";
 
 //Track Addresses (Fill in present addresses to prevent new deplopyment)
 const contractAddr = {
-  config:"0xe42a960537e1fB2F39361b6cffFa6CeD6162752b",
-  hub:"0xdd2e3c7d34ea7f5876bf7a05775106968b80ba83",
-  avatar:"0xAb4B21d7651b1484986E1D2790b125be8b6c460B",
-  history:"0x2454d7d9600036aEA5511fc14d5Ecb481fBBA666", //V3
-  jurisdiction:"0x7BAE28280a53D0519F0AAD1C9653D4C148FFDA59", //V4
+  config:"0x14E5D5B68A41665E86225e6830a69bb2b5F6E484",  //V2
+  case:"0x8DE4fEf11BCD3052F7B3Fee4f222c9D95A2D9191",  //Case Instance //V1
+  hub:"0x8fD411c1ae65904e6fE8F8c23a5fa86AaD7056A1", //V2
+  avatar:"0x41966B4485CBd781fE9e82f90ABBA96958C096CF",  //V1
+  history:"0x8b382adbfC940eae42AfC11eF389e5dA6597Fa06", //V4
+  jurisdiction:"0x434F5D485EDdcF15B59b44ec19502d7dc661Cb8D", //V5
 };
 
 async function main() {
-  /*
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
-
-  // We get the contract to deploy
-  const Greeter = await ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
-
-  await greeter.deployed();
-
-  console.log("Greeter deployed to:", greeter.address);
-  */
 
   //--- Config
   if(!contractAddr.config){
     //Deploy Config
-    const ConfigContract = await ethers.getContractFactory("Config");
-    let configContract = await ConfigContract.deploy();
+    // const ConfigContract = await ethers.getContractFactory("Config");
+    // let configContract = await ConfigContract.deploy();
+    let configContract = await ethers.getContractFactory("Config").then(res => res.deploy());
     await configContract.deployed();
     //Set Address
     contractAddr.config = configContract.address;
@@ -44,14 +30,24 @@ async function main() {
     console.log("Deployed Config Contract to " + contractAddr.config);
   }
 
+  //--- Case
+  if(!contractAddr.case){
+    //Deploy Case
+    let hubContract = await ethers.getContractFactory("Case").then(res => res.deploy());
+    await hubContract.deployed();
+    //Set Address
+    contractAddr.case = hubContract.address;
+    //Log
+    console.log("Deployed Case Contract to " + contractAddr.case);
+  }
+
   //--- Hub
   if(!contractAddr.hub){
     //Deploy Hub
-    const HubContract = await ethers.getContractFactory("Hub");
-    let hubContract = await HubContract.deploy(contractAddr.config);
-    await hubContract.deployed();
+    let caseContract = await ethers.getContractFactory("Hub").then(res => res.deploy(contractAddr.config, contractAddr.case));
+    await caseContract.deployed();
     //Set Address
-    contractAddr.hub = hubContract.address;
+    contractAddr.hub = caseContract.address;
     //Log
     console.log("Deployed Hub Contract to " + contractAddr.hub);
   }
@@ -59,8 +55,7 @@ async function main() {
   //--- Avatar
   if(!contractAddr.avatar){
     //Deploy Avatar
-    const AvatarContract = await ethers.getContractFactory("AvatarNFT");
-    let avatarContract = await AvatarContract.deploy(contractAddr.hub);
+    let avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(contractAddr.hub));
     await avatarContract.deployed();
     //Set Address
     contractAddr.avatar = avatarContract.address;
@@ -70,6 +65,7 @@ async function main() {
 
   //--- Action Repo
   if(!contractAddr.history){
+    //Deploy Action Repo
     let actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(contractAddr.hub));
     await actionContract.deployed();
     //Set Address
@@ -81,8 +77,9 @@ async function main() {
   //--- Jurisdiction
   if(!contractAddr.jurisdiction){
     //Deploy Avatar
-    const JurisdictionContract = await ethers.getContractFactory("Jurisdiction");
-    let jurisdictionContract = await JurisdictionContract.deploy(contractAddr.hub, contractAddr.history);
+    // const JurisdictionContract = await ethers.getContractFactory("Jurisdiction");
+    // let jurisdictionContract = await JurisdictionContract.deploy(contractAddr.hub, contractAddr.history);
+    let jurisdictionContract = await ethers.getContractFactory("Jurisdiction").then(res => res.deploy(contractAddr.hub, contractAddr.history));
     await jurisdictionContract.deployed();
     
     //Assign Admin
