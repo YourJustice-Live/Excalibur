@@ -1,7 +1,8 @@
 <img src="https://i.ibb.co/6HP7wLg/star-wars-g6e97cb07e-1280-flip.png" align="right" style="width:42%"/>
 
-# The Excalibur Protocol
-<br>
+# The Excalibur Protocol 
+
+* Version 0.1
 
 Using the magic of cryptographic technology to bring balance to the world and promote decentralized justice.
 
