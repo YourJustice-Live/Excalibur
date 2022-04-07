@@ -1,3 +1,5 @@
+<img src="https://i.ibb.co/6HP7wLg/star-wars-g6e97cb07e-1280-flip.png" align="right" style="width:400px"/>
+
 # The Excalibur Protocol
 
 
@@ -5,6 +7,8 @@
 ## Overview
 
 The Excalibur Protocol is an on-chain justice system, carefully designed to imitate the same innate human social structures that the traditional justice system is based on. 
+
+Using the magic of cryptographic technology to bring balance to the world and promote decentralized justice.
 
 
 ## Technical info
