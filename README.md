@@ -1,4 +1,4 @@
-<img src="https://i.ibb.co/6HP7wLg/star-wars-g6e97cb07e-1280-flip.png" align="right" style="width:400px"/>
+<img src="https://i.ibb.co/6HP7wLg/star-wars-g6e97cb07e-1280-flip.png" align="right" style="width:42%"/>
 
 # The Excalibur Protocol
 <br>
