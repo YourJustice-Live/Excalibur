@@ -13,7 +13,6 @@ import "./interfaces/ICase.sol";
 import "./interfaces/IRules.sol";
 // import "./interfaces/IJurisdiction.sol";
 
-
 /**
  * Case Contract
  */
@@ -49,6 +48,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         return interfaceId == type(ICase).interfaceId || interfaceId == type(IRules).interfaceId || super.supportsInterface(interfaceId);
     }
 
+    /// Initializer
     function initialize (
         string memory name_, 
         string memory symbol_, 
@@ -60,7 +60,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         // require(jurisdiction != address(0), "INVALID JURISDICTION");
         // _jurisdiction = _msgSender();   //Do I Even need this here? The jurisdiciton points to it's cases...
 
-        //Initializers        
+        //Initializers
         // __ERC1155_init("");
         // __Ownable_init();
         __ERC1155RolesUpgradable_init("");
@@ -78,7 +78,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         _roleCreate("witness");     //Witnesses
         _roleCreate("affected");    //Affected Party [?]
 
-        //Auto-Set Creator as Admin
+        //Auto-Set Creator Wallet as Admin
         _roleAssign(tx.origin, "admin");
         _roleAssign(tx.origin, "plaintiff");
 
@@ -89,10 +89,8 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
         //Add Rules
         for (uint256 i = 0; i < addRules.length; ++i) {
-            // _ruleAdd(addRules[i].jurisdiction, addRules[i].ruleId, addRules[i].affected);
             _ruleAdd(addRules[i].jurisdiction, addRules[i].ruleId);
         }
-
     }
     
     /// Assign to a Role
@@ -262,7 +260,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
      * @dev Contract URI
      *  https://docs.opensea.io/docs/contract-level-metadata
      */ 
-    function contractURI() public view returns (string memory) {
+    function contractURI() public view override returns (string memory) {
         return _contract_uri;
     }
     
