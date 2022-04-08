@@ -53,13 +53,9 @@ describe("Protocol", function () {
     this.caseContract = await ethers.getContractFactory("Case").then(res => res.deploy());
 
     //Deploy Hub
-    // const HubContract = await ethers.getContractFactory("Hub");
-    // hubContract = await HubContract.deploy(configContract.address);
     hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.caseContract.address));
 
     //Deploy Avatar
-    // const AvatarContract = await ethers.getContractFactory("AvatarNFT");
-    // avatarContract = await AvatarContract.deploy(hubContract.address);
     avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract.address));
 
     //Populate Accounts
@@ -417,6 +413,14 @@ describe("Protocol", function () {
       expect(await this.caseContract.roleHas(this.tester2Addr, "subject")).to.equal(true);
     });
 
+    it("Should Update", async function () {
+
+      let testCaseContract = await ethers.getContractFactory("Case").then(res => res.deploy());
+      await testCaseContract.deployed();
+      //Update Case Beacon (to the same implementation)
+      hubContract.upgradeCaseImplementation(testCaseContract.address);
+    });
+
     it("Should Add Rules", async function () {
       let ruleRef = {
         jurisdiction: jurisdictionContract.address, 
@@ -426,7 +430,6 @@ describe("Protocol", function () {
       // await this.caseContract.ruleAdd(ruleRef.jurisdiction,  ruleRef.id, ruleRef.affected);
       await this.caseContract.ruleAdd(ruleRef.jurisdiction,  ruleRef.id);
     });
-
     
     it("Should Post", async function () {
       let post = {
@@ -457,12 +460,10 @@ describe("Protocol", function () {
     });
 
     it("Should Wait for judge", async function () {
-      //File Case
-      //Expect Failure
+      //File Case -- Expect Failure
       await expect(
         this.caseContract.connect(tester2).stageVerdict(test_uri)
       ).to.be.revertedWith("ROLE:JUDGE_ONLY");
-
     });
 
     it("Should Appoint Judge", async function () {
@@ -484,6 +485,7 @@ describe("Protocol", function () {
       await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(6);
     });
 
+    
   }); //Case
     
 });
