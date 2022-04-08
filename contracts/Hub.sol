@@ -3,12 +3,11 @@ pragma solidity ^0.8.0;
 
 // import "hardhat/console.sol";
 
-// import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
-
+import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 // import "@openzeppelin/contracts/access/Ownable.sol";
-// import {DataTypes} from './libraries/DataTypes.sol';
+// import "@openzeppelin/contracts/utils/Counters.sol";
 import "./libraries/DataTypes.sol";
 import "./abstract/Rules.sol";
 import "./abstract/CommonYJ.sol";
@@ -26,6 +25,7 @@ import "./interfaces/ICase.sol";
 contract Hub is IHub, Ownable {
     //---Storage
     address public beaconCase;
+    // address public beaconJurisdiction;  //TBD
 
     // using Counters for Counters.Counter;
     // Counters.Counter internal _tokenIds; //Track Last Token ID
@@ -108,39 +108,36 @@ contract Hub is IHub, Ownable {
         //Deploy
         BeaconProxy newCaseProxy = new BeaconProxy(
             beaconCase,
-
             abi.encodeWithSelector(
                 ICase( payable(address(0)) ).initialize.selector,
                 name_,          //Name
                 "YJ_CASE",      //Symbol
                 address(this),   //Hub
-                 
-                addRules
-                , assignRoles
+                addRules,
+                assignRoles
             )
-
-            // abi.encodeWithSignature("initialize(string memory, string memory, address)", name_, "YJ_CASE", address(this))
         );
-        // console.log("Hub Addr1", msg.sender);
-        // console.log("Hub Addr2", _msgSender());
-        // console.log("Hub Addr3", tx.origin);
-        // ICase(address(newCaseProxy)).roleAssign(tx.origin, "admin");
-
         //Return
         return address(newCaseProxy);
     }
     
     //-- Upgrades
 
-    /// Upgrade Case Beacon Implementation
-    function upgradeCaseBeacon(address _newImplementation) public onlyOwner {
-        //TODO: Validate? 
+    /// Upgrade Case Implementation
+    function upgradeCaseImplementation(address newImplementation) public onlyOwner {
+        //Validate Interface
+        // require(IERC165(newImplementation).supportsInterface(type(ICase).interfaceId), "Implmementation Does Not Support ICase Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
 
         //Upgrade Beacon
-        UpgradeableBeacon(beaconCase).upgradeTo(_newImplementation);
+        UpgradeableBeacon(beaconCase).upgradeTo(newImplementation);
 
         //Remember New Implementation's Address     //This seems wrong. The beacon doesn't change.
-        // beaconCase = _newImplementation;
+        // beaconCase = newImplementation;
     }
+
+    /// Upgrade Jurisdiction Implementation [TBD]
+    // function upgradeCaseImplementation(address newImplementation) public onlyOwner {
+        
+    // }
 
 }
