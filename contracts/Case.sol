@@ -251,14 +251,16 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         // _rules[ruleId].affected = affected_;
 
         //TODO: Get Rule, Get Affected & Add as new Role if Doesn't Exist
+
+
     }
 
     /**
      * @dev Contract URI
      *  https://docs.opensea.io/docs/contract-level-metadata
-     
+     */ 
     function contractURI() public view returns (string memory) {
         return _contract_uri;
     }
-    */
+    
 }
