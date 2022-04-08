@@ -19,8 +19,7 @@ import "./abstract/ERC1155Roles.sol";
 import "./abstract/Rules.sol";
 // import "./abstract/Opinions.sol";
 import "./abstract/CommonYJ.sol";
-
-import "./Case.sol";
+// import "./Case.sol";
 
 
 /**
