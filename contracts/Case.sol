@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./libraries/DataTypes.sol";
@@ -53,7 +53,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
     ) public override initializer {
         // require(jurisdiction != address(0), "INVALID JURISDICTION");
-        // _jurisdiction = msg.sender;   //Do I Even need this here? The jurisdiciton points to it's cases...
+        // _jurisdiction = _msgSender();   //Do I Even need this here? The jurisdiciton points to it's cases...
 
         //Initializers        
         // __ERC1155_init("");
@@ -223,23 +223,17 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     // }
 
     /// Add Rule Reference
-    // function ruleAdd(address jurisdiction_, uint256 ruleId_, DataTypes.Entity calldata affected_) external {
-    // function ruleAdd(address jurisdiction_, uint256 ruleId_, string memory affected_) external {
     function ruleAdd(address jurisdiction_, uint256 ruleId_) external {
         //TODO: Validate Jurisdiciton implements IRules (ERC165)
 
         //Validate
-        // require (msg.sender == address(_HUB) || roleHas(_msgSender(), "admin") || owner() == _msgSender(), "EXPECTED HUB OR ADMIN");
         require (_msgSender() == address(_HUB) || roleHas(_msgSender(), "admin") || owner() == _msgSender(), "EXPECTED HUB OR ADMIN");
 
         //Run
-        // _ruleAdd(jurisdiction_, ruleId_, affected_);
         _ruleAdd(jurisdiction_, ruleId_);
     }
 
     /// Add Relevant Rule Reference 
-    // function _ruleAdd(address jurisdiction_, uint256 ruleId_, DataTypes.Entity calldata affected_) internal {
-    // function _ruleAdd(address jurisdiction_, uint256 ruleId_, string memory affected_) internal {
     function _ruleAdd(address jurisdiction_, uint256 ruleId_) internal {
         //Assign Rule Reference ID
         _ruleIds.increment(); //Start with 1
@@ -248,11 +242,14 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         //New Rule
         _rules[ruleId].jurisdiction = jurisdiction_;
         _rules[ruleId].ruleId = ruleId_;
-        // _rules[ruleId].affected = affected_;
 
-        //TODO: Get Rule, Get Affected & Add as new Role if Doesn't Exist
+        //Get Rule, Get Affected & Add as new Role if Doesn't Exist
+        DataTypes.Rule memory rule = ruleGet(ruleId);
+        if(!roleExist(rule.affected)){
+            _roleCreate(rule.affected);
+        }
 
-        //Event
+        //Event: Rule Reference Added 
         emit RuleAdded(jurisdiction_, ruleId_);
     }
 
