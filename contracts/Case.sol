@@ -252,7 +252,8 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
         //TODO: Get Rule, Get Affected & Add as new Role if Doesn't Exist
 
-
+        //Event
+        emit RuleAdded(jurisdiction_, ruleId_);
     }
 
     /**
