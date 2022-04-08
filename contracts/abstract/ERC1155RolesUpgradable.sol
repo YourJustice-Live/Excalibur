@@ -32,7 +32,8 @@ abstract contract ERC1155RolesUpgradable is IERC1155Roles, ERC1155GUIDUpgradable
 
     //--- Modifiers
     modifier roleExists(string memory role) {
-        require(_GUIDExists(_stringToBytes32(role)), "INEXISTENT_ROLE");
+        // require(_GUIDExists(_stringToBytes32(role)), "INEXISTENT_ROLE");
+        require(roleExist(role), "INEXISTENT_ROLE");
         _;
     }
     
@@ -72,23 +73,23 @@ abstract contract ERC1155RolesUpgradable is IERC1155Roles, ERC1155GUIDUpgradable
 
     //** Role Functions
 
+    /// Check if Role Exists
+    function roleExist(string memory role) public view override returns (bool) {
+        return _GUIDExists(_stringToBytes32(role));
+    }
+
     /// Check if account is assigned to role
     function roleHas(address account, string memory role) public view override returns (bool) {
-        // return ERC1155GUID.GUIDHas(account, _stringToBytes32(role));
         return GUIDHas(account, _stringToBytes32(role));
-        // return (balanceOf(account, _roleToId(_stringToBytes32(role))) > 0);
     }
 
     /// [TEST] Has Any of These Roles
     function rolesHas(address account, string[] calldata roles) public view returns (bool) {
-        // bool hasRole;
         for (uint256 i = 0; i < roles.length; ++i) {
             if(roleHas(account, roles[i])){
-                // hasRole = true;
                 return true;
             } 
         }
-        // return hasRole;
         return false;
     }
 

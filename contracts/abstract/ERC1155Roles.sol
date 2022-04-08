@@ -31,7 +31,7 @@ abstract contract ERC1155Roles is IERC1155Roles, ERC1155GUID {
 
     //--- Modifiers
     modifier roleExists(string memory role) {
-        require(_GUIDExists(_stringToBytes32(role)), "INEXISTENT_ROLE");
+        require(roleExist(role), "INEXISTENT_ROLE");
         _;
     }
     
@@ -56,11 +56,14 @@ abstract contract ERC1155Roles is IERC1155Roles, ERC1155GUID {
 
     //** Role Functions
 
+    /// Check if Role Exists
+    function roleExist(string memory role) public view override returns (bool) {
+        return _GUIDExists(_stringToBytes32(role));
+    }
+
     /// Check if account is assigned to role
     function roleHas(address account, string memory role) public view override returns (bool) {
-        // return ERC1155GUID.GUIDHas(account, _stringToBytes32(role));
         return GUIDHas(account, _stringToBytes32(role));
-        // return (balanceOf(account, _roleToId(_stringToBytes32(role))) > 0);
     }
 
     /// Assign Someone Else to a Role
