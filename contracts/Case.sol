@@ -44,6 +44,11 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
     //--- Functions
     
+    /// ERC165 - Supported Interfaces
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == type(ICase).interfaceId || interfaceId == type(IRules).interfaceId || super.supportsInterface(interfaceId);
+    }
+
     function initialize (
         string memory name_, 
         string memory symbol_, 
