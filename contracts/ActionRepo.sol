@@ -29,7 +29,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     // Event Storage     (Unique Concepts)
     mapping(bytes32 => DataTypes.SVO) internal _actions;            //Primary Data
-    mapping(uint256 => string) internal _uri;
+    mapping(uint256 => string) internal _tokenURI;
 
     //--- Functions
 
@@ -77,7 +77,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     /// Set Action's Metadata URI
     function _actionSetURI(bytes32 guid, string memory uri) internal {
-        _uri[_GUIDToId(guid)] = uri;
+        _tokenURI[_GUIDToId(guid)] = uri;
         emit ActionURI(guid, uri);
     }
     
@@ -110,7 +110,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     /// Get Action's URI
     function actionGetURI(bytes32 guid) public view override returns (string memory){
-        return _uri[_GUIDToId(guid)];
+        return _tokenURI[_GUIDToId(guid)];
     }
 
 }
