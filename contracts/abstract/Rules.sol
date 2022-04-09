@@ -23,9 +23,9 @@ contract Rules is IRules {
 
     using Counters for Counters.Counter;
     Counters.Counter private _ruleIds;
-    // address internal _actionRepo;   //Action Repository Contract (HISTORY)
-    IActionRepo internal _actionRepo;   //Action Repository Contract (HISTORY)
-
+    //Action Repository Contract (HISTORY)
+    IActionRepo internal _actionRepo;   
+    //Rule Data
     mapping(uint256 => DataTypes.Rule) internal _rules;
     //Additional Rule Data
     mapping(uint256 => DataTypes.Confirmation) internal _ruleConfirmation;

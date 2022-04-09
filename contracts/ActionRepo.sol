@@ -28,18 +28,11 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     //Rule(s)
 
     // Event Storage     (Unique Concepts)
-    // mapping(bytes32 => Action) internal _actions;
-    // mapping(uint256 => DataTypes.Action) internal _actions;
     mapping(bytes32 => DataTypes.SVO) internal _actions;            //Primary Data
-    // mapping(bytes32 => DataTypes.SVO) public actionsTest;
-    // mapping(uint256 => DataTypes.RoleData) internal _RoleData;      //Additional Data
     mapping(uint256 => string) internal _uri;
-
-
 
     //--- Functions
 
-    // constructor(address hub) CommonYJ(hub) ERC1155GUID(""){
     constructor(address hub) CommonYJ(hub) ERC1155(""){
         name = "YourJustice: Semantic Action Repo";
     }
@@ -110,15 +103,13 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     }
 
     /// Get Action by GUID
-    // function _actionGet(bytes32 guid) internal view GUIDExists(guid) returns (DataTypes.SVO memory){
-    function _actionGet(bytes32 guid) internal view returns (DataTypes.SVO memory){
-        // return _actions[_GUIDToId(guid)];
+    function _actionGet(bytes32 guid) internal view GUIDExists(guid) returns (DataTypes.SVO memory){
+    // function _actionGet(bytes32 guid) internal view returns (DataTypes.SVO memory){
         return _actions[guid];
     }
 
     /// Get Action's URI
     function actionGetURI(bytes32 guid) public view override returns (string memory){
-        // return _RoleData[_GUIDToId(guid)].uri;
         return _uri[_GUIDToId(guid)];
     }
 

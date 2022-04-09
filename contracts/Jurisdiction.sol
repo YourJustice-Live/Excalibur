@@ -8,18 +8,14 @@ pragma solidity ^0.8.0;
 // import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";  //Track Token Supply & Check 
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-
-
 import "./interfaces/IJurisdiction.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
 // import "./libraries/DataTypes.sol";
-// import "./abstract/ERC1155GUID.sol";
+// import "./abstract/Opinions.sol";
 import "./abstract/ERC1155Roles.sol";
 import "./abstract/Rules.sol";
-// import "./abstract/Opinions.sol";
 import "./abstract/CommonYJ.sol";
-// import "./Case.sol";
 
 
 /**
@@ -33,13 +29,11 @@ import "./abstract/CommonYJ.sol";
  * - Creates new Cases
  * - Contract URI
  * - [TODO] Token URIs for Roles
- * - [TODO] Validation: Make Sure Account has an Avatar NFT -- Assign Avatars instead of Accounts
+ * - [TODO] Validation: Make Sure Account has an Avatar NFT
  * - [TODO] Rules are Unique
  * V2:  
- * - [TODO] NFT Trackers - Track the owner of the Avatar NFT
+ * - [TODO] NFT Trackers - Assign Avatars instead of Accounts & Track the owner of the Avatar NFT
  */
-// contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155 {
-// contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155GUID {
 contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     //--- Storage
     string public constant override symbol = "YJ_Jurisdiction";
@@ -61,7 +55,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     mapping(uint256 => address) internal _cases;      // Mapping for Case Contracts
 
     // mapping(uint256 => string) internal _rulesURI;      // Mapping Metadata URIs for Individual Role 
-
+    // mapping(uint256 => string) internal _uri;
   
     //--- Functions
 
@@ -70,9 +64,6 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
         return interfaceId == type(IJurisdiction).interfaceId || interfaceId == type(IRules).interfaceId || super.supportsInterface(interfaceId);
     }
 
-    // constructor(address hub) CommonYJ(hub) ERC1155(string memory uri_){
-    // constructor(address hub) CommonYJ(hub) ERC1155(""){
-    // constructor(address hub, address actionRepo) CommonYJ(hub) ERC1155Roles("") Rules(actionRepo){
     constructor(address hub, address actionRepo) CommonYJ(hub) ERC1155("") Rules(actionRepo){
         name = "Anti-Scam Jurisdiction";
         // symbol = "YJ_J1";
@@ -84,32 +75,18 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
 
     //** Case Functions
 
-    
     /// Make a new Case
-    // function caseMake(string calldata name_, DataTypes.RoleMappingInput[] memory roleMapping) public returns (uint256, address) {
-    // function caseMake(string calldata name_, string calldata affected_) public returns (uint256, address) {
-    // function caseMake(string calldata name_) public returns (uint256, address) {
-    // function caseMake(string calldata name_, DataTypes.RuleRef[] calldata addRules) public returns (uint256, address) {
     function caseMake(string calldata name_, DataTypes.RuleRef[] calldata addRules, DataTypes.InputRole[] calldata assignRoles) public returns (uint256, address) {
         //TODO: Validate Caller Permissions
-
-        //Rules
-
-        //Role Mapping
-        // Account -> Role + Rule Mapping??
-        // DataTypes.RoleMappingInput[] memory roleMapping;
 
         //Assign Case ID
         _caseIds.increment(); //Start with 1
         uint256 caseId = _caseIds.current();
-
-        // address caseContract = _HUB.caseMake(name_, addRules);
+        //Create new Case
         address caseContract = _HUB.caseMake(name_, addRules, assignRoles);
-
-        //Remember
+        //Remember Address
         _cases[caseId] = caseContract;
-        
-        //Event
+        //New Case Created Event
         emit CaseCreated(caseId, caseContract);
         
         return (caseId, caseContract);
@@ -121,7 +98,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
         return _cases[caseId];
     }
     
-    //** Role Functions
+    //** Role Management
 
     /// Join a role in current jurisdiction
     function join() external override {
@@ -145,7 +122,6 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
         _roleAssign(account, role);
     }
 
-
     /// Remove Someone Else from a Role
     function roleRemove(address account, string memory role) external override roleExists(role) {
         //Validate Permissions
@@ -157,7 +133,6 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
         //Remove
         _roleRemove(account, role);
     }
-
 
     /**
     * @dev Hook that is called before any token transfer. This includes minting and burning, as well as batched variants.
@@ -183,7 +158,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
         }
     }
 
-    //--- Rules
+    //** Rule Management
 
     /// Create New Rule
     function ruleAdd(DataTypes.Rule memory rule, DataTypes.Confirmation memory confirmation) public override returns (uint256) {
@@ -203,14 +178,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
         //Update Rule
         _ruleUpdate(id, rule);
     }
-
-    /// Get Token URI
-    // function tokenURI(uint256 token_id) public view returns (string memory) {
-    // function uri(uint256 token_id) public view returns (string memory) {
-    //     require(exists(token_id), "NONEXISTENT_TOKEN");
-    //     return _tokenURIs[token_id];
-    // }
-
+    
    /**
      * @dev Contract URI
      *  https://docs.opensea.io/docs/contract-level-metadata

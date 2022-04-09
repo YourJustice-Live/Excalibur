@@ -5,10 +5,8 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
-// import "./ERC1155GUID.sol";
-import "./ERC1155GUIDUpgradable.sol";
 import "../interfaces/IERC1155Roles.sol";
-
+import "./ERC1155GUIDUpgradable.sol";
 
 /**
  * @title Sub-Groups with Role NFTs
@@ -24,8 +22,6 @@ import "../interfaces/IERC1155Roles.sol";
  *  Fractal DAO Access Control  https://github.com/fractal-framework/fractal-contracts/blob/93bc0e845a382673f3714e7df858e846d0f10b37/contracts/AccessControl.sol
  *  OZ Access Control  https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/AccessControl.sol
  */
-// abstract contract AccessControl is Context, IAccessControl, ERC165 {
-// abstract contract ERC1155RolesUpgradable is IERC1155Roles, ERC165, Context {
 abstract contract ERC1155RolesUpgradable is IERC1155Roles, ERC1155GUIDUpgradable {
     
     //--- Storage
