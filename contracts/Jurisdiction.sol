@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 
@@ -178,7 +178,25 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
         //Update Rule
         _ruleUpdate(id, rule);
     }
+
+    /// Get Token URI
+    // function tokenURI(uint256 token_id) public view returns (string memory) {
+    // function uri(uint256 token_id) public view returns (string memory) {
+    //     require(exists(token_id), "NONEXISTENT_TOKEN");
+    //     return _tokenURIs[token_id];
+    // }
     
+    /// Set Action's Metadata URI
+    // function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
+    //     require(_exists(tokenId), "ERC721URIStorage: URI set of nonexistent token");
+    //     _tokenURIs[tokenId] = _tokenURI;
+    // }
+
+    // function _actionSetURI(bytes32 guid, string memory uri) internal {
+    //     _uri[_GUIDToId(guid)] = uri;
+    //     emit ActionURI(guid, uri);
+    // }
+
    /**
      * @dev Contract URI
      *  https://docs.opensea.io/docs/contract-level-metadata

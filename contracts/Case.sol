@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
@@ -14,7 +14,7 @@ import "./interfaces/IRules.sol";
 // import "./interfaces/IJurisdiction.sol";
 
 /**
- * Case Contract
+ * @title Case Contract
  */
 contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
@@ -37,7 +37,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
     //Rules Reference
     mapping(uint256 => DataTypes.RuleRef) internal _rules;      // Mapping for Case Contracts
-    mapping(string => string) public roleName;      // Mapping Role Names //e.g. "subject"=>"seller"
+    // mapping(string => string) public roleName;      // Mapping Role Names //e.g. "subject"=>"seller"
     
     //--- Modifiers
 
@@ -61,8 +61,6 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         // _jurisdiction = _msgSender();   //Do I Even need this here? The jurisdiciton points to it's cases...
 
         //Initializers
-        // __ERC1155_init("");
-        // __Ownable_init();
         __ERC1155RolesUpgradable_init("");
         __CommonYJ_init(hub);
 
@@ -136,13 +134,6 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         return IRules(_rules[ruleRefId].jurisdiction).confirmationGet(_rules[ruleRefId].ruleId);
     }
 
-    /* Should Inherit From J's Rules / Actions
-    /// Set Role's Name Mapping
-    function _entityMap(string memory role_, string memory name_) internal {
-        roleName[role_] = name_;
-    }
-    */
-
     /// Add Post 
     /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
     /// @param postRole i.e. post type (role:comment/evidence/decleration/etc')
@@ -156,16 +147,39 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         emit Post(_msgSender(), entRole, postRole, uri);
     }
 
+    //--- Rule Reference 
+
+    /// Add Rule Reference
+    function ruleAdd(address jurisdiction_, uint256 ruleId_) external {
+        //TODO: Validate Jurisdiciton implements IRules (ERC165)
+
+        //Validate
+        require (_msgSender() == address(_HUB) || roleHas(_msgSender(), "admin") || owner() == _msgSender(), "EXPECTED HUB OR ADMIN");
+
+        //Run
+        _ruleAdd(jurisdiction_, ruleId_);
+    }
+
+    /// Add Relevant Rule Reference 
+    function _ruleAdd(address jurisdiction_, uint256 ruleId_) internal {
+        //Assign Rule Reference ID
+        _ruleIds.increment(); //Start with 1
+        uint256 ruleId = _ruleIds.current();
+
+        //New Rule
+        _rules[ruleId].jurisdiction = jurisdiction_;
+        _rules[ruleId].ruleId = ruleId_;
+
+        //Get Rule, Get Affected & Add as new Role if Doesn't Exist
+        DataTypes.Rule memory rule = ruleGet(ruleId);
+        if(!roleExist(rule.affected)){
+            _roleCreate(rule.affected);
+        }
+
+        //Event: Rule Reference Added 
+        emit RuleAdded(jurisdiction_, ruleId_);
+    }
     
-    /// TODO: Fetch Role Mapping (entity name to slot name)
-    // function getRoleMapping(string role) internal view returns (bool){
-        
-        //From Rule
-
-        //From Action
-
-    // }
-
     //--- State Changers
     
     /// File the Case (Validate & Open Discussion)  --> Open
@@ -212,49 +226,10 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         //Stage Change Event
         emit Stage(stage);
     }
+
     // function nextStage(string calldata uri) public {
         // if (sha3(myEnum) == sha3("Bar")) return MyEnum.Bar;
     // }
-
-
-    //--- Dev Playground [WIP]
-
-
-    /// Set Role's Name Mapping
-    // function _ruleRefSet(string memory role_, string memory name_) internal {
-    //     roleName[role_] = name_;
-    // }
-
-    /// Add Rule Reference
-    function ruleAdd(address jurisdiction_, uint256 ruleId_) external {
-        //TODO: Validate Jurisdiciton implements IRules (ERC165)
-
-        //Validate
-        require (_msgSender() == address(_HUB) || roleHas(_msgSender(), "admin") || owner() == _msgSender(), "EXPECTED HUB OR ADMIN");
-
-        //Run
-        _ruleAdd(jurisdiction_, ruleId_);
-    }
-
-    /// Add Relevant Rule Reference 
-    function _ruleAdd(address jurisdiction_, uint256 ruleId_) internal {
-        //Assign Rule Reference ID
-        _ruleIds.increment(); //Start with 1
-        uint256 ruleId = _ruleIds.current();
-
-        //New Rule
-        _rules[ruleId].jurisdiction = jurisdiction_;
-        _rules[ruleId].ruleId = ruleId_;
-
-        //Get Rule, Get Affected & Add as new Role if Doesn't Exist
-        DataTypes.Rule memory rule = ruleGet(ruleId);
-        if(!roleExist(rule.affected)){
-            _roleCreate(rule.affected);
-        }
-
-        //Event: Rule Reference Added 
-        emit RuleAdded(jurisdiction_, ruleId_);
-    }
 
     /**
      * @dev Contract URI
@@ -263,5 +238,18 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     function contractURI() public view override returns (string memory) {
         return _contract_uri;
     }
-    
+
+ 
+    //--- Dev Playground [WIP]
+
+    /// TODO: Get Avatar NFT By Account
+    // function xxx () returns () {}
+
+    /* Should Inherit From J's Rules / Actions
+    /// Set Role's Name Mapping
+    function _entityMap(string memory role_, string memory name_) internal {
+        roleName[role_] = name_;
+    }
+    */
+   
 }
