@@ -45,8 +45,7 @@ interface ICase {
     event Verdict(string uri, address account);
 
     /// General Post / Evidence, etc'
-    // event Post(address indexed account, string role, string uri);
-    event Post(address indexed account, string indexed entRole, string postRole, string uri);
+    event Post(address indexed account, string entRole, string postRole, string uri);
 
     /// Rule Reference Added
     event RuleAdded(address jurisdiction, uint256 ruleId);
