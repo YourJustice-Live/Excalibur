@@ -43,7 +43,6 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     // Counters.Counter internal _tokenIds; //Track Last Token ID
     Counters.Counter internal _caseIds;  //Track Last Case ID
     
-
     // Contract name
     string public name;
     // Contract symbol
@@ -56,7 +55,14 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
 
     // mapping(uint256 => string) internal _rulesURI;      // Mapping Metadata URIs for Individual Role 
     // mapping(uint256 => string) internal _uri;
-  
+    
+    //Post Input Struct
+    struct PostInput {
+        string entRole;
+        string postRole;
+        string uri;
+    }
+
     //--- Functions
 
     /// ERC165 - Supported Interfaces
@@ -76,7 +82,12 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     //** Case Functions
 
     /// Make a new Case
-    function caseMake(string calldata name_, DataTypes.RuleRef[] calldata addRules, DataTypes.InputRole[] calldata assignRoles) public returns (uint256, address) {
+    function caseMake(
+        string calldata name_, 
+        DataTypes.RuleRef[] calldata addRules, 
+        DataTypes.InputRole[] calldata assignRoles, 
+        PostInput[] calldata posts
+    ) public returns (uint256, address) {
         //TODO: Validate Caller Permissions
 
         //Assign Case ID
@@ -88,11 +99,13 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
         _cases[caseId] = caseContract;
         //New Case Created Event
         emit CaseCreated(caseId, caseContract);
-        
+        //Posts
+        for (uint256 i = 0; i < posts.length; ++i) {
+            ICase(caseContract).post(posts[i].entRole, posts[i].postRole, posts[i].uri);
+        }
         return (caseId, caseContract);
     }
     
-
     /// Get Case Address by Case ID
     function getCaseById(uint256 caseId) public view returns (address) {
         return _cases[caseId];

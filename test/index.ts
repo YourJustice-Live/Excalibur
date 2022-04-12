@@ -362,12 +362,20 @@ describe("Protocol", function () {
           account: this.tester2Addr, 
         }
       ];
+      let posts = [
+        {
+          entRole: "admin",
+          postRole: "evidence",
+          uri: test_uri,
+        }
+      ];
       // console.log("Make Case With Params:", ruleRefArr, roleRefArr);
 
       // actionContract = await ethers.getContractFactory("Case").then(res => res.deploy(hubContract.address));
 
       // let tx = await jurisdictionContract.connect(admin).caseMake(caseName, ruleRefArr);
-      let tx = await jurisdictionContract.connect(admin).caseMake(caseName, ruleRefArr, roleRefArr);
+      // let tx = await jurisdictionContract.connect(admin).caseMake(caseName, ruleRefArr, roleRefArr, []);  //V
+      let tx = await jurisdictionContract.connect(admin).caseMake(caseName, ruleRefArr, roleRefArr, posts);
 
       let caseAddr = await jurisdictionContract.getCaseById(1);
       expect(caseAddr).to.be.properAddress;
@@ -378,10 +386,11 @@ describe("Protocol", function () {
       // console.log("case", this.caseContract);
       // console.log("jurisdiction's Make Case TX:", tx);
       // console.log("jurisdiction's Case #1:", caseAddr);
-      
-      //Expect Event
-      await expect(tx).to.emit(jurisdictionContract, 'CaseCreated').withArgs(1, caseAddr);
 
+      //Expect Case Created Event
+      await expect(tx).to.emit(jurisdictionContract, 'CaseCreated').withArgs(1, caseAddr);
+      //Expect Post Event
+      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].postRole, posts[0].uri);
     });
 
     it("Should Auto-Appoint creator as Admin", async function () {

@@ -29,8 +29,14 @@ interface IJurisdiction {
     /// Create a new Role
     // function roleCreate(address account, string calldata role) external;
 
-    // function caseMake(string calldata name_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) public returns (uint256, address);
-
+    /// Make a new Case
+    // function caseMake(
+    //     string calldata name_, 
+    //     DataTypes.RuleRef[] calldata addRules, 
+    //     DataTypes.InputRole[] calldata assignRoles, 
+    //     PostInput[] calldata posts
+    // ) external returns (uint256, address);
+    
     //-- Rule Func.
 
     /// Create New Rule
