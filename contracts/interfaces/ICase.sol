@@ -36,6 +36,9 @@ interface ICase {
     /// Case Stage: Place Verdict  --> Closed
     function stageVerdict(string calldata uri) external;
 
+    /// Add Post 
+    function post(string calldata entRole, string calldata postRole, string calldata uri) external;
+
     //--- Events
 
     /// Case Stage Change

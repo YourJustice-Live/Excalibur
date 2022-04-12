@@ -138,13 +138,15 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
     /// @param postRole i.e. post type (role:comment/evidence/decleration/etc')
     // function post(uint256 token_id, string calldata uri) public {
-    function post(string calldata entRole, string calldata postRole, string calldata uri) external {
+    function post(string calldata entRole, string calldata postRole, string calldata uri) external override {
         //Validate: Sender Holds The Entity-Role 
-        require(roleHas(_msgSender(), entRole), "ROLE:INVALID_PERMISSION");
+        // require(roleHas(_msgSender(), entRole), "ROLE:INVALID_PERMISSION");
+        require(roleHas(tx.origin, entRole), "ROLE:INVALID_PERMISSION");    //Validate the Calling Account
         //Validate Stage
         require(stage < DataTypes.CaseStage.Closed, "STAGE:CASE_CLOSED");
         //Post Event
-        emit Post(_msgSender(), entRole, postRole, uri);
+        // emit Post(_msgSender(), entRole, postRole, uri);
+        emit Post(tx.origin, entRole, postRole, uri);
     }
 
     //--- Rule Reference 
