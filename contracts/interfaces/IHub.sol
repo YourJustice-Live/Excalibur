@@ -15,12 +15,14 @@ interface IHub {
     
     /// Make a new Case
     // function caseMake(string calldata name_) external returns (address);
-    // function caseMake(string calldata name_, DataTypes.RuleRef[] memory addRules) external returns (address);
     function caseMake(string calldata name_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external returns (address);
 
     //--- Events
 
     /// Case Implementation Contract Updated
     event UpdatedCaseImplementation(address implementation);
+
+    /// Jurisdiction Implementation Contract Updated
+    event UpdatedJurisdictionImplementation(address implementation);
 
 }

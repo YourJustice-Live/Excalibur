@@ -130,7 +130,7 @@ contract Hub is IHub, Ownable {
         //Upgrade Beacon
         UpgradeableBeacon(beaconCase).upgradeTo(newImplementation);
         //Upgrade Event
-        emit UpdatedCaseImplementation(newImplementation)
+        emit UpdatedCaseImplementation(newImplementation);
     }
 
     /// Upgrade Jurisdiction Implementation [TBD]
