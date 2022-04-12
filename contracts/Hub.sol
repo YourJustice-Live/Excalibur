@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.4;
 
 // import "hardhat/console.sol";
 
@@ -133,6 +133,9 @@ contract Hub is IHub, Ownable {
 
         //Remember New Implementation's Address     //This seems wrong. The beacon doesn't change.
         // beaconCase = newImplementation;
+
+        //TODO: Upgrade Event
+
     }
 
     /// Upgrade Jurisdiction Implementation [TBD]
