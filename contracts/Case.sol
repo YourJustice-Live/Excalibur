@@ -5,10 +5,8 @@ import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./libraries/DataTypes.sol";
-// import "./abstract/ERC1155Roles.sol";
 import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/ERC1155RolesUpgradable.sol";
-// import "./abstract/Rules.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IRules.sol";
 // import "./interfaces/IJurisdiction.sol";
