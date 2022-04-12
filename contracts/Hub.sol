@@ -8,13 +8,12 @@ import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 // import "@openzeppelin/contracts/access/Ownable.sol";
 // import "@openzeppelin/contracts/utils/Counters.sol";
+import "./interfaces/IConfig.sol";
+import "./interfaces/IHub.sol";
+import "./interfaces/ICase.sol";
 import "./libraries/DataTypes.sol";
 import "./abstract/Rules.sol";
 import "./abstract/CommonYJ.sol";
-import "./interfaces/IConfig.sol";
-import "./interfaces/IHub.sol";
-
-import "./interfaces/ICase.sol";
 
 
 /**
@@ -130,12 +129,8 @@ contract Hub is IHub, Ownable {
 
         //Upgrade Beacon
         UpgradeableBeacon(beaconCase).upgradeTo(newImplementation);
-
-        //Remember New Implementation's Address     //This seems wrong. The beacon doesn't change.
-        // beaconCase = newImplementation;
-
-        //TODO: Upgrade Event
-
+        //Upgrade Event
+        emit UpdatedCaseImplementation(newImplementation)
     }
 
     /// Upgrade Jurisdiction Implementation [TBD]
