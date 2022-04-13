@@ -365,7 +365,7 @@ describe("Protocol", function () {
       let posts = [
         {
           entRole: "admin",
-          postRole: "evidence",
+          // postRole: "evidence",
           uri: test_uri,
         }
       ];
@@ -390,7 +390,8 @@ describe("Protocol", function () {
       //Expect Case Created Event
       await expect(tx).to.emit(jurisdictionContract, 'CaseCreated').withArgs(1, caseAddr);
       //Expect Post Event
-      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].postRole, posts[0].uri);
+      // await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].postRole, posts[0].uri);
+      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].uri);
     });
 
     it("Should Auto-Appoint creator as Admin", async function () {
@@ -422,15 +423,17 @@ describe("Protocol", function () {
     it("Should Post", async function () {
       let post = {
         entRole:"subject",
-        postRole:"evidence", 
+        // postRole:"evidence", 
         uri:test_uri,
       }
       //Post
-      let tx = await this.caseContract.connect(tester2).post(post.entRole, post.postRole, post.uri);
+      // let tx = await this.caseContract.connect(tester2).post(post.entRole, post.postRole, post.uri);
+      let tx = await this.caseContract.connect(tester2).post(post.entRole, post.uri);
       // wait until the transaction is mined
       await tx.wait();
       //Expect Event
-      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, post.entRole, post.postRole, post.uri);
+      // await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, post.entRole, post.postRole, post.uri);
+      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, post.entRole, post.uri);
     });
 
     it("Should Open Case", async function () {

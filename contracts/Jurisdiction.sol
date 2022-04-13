@@ -59,7 +59,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     //Post Input Struct
     struct PostInput {
         string entRole;
-        string postRole;
+        // string postRole;
         string uri;
     }
 
@@ -116,7 +116,8 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
         emit CaseCreated(caseId, caseContract);
         //Posts
         for (uint256 i = 0; i < posts.length; ++i) {
-            ICase(caseContract).post(posts[i].entRole, posts[i].postRole, posts[i].uri);
+            // ICase(caseContract).post(posts[i].entRole, posts[i].postRole, posts[i].uri);
+            ICase(caseContract).post(posts[i].entRole, posts[i].uri);
         }
         return (caseId, caseContract);
     }

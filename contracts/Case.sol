@@ -134,9 +134,9 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
     /// Add Post 
     /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
-    /// @param postRole i.e. post type (role:comment/evidence/decleration/etc')
-    // function post(uint256 token_id, string calldata uri) public {
-    function post(string calldata entRole, string calldata postRole, string calldata uri) external override {
+    // function post(uint256 token_id, string calldata uri) external override {     //Post by Token ID (May later use Entity GUID as Caller)
+    // function post(string calldata entRole, string calldata postRole, string calldata uri) external override {        //Explicit postRole
+    function post(string calldata entRole, string calldata uri) external override {     //postRole in the URI
         //Validate: Sender Holds The Entity-Role 
         // require(roleHas(_msgSender(), entRole), "ROLE:INVALID_PERMISSION");
         require(roleHas(tx.origin, entRole), "ROLE:INVALID_PERMISSION");    //Validate the Calling Account
@@ -144,8 +144,16 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         require(stage < DataTypes.CaseStage.Closed, "STAGE:CASE_CLOSED");
         //Post Event
         // emit Post(_msgSender(), entRole, postRole, uri);
-        emit Post(tx.origin, entRole, postRole, uri);
+        // emit Post(tx.origin, entRole, postRole, uri);
+        emit Post(tx.origin, entRole, uri);
     }
+
+    // function post(string entRole, string uri) 
+    // - Post by account + role (in the case, since an account may have multiple roles)
+
+    // function post(uint256 token_id, string entRole, string uri) 
+    //- Post by Entity (Token ID or a token identifier struct)
+
 
     //--- Rule Reference 
 
@@ -190,6 +198,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         require(stage == DataTypes.CaseStage.Draft, "STAGE:DRAFT_ONLY");
 
         //TODO: Validate Evidence & Witnesses
+        // DataTypes.Rule memory rule = ruleGet(ruleId);
 
         //Case is now Open
         _setStage(DataTypes.CaseStage.Open);
