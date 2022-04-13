@@ -28,9 +28,9 @@ import "./abstract/CommonYJ.sol";
  * - Rules
  * - Creates new Cases
  * - Contract URI
- * - [TODO] Token URIs for Roles
  * - [TODO] Validation: Make Sure Account has an Avatar NFT
- * - [TODO] Rules are Unique
+ * - [TODO] Token URIs for Roles
+ * - [TODO] Unique Rule IDs (GUID)
  * V2:  
  * - [TODO] NFT Trackers - Assign Avatars instead of Accounts & Track the owner of the Avatar NFT
  */
@@ -55,7 +55,7 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
 
     // mapping(uint256 => string) internal _rulesURI;      // Mapping Metadata URIs for Individual Role 
     // mapping(uint256 => string) internal _uri;
-    
+
     //Post Input Struct
     struct PostInput {
         string entRole;
@@ -80,6 +80,21 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
     }
 
     //** Case Functions
+
+    /// Make a new Case & File it
+    function caseMakeOpen(
+        string calldata name_, 
+        DataTypes.RuleRef[] calldata addRules, 
+        DataTypes.InputRole[] calldata assignRoles, 
+        PostInput[] calldata posts
+    ) public returns (uint256, address) {
+        //Make Case
+        (uint256 caseId, address caseContract) = caseMake(name_, addRules, assignRoles, posts);
+        //File Case
+        ICase(caseContract).stageFile();
+        //Return
+        return (caseId, caseContract);
+    }
 
     /// Make a new Case
     function caseMake(
