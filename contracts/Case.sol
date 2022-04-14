@@ -194,11 +194,22 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     function stageFile() public override {
         
         //TODO: Validate Caller
-        
+
+        //Validate Lifecycle Stage
         require(stage == DataTypes.CaseStage.Draft, "STAGE:DRAFT_ONLY");
 
-        //TODO: Validate Evidence & Witnesses
-        // DataTypes.Rule memory rule = ruleGet(ruleId);
+        //Validate Witnesses
+        for (uint256 ruleId = 1; ruleId <= _ruleIds.current(); ++ruleId) {
+            // DataTypes.Rule memory rule = ruleGet(ruleId);
+            DataTypes.Confirmation memory confirmation = ruleGetConfirmation(ruleId);
+            //Get Current Witness Headcount (Unique)
+            uint256 witnesses = uniqueMembers(_roleToId("witness"));
+
+            // console.log("Check Witness Count:", confirmation.witness, witnesses);
+
+            //Validate Min Witness Requirements
+            require(witnesses >= confirmation.witness, "INSUFFICIENT_WITNESSES");
+        }
 
         //Case is now Open
         _setStage(DataTypes.CaseStage.Open);

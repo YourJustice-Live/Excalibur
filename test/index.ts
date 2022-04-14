@@ -436,6 +436,13 @@ describe("Protocol", function () {
       await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, post.entRole, post.uri);
     });
 
+    it("Should Assign Witness", async function () {
+          //Assign Admin
+          await this.caseContract.connect(admin).roleAssign(this.tester3Addr, "witness");
+          //Validate
+          expect(await this.caseContract.roleHas(this.tester3Addr, "witness")).to.equal(true);
+    });
+
     it("Should Open Case", async function () {
       //File Case
       let tx = await this.caseContract.connect(tester2).stageFile();
@@ -459,7 +466,6 @@ describe("Protocol", function () {
 
     it("Should Appoint Judge", async function () {
       //Assign Admin
-      // await this.caseContract.roleAssign(this.tester3Addr, "judge");
       await this.caseContract.connect(admin).roleAssign(this.tester3Addr, "judge");
       //Expect Mint/Transfer Event
       // await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(2);  
