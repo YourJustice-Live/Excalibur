@@ -99,7 +99,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
         bytes memory data
     ) internal virtual override {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
-        if (from == address(0)) {   //Mint
+        if (from == address(0)) { //Mint
             for (uint256 i = 0; i < ids.length; ++i) {
                 uint256 id = ids[i];
                 if(balanceOf(to, id) == 0){
@@ -112,7 +112,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
         if (to == address(0)) { //Burn
             for (uint256 i = 0; i < ids.length; ++i) {
                 uint256 id = ids[i];
-                if(balanceOf(to, id) == 1){
+                if(balanceOf(to, id) == amounts[i]){   //Burn All
                     --_uniqueMembers[id];
                 }
             }
