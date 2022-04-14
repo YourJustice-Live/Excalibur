@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity 0.8.4;
 
 interface IERC1155GUID {
 
     //--- Functions 
-    
+
+    /// Unique Members w/Token
+    function uniqueMembers(uint256 id) external view returns (uint256);
+
     /// Check if account is assigned to role
     function GUIDHas(address account, bytes32 guid) external view returns (bool);
     

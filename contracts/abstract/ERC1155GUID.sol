@@ -19,7 +19,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
 
     using Counters for Counters.Counter;
     Counters.Counter internal _tokenIds; //Track Last Token ID
-
+    mapping(uint256 => uint256) private _uniqueMembers; //Index Unique Members by Role
     mapping(bytes32 => uint256) internal _GUID;     //NFTs as GUID
 
     //--- Modifiers
@@ -31,6 +31,11 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
     }
 
     //--- Functions
+
+    /// Unique Members w/Token
+    function uniqueMembers(uint256 id) public view override returns (uint256) {
+        return _uniqueMembers[id];
+    }
 
     /**
      * @dev See {IERC165-supportsInterface}.
@@ -82,6 +87,36 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
     /// Translate GUID to Token ID
     function _GUIDToId(bytes32 guid) internal view GUIDExists(guid) returns(uint256) {
         return _GUID[guid];
+    }
+
+    /// Track Unique Tokens
+    function _beforeTokenTransfer(
+        address operator,
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) internal virtual override {
+        super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
+        if (from == address(0)) {   //Mint
+            for (uint256 i = 0; i < ids.length; ++i) {
+                uint256 id = ids[i];
+                if(balanceOf(to, id) == 0){
+                    unchecked {
+                        ++_uniqueMembers[id];
+                    }
+                }
+            }
+        }
+        if (to == address(0)) { //Burn
+            for (uint256 i = 0; i < ids.length; ++i) {
+                uint256 id = ids[i];
+                if(balanceOf(to, id) == 1){
+                    --_uniqueMembers[id];
+                }
+            }
+        }
     }
 
 }
