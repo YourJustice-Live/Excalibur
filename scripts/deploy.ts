@@ -8,11 +8,11 @@ import { ethers } from "hardhat";
 //Track Addresses (Fill in present addresses to prevent new deplopyment)
 const contractAddr = {
   config:"0x14E5D5B68A41665E86225e6830a69bb2b5F6E484",  //V2
-  case:"0x975799d074e7ddFA2019961e6bbDc486e5817690",  //Case Instance //V1.3
-  hub:"0x8fD411c1ae65904e6fE8F8c23a5fa86AaD7056A1", //V2
+  case:"0x8387e1aBf395ADfA4C074024345dCd66FDF00719",  //Case Instance //V2
+  hub:"0x731bAa306685d6db7e2a6bAAbe12cf8A874Bd16E", //V2
   avatar:"0x41966B4485CBd781fE9e82f90ABBA96958C096CF",  //V1
   history:"0x8b382adbfC940eae42AfC11eF389e5dA6597Fa06", //V4
-  jurisdiction:"0x434F5D485EDdcF15B59b44ec19502d7dc661Cb8D", //V5
+  jurisdiction:"0x93Cb004fd336f9918d1198bA193e04B396925940", //V6
 };
 
 async function main() {
@@ -47,7 +47,7 @@ async function main() {
     //Set Address
     contractAddr.hub = caseContract.address;
     //Log
-    console.log("Deployed Hub Contract to " + contractAddr.hub);
+    console.log("Deployed Hub Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " Case: "+ contractAddr.case);
   }
 
   //--- Avatar
