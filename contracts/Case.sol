@@ -13,6 +13,7 @@ import "./interfaces/IRules.sol";
 
 /**
  * @title Case Contract
+ * @dev Version 0.2.0
  */
 contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
@@ -35,6 +36,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
     //Rules Reference
     mapping(uint256 => DataTypes.RuleRef) internal _rules;      // Mapping for Case Contracts
+    
     // mapping(string => string) public roleName;      // Mapping Role Names //e.g. "subject"=>"seller"
     
     //--- Modifiers
@@ -163,7 +165,6 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
         //Validate
         require (_msgSender() == address(_HUB) || roleHas(_msgSender(), "admin") || owner() == _msgSender(), "EXPECTED HUB OR ADMIN");
-
         //Run
         _ruleAdd(jurisdiction_, ruleId_);
     }

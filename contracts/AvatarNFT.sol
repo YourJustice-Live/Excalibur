@@ -23,6 +23,7 @@ import "./abstract/CommonYJ.sol";
  *  - Minted Token's URI is updatable by Token holder
  *  - Assets are non-transferable by owner
  *  - [TODO] Orphan tokens can be claimed
+ *  - [TODO] Tokens can be merged
  *  - [TODO] Contract is Updatable
   */
 contract AvatarNFT is CommonYJ, ERC721URIStorage, IERC721Receiver {
@@ -33,7 +34,7 @@ contract AvatarNFT is CommonYJ, ERC721URIStorage, IERC721Receiver {
     Counters.Counter private _tokenIds;
 
 
-    //Positive & Negative Reputation Trackin Per Domain (Personal,Community,Professional) 
+    //Positive & Negative Reputation Tracking Per Domain (Personal,Community,Professional) 
     mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256))) internal _rep;  //[Token][Domain][bool] => Rep
 
 

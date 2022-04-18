@@ -1,6 +1,6 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
-pragma experimental ABIEncoderV2;    //https://docs.soliditylang.org/en/v0.5.2/abi-spec.html?highlight=abiencoderv2
+// pragma experimental ABIEncoderV2;    //https://docs.soliditylang.org/en/v0.5.2/abi-spec.html?highlight=abiencoderv2
 
 // import "hardhat/console.sol";
 
@@ -9,12 +9,10 @@ import "../interfaces/IRules.sol";
 import "../interfaces/IActionRepo.sol";
 import "../libraries/DataTypes.sol";
 
-
 /**
  * @title Rules Contract 
  * @dev To Extend or Be Used by Jurisdictions
  * - Hold, Update, Delete & Serve Rules
- * - Single immutable Action Repo
  */
 // abstract contract Rules is IRules, Opinions {
 contract Rules is IRules {
