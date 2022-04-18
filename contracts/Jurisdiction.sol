@@ -15,12 +15,14 @@ import "./interfaces/ICase.sol";
 // import "./abstract/Opinions.sol";
 import "./abstract/ERC1155Roles.sol";
 import "./abstract/Rules.sol";
+import "./abstract/Rating.sol";
 import "./abstract/CommonYJ.sol";
 
 
 /**
  * @title Jurisdiction Contract
  * @dev Retains Group Members in Roles
+ * @dev Version 0.6.0
  * V1: Role NFTs
  * - Mints Member NFTs
  * - One for each
@@ -34,7 +36,7 @@ import "./abstract/CommonYJ.sol";
  * V2:  
  * - [TODO] NFT Trackers - Assign Avatars instead of Accounts & Track the owner of the Avatar NFT
  */
-contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
+contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, ERC1155Roles {
     //--- Storage
     string public constant override symbol = "YJ_Jurisdiction";
     using Strings for uint256;
@@ -103,7 +105,9 @@ contract Jurisdiction is IJurisdiction, Rules, CommonYJ, ERC1155Roles {
         DataTypes.InputRole[] calldata assignRoles, 
         PostInput[] calldata posts
     ) public returns (uint256, address) {
-        //TODO: Validate Caller Permissions
+        //TODO: Validate Caller Permissions (Member of Jurisdiction)
+        // roleHas(_msgSender(), "admin")  
+        // roleHas(_msgSender(), "member") 
 
         //Assign Case ID
         _caseIds.increment(); //Start with 1
