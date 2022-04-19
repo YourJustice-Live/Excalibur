@@ -144,7 +144,7 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, ERC1155Roles {
     }
 
     /// Assign Someone Else to a Role
-    function roleAssign(address account, string memory role) external override roleExists(role) {
+    function roleAssign(address account, string memory role) public override roleExists(role) {
         //Validate Permissions
         require(
             _msgSender() == account         //Self
@@ -156,7 +156,7 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, ERC1155Roles {
     }
 
     /// Remove Someone Else from a Role
-    function roleRemove(address account, string memory role) external override roleExists(role) {
+    function roleRemove(address account, string memory role) public override roleExists(role) {
         //Validate Permissions
         require(
             _msgSender() == account         //Self
@@ -165,6 +165,12 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, ERC1155Roles {
             , "INVALID_PERMISSIONS");
         //Remove
         _roleRemove(account, role);
+    }
+
+    /// Change Role Wrapper (Add & Remove)
+    function roleChange(address account, string memory roleNew, string memory roleOld) external override {
+        roleAssign(account, roleNew);
+        roleRemove(account, roleOld);
     }
 
     /**

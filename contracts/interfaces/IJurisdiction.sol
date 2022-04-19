@@ -25,7 +25,10 @@ interface IJurisdiction {
 
     /// Remove Someone Else from a Role
     function roleRemove(address account, string calldata role) external;
-    
+
+    /// Change Role Wrapper (Add & Remove)
+    function roleChange(address account, string memory roleNew, string memory roleOld) external;
+
     /// Create a new Role
     // function roleCreate(address account, string calldata role) external;
 
