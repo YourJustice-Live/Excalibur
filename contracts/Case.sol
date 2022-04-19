@@ -35,8 +35,8 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     DataTypes.CaseStage public stage;
 
     //Rules Reference
-    mapping(uint256 => DataTypes.RuleRef) internal _rules;      // Mapping for Case Contracts
-    
+    mapping(uint256 => DataTypes.RuleRef) internal _rules;      // Mapping for Case Rules
+    mapping(uint256 => bool) public decision;                   // Mapping for Rule Decisions
     // mapping(string => string) public roleName;      // Mapping Role Names //e.g. "subject"=>"seller"
     
     //--- Modifiers
@@ -224,16 +224,10 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         require(stage == DataTypes.CaseStage.Open, "STAGE:OPEN_ONLY");
         //Case is now Waiting for Verdict
         _setStage(DataTypes.CaseStage.Verdict);
-    }
-
-
-
-    mapping(uint256 => bool) public decision;      // Mapping for Case Contracts
-    
+    }   
 
     /// Case Stage: Place Verdict  --> Closed
-    // function stageVerdict(string calldata uri, ) public override {
-    // function stageVerdict(bool[] verdict, string calldata uri) public override {
+    // function stageVerdict(string calldata uri) public override {
     function stageVerdict(DataTypes.InputDecision[] calldata verdict, string calldata uri) public override {
         require(roleHas(_msgSender(), "judge") , "ROLE:JUDGE_ONLY");
         require(stage == DataTypes.CaseStage.Verdict, "STAGE:VERDICT_ONLY");
@@ -251,9 +245,6 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         _setStage(DataTypes.CaseStage.Closed);
         //Emit Verdict Event
         emit Verdict(uri, _msgSender());
-
-        //TODO: Update Avatar's Reputation
-
     }
 
     /// Case Stage: Reject Case --> Cancelled
@@ -274,9 +265,13 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         emit Stage(stage);
     }
 
-    /// TODO: Rule (Action) Confirmed
+    /// Rule (Action) Confirmed
     function _ruleConfirmed(uint256 ruleId) internal {
 
+        //TODO: Update Jurisdiction's Reputation
+
+        //TODO: Update Avatar's Reputation
+        
     }
 
     // function nextStage(string calldata uri) public {
