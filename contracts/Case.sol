@@ -240,6 +240,16 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
     }
 
+    /// Case Stage: Reject Case --> Cancelled
+    function stageCancel(string calldata uri) public override {
+        require(roleHas(_msgSender(), "judge") , "ROLE:JUDGE_ONLY");
+        require(stage == DataTypes.CaseStage.Verdict, "STAGE:VERDICT_ONLY");
+        //Case is now Closed
+        _setStage(DataTypes.CaseStage.Cancelled);
+        //Cancellation Event
+        emit Cancelled(uri, _msgSender());
+    }
+
     /// Change Case Stage
     function _setStage(DataTypes.CaseStage stage_) internal {
         //Set Stage
