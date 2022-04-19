@@ -226,14 +226,30 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         _setStage(DataTypes.CaseStage.Verdict);
     }
 
+
+
+    mapping(uint256 => bool) public decision;      // Mapping for Case Contracts
+    
+
     /// Case Stage: Place Verdict  --> Closed
-    function stageVerdict(string calldata uri) public override {
+    // function stageVerdict(string calldata uri, ) public override {
+    // function stageVerdict(bool[] verdict, string calldata uri) public override {
+    function stageVerdict(DataTypes.InputDecision[] calldata verdict, string calldata uri) public override {
         require(roleHas(_msgSender(), "judge") , "ROLE:JUDGE_ONLY");
         require(stage == DataTypes.CaseStage.Verdict, "STAGE:VERDICT_ONLY");
 
+        //Process Verdict
+        for (uint256 i = 0; i < verdict.length; ++i) {
+            decision[verdict[i].ruleId] = verdict[i].decision;
+            if(verdict[i].decision){
+                // Rule Confirmed
+                _ruleConfirmed(verdict[i].ruleId);
+            }
+        }
+
         //Case is now Closed
         _setStage(DataTypes.CaseStage.Closed);
-        //Verdict Event
+        //Emit Verdict Event
         emit Verdict(uri, _msgSender());
 
         //TODO: Update Avatar's Reputation
@@ -256,6 +272,11 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         stage = stage_;
         //Stage Change Event
         emit Stage(stage);
+    }
+
+    /// TODO: Rule (Action) Confirmed
+    function _ruleConfirmed(uint256 ruleId) internal {
+
     }
 
     // function nextStage(string calldata uri) public {

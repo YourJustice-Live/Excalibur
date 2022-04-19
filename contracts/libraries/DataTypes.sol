@@ -164,7 +164,8 @@ library DataTypes {
         bool direction;
         // Confidence/Strictness: [?]
     }
-    */    
+    */
+
     //Rule Confirmation Method
     struct Confirmation {
         //     ruling: "judge"|"jury"|"democracy",  //Decision Maker
@@ -199,12 +200,17 @@ library DataTypes {
         address account;
         string role;
     }
+    //Decision (Verdict) Input
+    struct InputDecision {
+        uint256 ruleId;
+        bool decision;
+    }
     
     //Role Name Input Struct
-    struct RoleMappingInput {
-        string role;
-        string name;
-    }
+    // struct InputRoleMapping {
+    //     string role;
+    //     string name;
+    // }
 
 }
 

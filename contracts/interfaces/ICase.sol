@@ -34,7 +34,11 @@ interface ICase {
     function stageWaitForVerdict() external;
 
     /// Case Stage: Place Verdict  --> Closed
-    function stageVerdict(string calldata uri) external;
+    // function stageVerdict(string calldata uri) external;
+    function stageVerdict(DataTypes.InputDecision[] calldata verdict, string calldata uri) external;
+
+    /// Case Stage: Reject Case --> Cancelled
+    function stageCancel(string calldata uri) external;
 
     /// Add Post 
     // function post(string calldata entRole, string calldata postRole, string calldata uri) external;

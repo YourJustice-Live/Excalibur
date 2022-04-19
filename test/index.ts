@@ -458,9 +458,10 @@ describe("Protocol", function () {
     });
 
     it("Should Wait for judge", async function () {
+      let verdict = [{ ruleId:1, decision: true }];
       //File Case -- Expect Failure
       await expect(
-        this.caseContract.connect(tester2).stageVerdict(test_uri)
+        this.caseContract.connect(tester2).stageVerdict(verdict, test_uri)
       ).to.be.revertedWith("ROLE:JUDGE_ONLY");
     });
 
@@ -474,8 +475,9 @@ describe("Protocol", function () {
     });
     
     it("Should Accept Verdict URI & Close Case", async function () {
+      let verdict = [{ ruleId:1, decision: true }];
       //Submit Verdict & Close Case
-      let tx = await this.caseContract.connect(tester3).stageVerdict(test_uri);
+      let tx = await this.caseContract.connect(tester3).stageVerdict(verdict, test_uri);
       //Expect Verdict Event
       await expect(tx).to.emit(this.caseContract, 'Verdict').withArgs(test_uri, this.tester3Addr);
       //Expect State Event
