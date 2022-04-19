@@ -168,7 +168,7 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, ERC1155Roles {
     }
 
     /// Change Role Wrapper (Add & Remove)
-    function roleChange(address account, string memory roleNew, string memory roleOld) external override {
+    function roleChange(address account, string memory roleOld, string memory roleNew) external override {
         roleAssign(account, roleNew);
         roleRemove(account, roleOld);
     }

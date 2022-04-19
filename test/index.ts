@@ -20,6 +20,7 @@ describe("Protocol", function () {
   let tester: Signer;
   let tester2: Signer;
   let tester3: Signer;
+  let tester4: Signer;
   let addrs: Signer[];
 
 
@@ -38,12 +39,13 @@ describe("Protocol", function () {
     avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract.address));
 
     //Populate Accounts
-    [owner, admin, tester, tester2, tester3, ...addrs] = await ethers.getSigners();
+    [owner, admin, tester, tester2, tester3, tester4, ...addrs] = await ethers.getSigners();
     //Addresses
     this.adminAddr = await admin.getAddress();
     this.testerAddr = await tester.getAddress();
     this.tester2Addr = await tester2.getAddress();
     this.tester3Addr = await tester3.getAddress();
+    this.tester4Addr = await tester4.getAddress();
   })
 
   describe("Config", function () {
@@ -197,67 +199,58 @@ describe("Protocol", function () {
     
     before(async function () {
         //Deploy Jurisdiction
-        const JurisdictionContract = await ethers.getContractFactory("Jurisdiction");
-        jurisdictionContract = await JurisdictionContract.deploy(hubContract.address, actionContract.address);
-
-        //TODO: Maybe Write it like this
-        this.jurisdiction = jurisdictionContract;
-        // console.log("jurisdiction: ", this.jurisdiction);
+        jurisdictionContract=  await ethers.getContractFactory("Jurisdiction").then(res => res.deploy(hubContract.address, actionContract.address));
+        this.jurisdictionContract = jurisdictionContract;
     });
 
     it("Users can join as a member", async function () {
-
-      let testerAddr = await tester.getAddress();
-
       //Check Before
-      expect(await jurisdictionContract.roleHas(testerAddr, "member")).to.equal(false);
-
+      expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(false);
       //Join Jurisdiction
-      await jurisdictionContract.connect(tester).join();
-
+      await this.jurisdictionContract.connect(tester).join();
       //Check After
-      expect(await jurisdictionContract.roleHas(testerAddr, "member")).to.equal(true);
+      expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(true);
     });
 
     it("Owner can appoint Admin", async function () {
-      // let testerAddr = await tester.getAddress();
-      let adminAddr = await admin.getAddress();
-
       //Check Before
-      expect(await jurisdictionContract.roleHas(adminAddr, "admin")).to.equal(false);
-
+      expect(await this.jurisdictionContract.roleHas(this.adminAddr, "admin")).to.equal(false);
       //Should Fail - Require Permissions
       await expect(
-        jurisdictionContract.connect(tester).roleAssign(adminAddr, "admin")
+        this.jurisdictionContract.connect(tester).roleAssign(this.adminAddr, "admin")
       ).to.be.revertedWith("INVALID_PERMISSIONS");
-      
       //Assign Admin
-      await jurisdictionContract.roleAssign(adminAddr, "admin");
-
+      await this.jurisdictionContract.roleAssign(this.adminAddr, "admin");
       //Check After
-      expect(await jurisdictionContract.roleHas(adminAddr, "admin")).to.equal(true);
+      expect(await this.jurisdictionContract.roleHas(this.adminAddr, "admin")).to.equal(true);
     });
 
     it("Admin can appoint judge", async function () {
-
       let testerAddr = await tester.getAddress();
-      let adminAddr = await admin.getAddress();
-      this.adminAddr = adminAddr;
-
       //Check Before
-      expect(await jurisdictionContract.roleHas(testerAddr, "judge")).to.equal(false);
-
+      expect(await this.jurisdictionContract.roleHas(testerAddr, "judge")).to.equal(false);
       //Should Fail - Require Permissions
       await expect(
-        jurisdictionContract.connect(tester2).roleAssign(testerAddr, "judge")
+        this.jurisdictionContract.connect(tester2).roleAssign(testerAddr, "judge")
       ).to.be.revertedWith("INVALID_PERMISSIONS");
-      
       //Assign Judge
-      await jurisdictionContract.connect(admin).roleAssign(testerAddr, "judge");
-
+      await this.jurisdictionContract.connect(admin).roleAssign(testerAddr, "judge");
       //Check After
-      expect(await jurisdictionContract.roleHas(testerAddr, "judge")).to.equal(true);
+      expect(await this.jurisdictionContract.roleHas(testerAddr, "judge")).to.equal(true);
+    });
 
+    it("Can Change Roles", async function () {
+      //Check Before
+      expect(await this.jurisdictionContract.roleHas(this.tester4Addr, "admin")).to.equal(false);
+      //Join Jurisdiction
+      let tx = await this.jurisdictionContract.connect(tester4).join();
+      await tx.wait();
+      //Check Before
+      expect(await this.jurisdictionContract.roleHas(this.tester4Addr, "member")).to.equal(true);
+      //Upgrade to Admin
+      await this.jurisdictionContract.roleChange(this.tester4Addr, "member", "admin");
+      //Check After
+      expect(await this.jurisdictionContract.roleHas(this.tester4Addr, "admin")).to.equal(true);
     });
     
     it("Should store Rules", async function () {
