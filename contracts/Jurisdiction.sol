@@ -14,9 +14,10 @@ import "./interfaces/ICase.sol";
 // import "./libraries/DataTypes.sol";
 // import "./abstract/Opinions.sol";
 import "./abstract/ERC1155Roles.sol";
+import "./abstract/CommonYJ.sol";
 import "./abstract/Rules.sol";
 import "./abstract/Rating.sol";
-import "./abstract/CommonYJ.sol";
+import "./abstract/Recursion.sol";
 
 
 /**
@@ -36,7 +37,7 @@ import "./abstract/CommonYJ.sol";
  * V2:  
  * - [TODO] NFT Trackers - Assign Avatars instead of Accounts & Track the owner of the Avatar NFT
  */
-contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, ERC1155Roles {
+contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, Recursion, ERC1155Roles {
     //--- Storage
     string public constant override symbol = "YJ_Jurisdiction";
     using Strings for uint256;
@@ -53,7 +54,8 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, ERC1155Roles {
     string internal _contract_uri;
 
     // mapping(string => uint256) internal _roles;     //NFTs as Roles
-    mapping(uint256 => address) internal _cases;      // Mapping for Case Contracts
+    // mapping(uint256 => address) internal _cases;      // Mapping for Case Contracts      //DEPRECATED - No need for Case IDs, Use Hash
+    mapping(address => bool) internal _active;      // Mapping for Case Contracts
 
     // mapping(uint256 => string) internal _rulesURI;      // Mapping Metadata URIs for Individual Role 
     // mapping(uint256 => string) internal _uri;
@@ -89,13 +91,16 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, ERC1155Roles {
         DataTypes.RuleRef[] calldata addRules, 
         DataTypes.InputRole[] calldata assignRoles, 
         PostInput[] calldata posts
-    ) public returns (uint256, address) {
+    // ) public returns (uint256, address) {
+    ) public returns (address) {
         //Make Case
-        (uint256 caseId, address caseContract) = caseMake(name_, addRules, assignRoles, posts);
+        // (uint256 caseId, address caseContract) = caseMake(name_, addRules, assignRoles, posts);
+        address caseContract = caseMake(name_, addRules, assignRoles, posts);
         //File Case
         ICase(caseContract).stageFile();
         //Return
-        return (caseId, caseContract);
+        // return (caseId, caseContract);
+        return caseContract;
     }
 
     /// Make a new Case
@@ -104,7 +109,8 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, ERC1155Roles {
         DataTypes.RuleRef[] calldata addRules, 
         DataTypes.InputRole[] calldata assignRoles, 
         PostInput[] calldata posts
-    ) public returns (uint256, address) {
+    // ) public returns (uint256, address) {
+    ) public returns (address) {
         //TODO: Validate Caller Permissions (Member of Jurisdiction)
         // roleHas(_msgSender(), "admin")  
         // roleHas(_msgSender(), "member") 
@@ -115,7 +121,8 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, ERC1155Roles {
         //Create new Case
         address caseContract = _HUB.caseMake(name_, addRules, assignRoles);
         //Remember Address
-        _cases[caseId] = caseContract;
+        // _cases[caseId] = caseContract;
+        _active[caseContract] = true;
         //New Case Created Event
         emit CaseCreated(caseId, caseContract);
         //Posts
@@ -123,14 +130,34 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, ERC1155Roles {
             // ICase(caseContract).post(posts[i].entRole, posts[i].postRole, posts[i].uri);
             ICase(caseContract).post(posts[i].entRole, posts[i].uri);
         }
-        return (caseId, caseContract);
+        // return (caseId, caseContract);
+        return caseContract;
     }
     
-    /// Get Case Address by Case ID
-    function getCaseById(uint256 caseId) public view returns (address) {
-        return _cases[caseId];
+    /// Get Case Address by Case ID     //DEPRECATED
+    // function getCaseById(uint256 caseId) public view returns (address) {
+    //     return _cases[caseId];
+    // }
+    
+    /// Disable Case
+    function caseDisable(address caseContract) public override onlyOwner {
+        //Validate
+        require(_active[caseContract], "Case Not Active");
+        _active[caseContract] = false;
     }
     
+    //** Custom Rating Functions
+    
+    /// Add Reputation (Positive or Negative)
+    function repAdd(address contractAddr, uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating, uint8 amount) external {
+        
+        //TODO Validate - Called by Child Case
+
+
+        //Run
+        _repAdd(contractAddr, tokenId, domain, rating, amount);
+    }
+
     //** Role Management
 
     /// Join a role in current jurisdiction
@@ -185,7 +212,7 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, ERC1155Roles {
         uint256[] memory amounts,
         bytes memory data
     ) internal virtual override {
-        super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
+    super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
         if (to != address(0)) {
             for (uint256 i = 0; i < ids.length; ++i) {
                 //Validate - Max of 1 Per Account

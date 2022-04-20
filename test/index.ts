@@ -114,18 +114,15 @@ describe("Protocol", function () {
       expect(await avatarContract.connect(tester).tokenURI(1)).to.equal(test_uri);
     });
 
-    it("Can collect reputation", async function () {
+    it("Can collect rating", async function () {
       //Rep Call Data      
       let repCall = { tokenId:1, domain:1, rating:1, amount:2};
       let tx = await avatarContract.repAdd(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount);
-
       //Expect Event
       await expect(tx).to.emit(avatarContract, 'ReputationChange').withArgs(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount);
-
       //Validate State
       let rep = await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain, repCall.rating);
       expect(rep).to.equal(repCall.amount);
-
       //Other Domain Rep - Should be 0
       expect(await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain + 1, repCall.rating)).to.equal(0);
     });
@@ -239,7 +236,7 @@ describe("Protocol", function () {
       expect(await this.jurisdictionContract.roleHas(testerAddr, "judge")).to.equal(true);
     });
 
-    it("Can Change Roles", async function () {
+    it("Should Change Roles", async function () {
       //Check Before
       expect(await this.jurisdictionContract.roleHas(this.tester4Addr, "admin")).to.equal(false);
       //Join Jurisdiction
@@ -267,7 +264,7 @@ describe("Protocol", function () {
         // about: 1,
         // string uri;     //Text, Conditions & additional data
         uri: "ADDITIONAL_DATA_URI",
-        // Effect Object (Describes Changes to Reputation By Type)
+        // Effect Object (Describes Changes to Rating By Type)
         effects:{
           // int8 environmental;
           environmental: 0,
@@ -288,7 +285,7 @@ describe("Protocol", function () {
         // about: 1,
         // string uri;     //Text, Conditions & additional data
         uri: "ADDITIONAL_DATA_URI",
-        // Effect Object (Describes Changes to Reputation By Type)
+        // Effect Object (Describes Changes to Rating By Type)
         effects:{
           // int8 environmental;
           environmental: -10,
@@ -332,6 +329,32 @@ describe("Protocol", function () {
       // await expect(ruleData).to.include.members(Object.values(rule));
     });
     
+
+    it("Can collect rating", async function () {
+      //TODO: Tests for Collect Rating
+      
+      //Rep Call Data      
+      // let repCall = { tokenId:1, domain:1, rating:1, amount:2};
+      // let tx = await avatarContract.repAdd(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount);
+
+      // //Expect Event
+      // await expect(tx).to.emit(avatarContract, 'ReputationChange').withArgs(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount);
+
+
+
+      //Validate State
+      // getRepForDomain(address contractAddr, uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating) public view override returns (uint256){
+
+
+
+      // let rep = await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain, repCall.rating);
+      // expect(rep).to.equal(repCall.amount);
+
+      // //Other Domain Rep - Should be 0
+      // expect(await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain + 1, repCall.rating)).to.equal(0);
+
+    });
+
   }); //Jurisdiction
 
   /**
@@ -363,17 +386,14 @@ describe("Protocol", function () {
         }
       ];
       // console.log("Make Case With Params:", ruleRefArr, roleRefArr);
-
-      // actionContract = await ethers.getContractFactory("Case").then(res => res.deploy(hubContract.address));
-
-      // let tx = await jurisdictionContract.connect(admin).caseMake(caseName, ruleRefArr);
-      // let tx = await jurisdictionContract.connect(admin).caseMake(caseName, ruleRefArr, roleRefArr, []);  //V
+      //Simulate - Get New Case Address
+      let caseAddr = await jurisdictionContract.connect(admin).callStatic.caseMake(caseName, ruleRefArr, roleRefArr, posts);
+      //Create New Case
       let tx = await jurisdictionContract.connect(admin).caseMake(caseName, ruleRefArr, roleRefArr, posts);
-
-      let caseAddr = await jurisdictionContract.getCaseById(1);
+      //Expect Valid Address
       expect(caseAddr).to.be.properAddress;
       
-      //Case Contract
+      //Init Case Contract
       this.caseContract = await ethers.getContractFactory("Case").then(res => res.attach(caseAddr));
 
       // console.log("case", this.caseContract);

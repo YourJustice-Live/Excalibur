@@ -14,6 +14,9 @@ interface IJurisdiction {
     /// Contract URI
     function contractURI() external view returns (string memory);
 
+    /// Disable Case
+    function caseDisable(address caseContract) external;
+
     /// Join jurisdiction as member
     function join() external;
 
