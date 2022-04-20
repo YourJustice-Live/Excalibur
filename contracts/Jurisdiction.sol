@@ -145,7 +145,12 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, Recursion, ERC1
         require(_active[caseContract], "Case Not Active");
         _active[caseContract] = false;
     }
-    
+
+    /// Check if Case is Owned by This Contract (& Active)
+    function caseHas(address caseContract) public view override returns (bool){
+        return _active[caseContract];
+    }
+
     //** Custom Rating Functions
     
     /// Add Reputation (Positive or Negative)

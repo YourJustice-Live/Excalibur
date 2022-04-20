@@ -17,6 +17,9 @@ interface IJurisdiction {
     /// Disable Case
     function caseDisable(address caseContract) external;
 
+    /// Check if Case is Owned by This Contract (& Active)
+    function caseHas(address caseContract) external view returns (bool);
+
     /// Join jurisdiction as member
     function join() external;
 
