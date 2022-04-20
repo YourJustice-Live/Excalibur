@@ -271,7 +271,9 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         //TODO: Update Jurisdiction's Reputation
 
         //TODO: Update Avatar's Reputation
-        
+
+        //Rule Confirmed Event
+        emit RuleConfirmed(ruleId);
     }
 
     // function nextStage(string calldata uri) public {

@@ -62,4 +62,10 @@ interface ICase {
     /// Rule Reference Added
     event RuleAdded(address jurisdiction, uint256 ruleId);
 
+    //Rule Confirmed
+    event RuleConfirmed(uint256 ruleId);
+
+    //Rule Denied (Changed from Confirmed)
+    // event RuleDenied(uint256 ruleId);
+    
 }
