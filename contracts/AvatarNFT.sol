@@ -25,15 +25,14 @@ import "./abstract/CommonYJ.sol";
   */
 contract AvatarNFT is IAvatar, CommonYJ, ERC721URIStorage, IERC721Receiver {
     
-    
     //--- Storage
+
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-
     //Positive & Negative Reputation Tracking Per Domain (Personal,Community,Professional) 
     mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256))) internal _rep;  //[Token][Domain][bool] => Rep
-    mapping(address => uint256) public owners;  //Map Accounts to Tokens
+    mapping(address => uint256) internal _owners;  //Map Accounts to Tokens
 
 
     //--- Modifiers
@@ -46,20 +45,30 @@ contract AvatarNFT is IAvatar, CommonYJ, ERC721URIStorage, IERC721Receiver {
 
     }
 
+    //** Token Owner Index **/
+
     /// Map Account to Existing Token
     function tokenOwnerAdd(address owner, uint256 tokenId) external onlyOwner {
         _tokenOwnerAdd(owner, tokenId);
     }
 
+    /// Get Token ID by Address
+    function tokenByAddress(address owner) external view override returns (uint256){
+        return _owners[owner];
+    }
+
     /// Map Account to Existing Token
     function _tokenOwnerAdd(address owner, uint256 tokenId) internal {
         require(_exists(tokenId), "nonexistent token");
-        owners[owner] = tokenId;
+        require(_owners[owner] == 0, "Account Already Mapped to Token");
+        _owners[owner] = tokenId;
     }
 
+    //** Reputation **/
+    
     /// Add Reputation (Positive or Negative)
     function repAdd(uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating, uint8 amount) external override {
-        //[TBD] Validate
+        //Validate
 
         //Set
         _rep[tokenId][domain][rating] += amount;
@@ -72,11 +81,13 @@ contract AvatarNFT is IAvatar, CommonYJ, ERC721URIStorage, IERC721Receiver {
         return _rep[tokenId][domain][rating];
     }
     
+    //** Token Actions **/
+    
     /// Mint (Create New Avatar for oneself)
     function mint(string memory tokenURI) public override returns (uint256) {
         //One Per Account
         require(balanceOf(_msgSender()) == 0, "Requesting account already has an avatar");
-        require(owners[_msgSender()] == 0, "Account Already Mapped to Token");
+        
         //Mint
         uint256 tokenId = _createAvatar(_msgSender(), tokenURI);
         //Index Owner
@@ -109,7 +120,7 @@ contract AvatarNFT is IAvatar, CommonYJ, ERC721URIStorage, IERC721Receiver {
         //Done
         return tokenId;
     }
-    
+
     /// Create a new Avatar
     function _createAvatar(address to, string memory uri) internal returns (uint256){
         //Validate - Bot Protection

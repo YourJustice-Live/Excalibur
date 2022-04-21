@@ -11,6 +11,9 @@ interface IAvatar {
     /// Arbitrary contract designation signature
     // function role() external view returns (string memory);
 
+    /// Get Token ID by Address
+    function tokenByAddress(address owner) external view returns (uint256);
+
     /// Mint (Create New Avatar for oneself)
     function mint(string memory tokenURI) external returns (uint256);
 

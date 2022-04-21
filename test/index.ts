@@ -80,10 +80,14 @@ describe("Protocol", function () {
 
     it("Should Index Addresses", async function () {
       //Fetch Token ID By Address
-      let result = await avatarContract.owners(this.testerAddr);
+      let result = await avatarContract.tokenByAddress(this.testerAddr);
       //Check Token
       expect(result).to.equal(1);
     });
+
+    // it("[TBD] Should Merge Avatars", async function () {
+
+    // });
 
     it("Can add other people", async function () {
       // let test_uri = "TEST_URI_2";
