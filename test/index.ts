@@ -63,8 +63,6 @@ describe("Protocol", function () {
     });
     
     it("Can mint only one", async function () {
-      let test_uri = "ipfs://QmQxkoWcpFgMa7bCzxaANWtSt43J1iMgksjNnT4vM1Apd7"; //"TEST_URI";
-
       let tx = await avatarContract.connect(tester).mint(test_uri);
       tx.wait();
       // console.log("minting", tx);
@@ -74,18 +72,24 @@ describe("Protocol", function () {
       expect(result).to.equal(await tester.getAddress());
       //Check URI
       expect(await avatarContract.tokenURI(1)).to.equal(test_uri);
-
       //Another Call Should Fail
       await expect(
         avatarContract.connect(tester).mint(test_uri)
       ).to.be.revertedWith("Requesting account already has an avatar");
     });
 
-    
-    it("Can add other people", async function () {
-      let test_uri = "TEST_URI_2";
+    it("Should Index Addresses", async function () {
+      //Fetch Token ID By Address
+      let result = await avatarContract.owners(this.testerAddr);
+      //Check Token
+      expect(result).to.equal(1);
+    });
 
+    it("Can add other people", async function () {
+      // let test_uri = "TEST_URI_2";
       let tx = await avatarContract.connect(tester).add(test_uri);
+      await avatarContract.connect(tester).add(test_uri);
+      await avatarContract.connect(tester).add(test_uri);
       tx.wait();
       // console.log("minting", tx);
       //Fetch Token
@@ -95,7 +99,6 @@ describe("Protocol", function () {
       //Check URI
       expect(await avatarContract.tokenURI(2)).to.equal(test_uri);
     });
-
 
     it("Should NOT be transferable", async function () {
       //Should Fail to transfer -- "Sorry, Assets are non-transferable"
@@ -392,7 +395,7 @@ describe("Protocol", function () {
       let tx = await jurisdictionContract.connect(admin).caseMake(caseName, ruleRefArr, roleRefArr, posts);
       //Expect Valid Address
       expect(caseAddr).to.be.properAddress;
-      
+
       //Init Case Contract
       this.caseContract = await ethers.getContractFactory("Case").then(res => res.attach(caseAddr));
 
