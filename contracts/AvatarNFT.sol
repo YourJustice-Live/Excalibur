@@ -26,7 +26,7 @@ import "./abstract/CommonYJ.sol";
 contract AvatarNFT is IAvatar, CommonYJ, ERC721URIStorage, IERC721Receiver {
     
     //--- Storage
-
+    
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -69,7 +69,7 @@ contract AvatarNFT is IAvatar, CommonYJ, ERC721URIStorage, IERC721Receiver {
     /// Add Reputation (Positive or Negative)
     function repAdd(uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating, uint8 amount) external override {
         //Validate
-
+        require(_msgSender() == address(_HUB), "UNAUTHORIZED_ACCESS");
         //Set
         _rep[tokenId][domain][rating] += amount;
         //Event
