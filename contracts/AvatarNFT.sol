@@ -32,7 +32,7 @@ contract AvatarNFT is IAvatar, CommonYJ, ERC721URIStorage, IERC721Receiver {
 
     //Positive & Negative Reputation Tracking Per Domain (Personal,Community,Professional) 
     mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256))) internal _rep;  //[Token][Domain][bool] => Rep
-    mapping(address => uint256) internal _owners;  //Map Accounts to Tokens
+    mapping(address => uint256) internal _owners;  //Map Multiple Accounts to Tokens (Aliases)
 
 
     //--- Modifiers
@@ -55,6 +55,15 @@ contract AvatarNFT is IAvatar, CommonYJ, ERC721URIStorage, IERC721Receiver {
     /// Get Token ID by Address
     function tokenByAddress(address owner) external view override returns (uint256){
         return _owners[owner];
+    }
+
+    /**
+     * @dev See {IERC721-balanceOf}.
+     */
+    function balanceOf(address owner) public view override returns (uint256) {
+        require(owner != address(0), "ERC721: balance query for the zero address");
+        if(_owners[owner] != 0) return 1;
+        return super.balanceOf(owner);
     }
 
     /// Map Account to Existing Token
