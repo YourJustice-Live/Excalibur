@@ -15,5 +15,4 @@ interface IRating {
     /// Reputation Changed
     event ReputationChange(address indexed contractAddr, uint256 indexed tokenId, DataTypes.Domain domain, DataTypes.Rating rating, uint256 score);
 
-    
 }

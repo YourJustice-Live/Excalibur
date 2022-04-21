@@ -268,10 +268,17 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     /// Rule (Action) Confirmed
     function _ruleConfirmed(uint256 ruleId) internal {
 
-        //TODO: Update Jurisdiction's Reputation
 
-        //TODO: Update Avatar's Reputation
+        // DataTypes.Rule memory rule = ruleGet(ruleId);
+        // _rules[ruleId].jurisdiction = jurisdiction_;
+        // _rules[ruleId].ruleId = ruleId_;
 
+        //TODO! Get Token ID For Subject
+        // uint256 tokenId
+
+        //Apply to Subject(s)
+        // _HUB.repAddAvatar()
+        
         //Rule Confirmed Event
         emit RuleConfirmed(ruleId);
     }

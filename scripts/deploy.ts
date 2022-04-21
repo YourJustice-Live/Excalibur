@@ -17,6 +17,8 @@ const contractAddr = {
 
 async function main() {
 
+  let hubContract;
+
   //--- Config
   if(!contractAddr.config){
     //Deploy Config
@@ -31,7 +33,7 @@ async function main() {
   //--- Case
   if(!contractAddr.case){
     //Deploy Case
-    let hubContract = await ethers.getContractFactory("Case").then(res => res.deploy());
+    hubContract = await ethers.getContractFactory("Case").then(res => res.deploy());
     await hubContract.deployed();
     //Set Address
     contractAddr.case = hubContract.address;
@@ -42,7 +44,11 @@ async function main() {
   //--- Hub
   if(!contractAddr.hub){
     //Deploy Hub
-    let caseContract = await ethers.getContractFactory("Hub").then(res => res.deploy(contractAddr.config, contractAddr.case));
+    let caseContract = await ethers.getContractFactory("Hub").then(res => res.deploy(
+        contractAddr.config, 
+        // contractAddr.avatar, 
+        contractAddr.case,
+      ));
     await caseContract.deployed();
     //Set Address
     contractAddr.hub = caseContract.address;
@@ -59,6 +65,11 @@ async function main() {
     contractAddr.avatar = avatarContract.address;
     //Log
     console.log("Deployed Avatar Contract to " + contractAddr.avatar);
+
+    if(!!hubContract){  //If Deployed Together
+      //Set to HUB
+      hubContract.setAvatarContract(contractAddr.avatar);
+    }
   }
 
   //--- Action Repo

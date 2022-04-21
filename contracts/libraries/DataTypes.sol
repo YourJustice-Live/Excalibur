@@ -117,10 +117,6 @@ library DataTypes {
     
     // Rule Object
     struct Rule {
-        // string name;
-        // string uri;
-        //eventId: 1, 
-
         // uint256 about;    //About What (Token URI +? Contract Address)
         bytes32 about;    //About What (Action's GUID)      //TODO: Maybe Call This 'action'? 
 
@@ -205,7 +201,7 @@ library DataTypes {
         uint256 ruleId;
         bool decision;
     }
-    
+
     //Role Name Input Struct
     // struct InputRoleMapping {
     //     string role;

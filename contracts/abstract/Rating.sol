@@ -14,19 +14,26 @@ import "../interfaces/IRating.sol";
 contract Rating is IRating {
     
     // Reputation Tracking - Positive & Negative Reputation Tracking Per Domain (Environmantal, Personal, Community, Professional) For Tokens in Contracts
-    mapping(address => mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256)))) internal _rep;
+    
+    // mapping(address => mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256)))) internal _rep;
+    // [Contract][Token] => [Domain][Rating] => uint
+
+    mapping(uint256 => mapping(address => mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256))))) internal _rep;
+    // [Chain][Contract][Token] => [Domain][Rating] => uint     //Crosschain Support
 
     /// Fetch Reputation 
     function getRepForDomain(address contractAddr, uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating) public view override returns (uint256){
-        return _rep[contractAddr][tokenId][domain][rating];
+        return _rep[block.chainid][contractAddr][tokenId][domain][rating];
     }
     
     /// Add Reputation (Positive or Negative)
     function _repAdd(address contractAddr, uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating, uint8 score) internal {
         //Update Reputation
-        _rep[contractAddr][tokenId][domain][rating] += score;
+        _rep[block.chainid][contractAddr][tokenId][domain][rating] += score;
         //Reputation Change Event
         emit ReputationChange(contractAddr, tokenId, domain, rating, score);
     }
+
+
 
 }
