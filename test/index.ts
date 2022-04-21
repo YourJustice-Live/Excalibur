@@ -121,6 +121,7 @@ describe("Protocol", function () {
       expect(await avatarContract.connect(tester).tokenURI(1)).to.equal(test_uri);
     });
 
+    /* BLOCKED FOR SECURITY REASONS
     it("Can collect rating", async function () {
       //Rep Call Data      
       let repCall = { tokenId:1, domain:1, rating:1, amount:2};
@@ -133,7 +134,17 @@ describe("Protocol", function () {
       //Other Domain Rep - Should be 0
       expect(await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain + 1, repCall.rating)).to.equal(0);
     });
-    
+    */
+
+    it("Should protect from unauthorized reputation changes", async function () {
+      //Rep Call Data      
+      let repCall = { tokenId:1, domain:1, rating:1, amount:2};
+      //Should Fail - Require Permissions
+      await expect(
+        avatarContract.repAdd(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount)
+      ).to.be.revertedWith("UNAUTHORIZED_ACCESS");
+    });
+
   }); //Avatar
 
 
