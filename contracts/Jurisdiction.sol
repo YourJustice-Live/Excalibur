@@ -78,9 +78,11 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, Recursion, ERC1
         name = "Anti-Scam Jurisdiction";
         // symbol = "YJ_J1";
         //Init Default Jurisdiction Roles
-        _roleCreate("admin");
+        _roleCreate("creator");
         _roleCreate("member");
         _roleCreate("judge");
+        //Assign Creator
+        _roleAssign(tx.origin, "creator");
     }
 
     //** Case Functions
@@ -133,11 +135,6 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, Recursion, ERC1
         // return (caseId, caseContract);
         return caseContract;
     }
-    
-    /// Get Case Address by Case ID     //DEPRECATED
-    // function getCaseById(uint256 caseId) public view returns (address) {
-    //     return _cases[caseId];
-    // }
     
     /// Disable Case
     function caseDisable(address caseContract) public override onlyOwner {
