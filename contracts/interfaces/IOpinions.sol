@@ -7,11 +7,14 @@ interface IOpinions {
     
     //--- Functions
 
-    /// Fetch Opinion 
-    function getRepForDomain(address contractAddr, uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating) external view returns (uint256);
-
     /// Fetch Opinion (Multichain)
     function getRepForDomain(uint256 chainId, address contractAddr, uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating) external view returns (uint256);
+
+    /// Fetch Opinion (Current Chain)
+    function getRepForDomain(address contractAddr, uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating) external view returns (uint256);
+
+    /// Fetch Opinion (Self)
+    function getRepForDomain(uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating) external view returns (uint256);
 
     //--- Events
 

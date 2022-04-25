@@ -10,6 +10,8 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";  //To Hold NF
 import "./interfaces/IAvatar.sol";
 import "./libraries/DataTypes.sol";
 import "./abstract/CommonYJ.sol";
+import "./abstract/Opinions.sol";
+
 
 /**
  * @title Avatar as NFT
@@ -23,7 +25,12 @@ import "./abstract/CommonYJ.sol";
  *  - [TODO] Orphan tokens can be claimed
  *  - [TODO] Contract is Updatable
   */
-contract AvatarNFT is IAvatar, CommonYJ, ERC721URIStorage, IERC721Receiver {
+contract AvatarNFT is 
+        IAvatar, 
+        CommonYJ, 
+        Opinions,
+        ERC721URIStorage, 
+        IERC721Receiver {
     
     //--- Storage
     
@@ -31,7 +38,7 @@ contract AvatarNFT is IAvatar, CommonYJ, ERC721URIStorage, IERC721Receiver {
     Counters.Counter private _tokenIds;
 
     //Positive & Negative Reputation Tracking Per Domain (Personal,Community,Professional) 
-    mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256))) internal _rep;  //[Token][Domain][bool] => Rep
+    // mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256))) internal _rep;  //[Token][Domain][bool] => Rep
     mapping(address => uint256) internal _owners;  //Map Multiple Accounts to Tokens (Aliases)
 
 
@@ -80,15 +87,18 @@ contract AvatarNFT is IAvatar, CommonYJ, ERC721URIStorage, IERC721Receiver {
         //Validate
         require(_msgSender() == address(_HUB), "UNAUTHORIZED_ACCESS");
         //Set
-        _rep[tokenId][domain][rating] += amount;
+        // _rep[tokenId][domain][rating] += amount;
+        _repAdd(address(this), tokenId, domain, rating, amount);
         //Event
-        emit ReputationChange(tokenId, domain, rating, _rep[tokenId][domain][rating]);
+        // emit ReputationChange(tokenId, domain, rating, _rep[tokenId][domain][rating]);
     }
-
+    
+    /* Inherited from Opinions
     /// Fetch Avatar's Reputation 
     function getRepForDomain(uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating) public view returns (uint256){
         return _rep[tokenId][domain][rating];
     }
+    */
     
     //** Token Actions **/
     
