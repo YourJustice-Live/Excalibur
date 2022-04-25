@@ -12,11 +12,10 @@ import "./interfaces/IJurisdiction.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
 // import "./libraries/DataTypes.sol";
-// import "./abstract/Opinions.sol";
 import "./abstract/ERC1155Roles.sol";
 import "./abstract/CommonYJ.sol";
 import "./abstract/Rules.sol";
-import "./abstract/Rating.sol";
+import "./abstract/Opinions.sol";
 import "./abstract/Recursion.sol";
 
 
@@ -37,7 +36,14 @@ import "./abstract/Recursion.sol";
  * V2:  
  * - [TODO] NFT Trackers - Assign Avatars instead of Accounts & Track the owner of the Avatar NFT
  */
-contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, Recursion, ERC1155Roles {
+contract Jurisdiction is 
+        IJurisdiction, 
+        Rules, 
+        Opinions, 
+        CommonYJ, 
+        Recursion, 
+        ERC1155Roles {
+
     //--- Storage
     string public constant override symbol = "YJ_Jurisdiction";
     using Strings for uint256;
@@ -53,11 +59,11 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, Recursion, ERC1
     //Contract URI
     string internal _contract_uri;
 
-    // mapping(string => uint256) internal _roles;     //NFTs as Roles
-    // mapping(uint256 => address) internal _cases;      // Mapping for Case Contracts      //DEPRECATED - No need for Case IDs, Use Hash
-    mapping(address => bool) internal _active;      // Mapping for Case Contracts
+    // mapping(string => uint256) internal _roles;    //NFTs as Roles
+    // mapping(uint256 => address) internal _cases;   // Mapping for Case Contracts      //DEPRECATED - No need for Case IDs, Use Hash
+    mapping(address => bool) internal _active;        // Mapping for Case Contracts
 
-    // mapping(uint256 => string) internal _rulesURI;      // Mapping Metadata URIs for Individual Role 
+    // mapping(uint256 => string) internal _rulesURI; // Mapping Metadata URIs for Individual Role 
     // mapping(uint256 => string) internal _uri;
 
     //Post Input Struct
@@ -78,11 +84,11 @@ contract Jurisdiction is IJurisdiction, Rules, Rating, CommonYJ, Recursion, ERC1
         name = "Anti-Scam Jurisdiction";
         // symbol = "YJ_J1";
         //Init Default Jurisdiction Roles
-        _roleCreate("creator");
+        _roleCreate("admin"); 
         _roleCreate("member");
         _roleCreate("judge");
-        //Assign Creator
-        _roleAssign(tx.origin, "creator");
+        //Assign Creator as First Admin
+        _roleAssign(tx.origin, "admin");
     }
 
     //** Case Functions
