@@ -110,7 +110,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
                 uint256 id = ids[i];
                 if(balanceOf(to, id) == 0){
                     unchecked {
-                        ++_uniqueMembersCount[id];
+                        // ++_uniqueMembersCount[id];
                         _uniqueMembers[id].push(to);
                     }
                 }
@@ -120,10 +120,8 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
             for (uint256 i = 0; i < ids.length; ++i) {
                 uint256 id = ids[i];
                 if(balanceOf(from, id) == amounts[i]){   //Burn All
-                    --_uniqueMembersCount[id];
-
+                    // --_uniqueMembersCount[id];
                     _uniqueMembers[id].removeItem(from);
-
                 }
             }
         }
