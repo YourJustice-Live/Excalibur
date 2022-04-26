@@ -5,7 +5,7 @@ interface IERC1155GUID {
 
     //--- Functions 
 
-    /// Unique Members w/Token
+    /// Unique Members Count (w/Token)
     function uniqueMembers(uint256 id) external view returns (uint256);
 
     /// Check if account is assigned to role

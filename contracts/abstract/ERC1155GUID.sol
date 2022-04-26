@@ -19,7 +19,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
 
     using Counters for Counters.Counter;
     Counters.Counter internal _tokenIds; //Track Last Token ID
-    mapping(uint256 => uint256) private _uniqueMembers; //Index Unique Members by Role
+    mapping(uint256 => uint256) private _uniqueMembersCount; //Index Unique Members by Role
     mapping(bytes32 => uint256) internal _GUID;     //NFTs as GUID
 
     //--- Modifiers
@@ -32,9 +32,9 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
 
     //--- Functions
 
-    /// Unique Members w/Token
+    /// Unique Members Count (w/Token)
     function uniqueMembers(uint256 id) public view override returns (uint256) {
-        return _uniqueMembers[id];
+        return _uniqueMembersCount[id];
     }
 
     /**
@@ -104,7 +104,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
                 uint256 id = ids[i];
                 if(balanceOf(to, id) == 0){
                     unchecked {
-                        ++_uniqueMembers[id];
+                        ++_uniqueMembersCount[id];
                     }
                 }
             }
@@ -113,7 +113,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
             for (uint256 i = 0; i < ids.length; ++i) {
                 uint256 id = ids[i];
                 if(balanceOf(from, id) == amounts[i]){   //Burn All
-                    --_uniqueMembers[id];
+                    --_uniqueMembersCount[id];
                 }
             }
         }
