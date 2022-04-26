@@ -38,7 +38,7 @@ contract AvatarNFT is
     Counters.Counter private _tokenIds;
 
     //Positive & Negative Reputation Tracking Per Domain (Personal,Community,Professional) 
-    // mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256))) internal _rep;  //[Token][Domain][bool] => Rep
+    // mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256))) internal _rep;  //[Token][Domain][bool] => Rep     //Inherited from Opinions
     mapping(address => uint256) internal _owners;  //Map Multiple Accounts to Tokens (Aliases)
 
 
@@ -92,13 +92,6 @@ contract AvatarNFT is
         //Event
         // emit ReputationChange(tokenId, domain, rating, _rep[tokenId][domain][rating]);
     }
-    
-    /* Inherited from Opinions
-    /// Fetch Avatar's Reputation 
-    function getRepForDomain(uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating) public view returns (uint256){
-        return _rep[tokenId][domain][rating];
-    }
-    */
     
     //** Token Actions **/
     
