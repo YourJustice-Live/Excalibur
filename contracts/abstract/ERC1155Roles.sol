@@ -66,13 +66,11 @@ abstract contract ERC1155Roles is IERC1155Roles, ERC1155GUID {
     /// Assign Someone Else to a Role
     function _roleAssign(address account, string memory role) internal roleExists(role) {
         _GUIDAssign(account, _stringToBytes32(role));
-        //TODO: Role Assigned Event?
     }
 
     /// Remove Someone Else from a Role
     function _roleRemove(address account, string memory role) internal roleExists(role) {
         _GUIDRemove(account, _stringToBytes32(role));
-        //TODO: Role Removed Event?
     }
 
     /// Translate Role to Token ID
