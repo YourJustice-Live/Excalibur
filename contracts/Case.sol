@@ -173,9 +173,9 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
     /// Add Rule Reference
     function ruleAdd(address jurisdiction_, uint256 ruleId_) external {
-        //TODO: Validate Jurisdiciton implements IRules (ERC165)
-
-        //Validate
+        //Validate Jurisdiciton implements IRules (ERC165)
+        require(IERC165(jurisdiction_).supportsInterface(type(IRules).interfaceId), "Implmementation Does Not Support Rules Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
+        //Validate Sender
         require (_msgSender() == address(_HUB) || roleHas(_msgSender(), "admin") || owner() == _msgSender(), "EXPECTED HUB OR ADMIN");
         //Run
         _ruleAdd(jurisdiction_, ruleId_);
