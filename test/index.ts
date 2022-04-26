@@ -261,7 +261,7 @@ describe("Protocol", function () {
       expect(await this.jurisdictionContract.roleHas(testerAddr, "judge")).to.equal(true);
     });
 
-    it("Should Change Roles", async function () {
+    it("Can change Roles (Promote / Demote)", async function () {
       //Check Before
       expect(await this.jurisdictionContract.roleHas(this.tester4Addr, "admin")).to.equal(false);
       //Join Jurisdiction
