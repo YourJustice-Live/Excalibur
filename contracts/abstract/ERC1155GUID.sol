@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 // import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "../interfaces/IERC1155GUID.sol";
+import "../libraries/AddressArray.sol";
 
 /**
  * @title 2D ERC1155 -- Members + Groups (Meaningful Global Unique Identifiers for each Token ID)
@@ -16,10 +17,14 @@ import "../interfaces/IERC1155GUID.sol";
 abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
 
     //--- Storage
+    
 
     using Counters for Counters.Counter;
     Counters.Counter internal _tokenIds; //Track Last Token ID
-    mapping(uint256 => uint256) private _uniqueMembersCount; //Index Unique Members by Role
+    
+    using AddressArray for address[];
+    mapping(uint256 => address[]) private _uniqueMembers; //Index Unique Members by Role
+    mapping(uint256 => uint256) private _uniqueMembersCount; //Count Unique Members by Role
     mapping(bytes32 => uint256) internal _GUID;     //NFTs as GUID
 
     //--- Modifiers
@@ -34,7 +39,8 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
 
     /// Unique Members Count (w/Token)
     function uniqueMembers(uint256 id) public view override returns (uint256) {
-        return _uniqueMembersCount[id];
+        // return _uniqueMembersCount[id];
+        return _uniqueMembers[id].length;
     }
 
     /**
@@ -105,6 +111,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
                 if(balanceOf(to, id) == 0){
                     unchecked {
                         ++_uniqueMembersCount[id];
+                        _uniqueMembers[id].push(to);
                     }
                 }
             }
@@ -114,6 +121,9 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
                 uint256 id = ids[i];
                 if(balanceOf(from, id) == amounts[i]){   //Burn All
                     --_uniqueMembersCount[id];
+
+                    _uniqueMembers[id].removeItem(from);
+
                 }
             }
         }
