@@ -11,7 +11,8 @@ interface ICase {
     /// Initialize
     // function initialize(string memory name_, string memory symbol_, address hub) external ;
     // function initialize(string memory name_, string memory symbol_, address hub, DataTypes.RuleRef[] memory addRules) external ;
-    function initialize(string memory name_, string memory symbol_, address hub, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external ;
+    // function initialize(string memory name_, string memory symbol_, address hub, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external ;
+    function initialize(string memory name_, string memory symbol_, address hub, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles, address container) external ;
 
     /// Contract URI
     function contractURI() external view returns (string memory);

@@ -27,7 +27,7 @@ contract Hub is IHub, Ownable {
     // address public beaconJurisdiction;  //TBD
 
     //Avatar Contract Address
-    address public avatarContract;
+    address public override avatarContract;
 
     // using Counters for Counters.Counter;
     // Counters.Counter internal _tokenIds; //Track Last Token ID
@@ -121,7 +121,8 @@ contract Hub is IHub, Ownable {
                 "YJ_CASE",      //Symbol
                 address(this),   //Hub
                 addRules,
-                assignRoles
+                assignRoles,
+                _msgSender()    //Birth Parent (Container)
             )
         );
 
@@ -138,11 +139,11 @@ contract Hub is IHub, Ownable {
         repAdd(avatarContract, tokenId, domain, rating, amount);
     }
 
-    /// Add Reputation (Positive or Negative)
+    /// Add Reputation (Positive or Negative)       /// Opinion Updated
     function repAdd(address contractAddr, uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating, uint8 amount) public {
 
+        //TODO: Validate - Known Jurisdiction
 
-        //TODO: Update Reputation in Jurisdiction's 
 
         //TODO: Update Avatar's Reputation //?
 
@@ -166,7 +167,7 @@ contract Hub is IHub, Ownable {
     /// Upgrade Case Implementation
     function upgradeCaseImplementation(address newImplementation) public onlyOwner {
         //Validate Interface
-        // require(IERC165(newImplementation).supportsInterface(type(ICase).interfaceId), "Implmementation Does Not Support ICase Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
+        // require(IERC165(newImplementation).supportsInterface(type(ICase).interfaceId), "Implmementation Does Not Support Case Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
 
         //Upgrade Beacon
         UpgradeableBeacon(beaconCase).upgradeTo(newImplementation);

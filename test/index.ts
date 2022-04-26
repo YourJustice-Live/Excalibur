@@ -503,21 +503,28 @@ describe("Protocol", function () {
       ).to.be.revertedWith("ROLE:JUDGE_ONLY");
     });
 
-    it("Should Appoint Judge", async function () {
-      //Assign Admin
-      await this.caseContract.connect(admin).roleAssign(this.tester3Addr, "judge");
-      //Expect Mint/Transfer Event
-      // await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(2);  
+    it("Should Validate Judge with parent jurisdiction", async function () {
+      //Validate
+      await expect(
+        this.caseContract.connect(admin).roleAssign(this.tester3Addr, "judge")
+      ).to.be.revertedWith("User Required to hold same role in Jurisdiction");
+    });
+
+    it("Should Appoint Judge From the parent jurisdiction", async function () {
+      //Check Before
+      // expect(await this.jurisdictionContract.roleHas(this.testerAddr, "judge")).to.equal(true);
+      //Assign Judge
+      await this.caseContract.connect(admin).roleAssign(this.testerAddr, "judge");
       //Check After
-      expect(await this.caseContract.roleHas(this.tester3Addr, "judge")).to.equal(true);
+      expect(await this.caseContract.roleHas(this.testerAddr, "judge")).to.equal(true);
     });
     
     it("Should Accept Verdict URI & Close Case", async function () {
       let verdict = [{ ruleId:1, decision: true }];
       //Submit Verdict & Close Case
-      let tx = await this.caseContract.connect(tester3).stageVerdict(verdict, test_uri);
+      let tx = await this.caseContract.connect(tester).stageVerdict(verdict, test_uri);
       //Expect Verdict Event
-      await expect(tx).to.emit(this.caseContract, 'Verdict').withArgs(test_uri, this.tester3Addr);
+      await expect(tx).to.emit(this.caseContract, 'Verdict').withArgs(test_uri, this.testerAddr);
       //Expect State Event
       await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(6);
     });

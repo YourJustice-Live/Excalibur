@@ -9,7 +9,8 @@ import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/ERC1155RolesUpgradable.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IRules.sol";
-// import "./interfaces/IJurisdiction.sol";
+import "./interfaces/IERC1155Roles.sol";
+import "./interfaces/IJurisdiction.sol";
 
 /**
  * @title Case Contract
@@ -55,16 +56,14 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         address hub 
         , DataTypes.RuleRef[] memory addRules
         , DataTypes.InputRole[] memory assignRoles
-
+        , address container
     ) public override initializer {
-        // require(jurisdiction != address(0), "INVALID JURISDICTION");
-        // _jurisdiction = _msgSender();   //Do I Even need this here? The jurisdiciton points to it's cases...
-
+        //Set Parent Container
+        _setParentCTX(container);
         //Initializers
         __ERC1155RolesUpgradable_init("");
         __CommonYJ_init(hub);
-
-        //State
+        //Identifiers
         name = name_;
         symbol = symbol_;
 
@@ -84,11 +83,19 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         for (uint256 i = 0; i < assignRoles.length; ++i) {
             _roleAssign(assignRoles[i].account, assignRoles[i].role);
         }
-
         //Add Rules
         for (uint256 i = 0; i < addRules.length; ++i) {
             _ruleAdd(addRules[i].jurisdiction, addRules[i].ruleId);
         }
+    }
+
+    /// Set Parent Container
+    function _setParentCTX(address container) internal {
+        //Validate
+        require(container != address(0), "Invalid Container Address");
+        require(IERC165(container).supportsInterface(type(IJurisdiction).interfaceId), "Implmementation Does Not Support Jurisdiction Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
+        //Set        
+        _jurisdiction = container;
     }
     
     /// Assign to a Role
@@ -100,7 +107,12 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
             // || msg.sender == address(_HUB)   //Through the Hub
             , "INVALID_PERMISSIONS");
 
-        // console.log("Case Role Assign:", role);
+        //Special Validations
+        if (keccak256(abi.encodePacked(role)) == keccak256(abi.encodePacked("judge"))){
+            require(_jurisdiction != address(0), "Unknown Parent Container");
+            //Validate: Must Hold same role in Containing Jurisdiction
+            require(IERC1155Roles(_jurisdiction).roleHas(account, role), "User Required to hold same role in Jurisdiction");
+        }
 
         //Add
         _roleAssign(account, role);
@@ -268,16 +280,26 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     /// Rule (Action) Confirmed
     function _ruleConfirmed(uint256 ruleId) internal {
 
-
         // DataTypes.Rule memory rule = ruleGet(ruleId);
+        
         // _rules[ruleId].jurisdiction = jurisdiction_;
         // _rules[ruleId].ruleId = ruleId_;
+        
 
         //TODO! Get Token ID For Subject
-        // uint256 tokenId
+        // for (uint256 i = 0; i < assignRoles.length; ++i) {
 
-        //Apply to Subject(s)
-        // _HUB.repAddAvatar()
+        // }
+        // uint256 tokenId = 
+
+        //Register Rep in Jurisdiction
+        // IJurisdiction(_jurisdiction).repAdd(contractAddr, tokenId, domain, rating, amount);
+
+
+        //Check if Contract is Avatar Contract
+            //TODO: Register Rep To Avatar Contract
+            // _HUB.repAddAvatar()
+
         
         //Rule Confirmed Event
         emit RuleConfirmed(ruleId);
@@ -295,11 +317,8 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         return _contract_uri;
     }
 
- 
-    //--- Dev Playground [WIP]
 
-    /// TODO: Get Avatar NFT By Account
-    // function xxx () returns () {}
+    //--- Dev Playground [WIP]
 
     /* Should Inherit From J's Rules / Actions
     /// Set Role's Name Mapping
