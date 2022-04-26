@@ -147,8 +147,6 @@ describe("Protocol", function () {
 
   }); //Avatar
 
-
-
   /**
    * Action Repository
    */
@@ -225,6 +223,15 @@ describe("Protocol", function () {
       await this.jurisdictionContract.connect(tester).join();
       //Check After
       expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(true);
+    });
+    
+    it("Users can leave", async function () {
+      //Check Before
+      expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(true);
+      //Join Jurisdiction
+      await this.jurisdictionContract.connect(tester).leave();
+      //Check After
+      expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(false);
     });
 
     it("Owner can appoint Admin", async function () {
