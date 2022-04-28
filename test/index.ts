@@ -38,6 +38,9 @@ describe("Protocol", function () {
     //Deploy Avatar
     avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract.address));
 
+    //Set Avatar Contract to Hub
+    hubContract.setAvatarContract(avatarContract.address);
+
     //Populate Accounts
     [owner, admin, tester, tester2, tester3, tester4, ...addrs] = await ethers.getSigners();
     //Addresses
