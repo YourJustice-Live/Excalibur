@@ -158,12 +158,12 @@ contract Jurisdiction is
     
     /// Add Reputation (Positive or Negative)
     function repAdd(address contractAddr, uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating, uint8 amount) external {
-        
-        //TODO Validate - Called by Child Case
-
-
+        //Validate - Called by Child Case
+        require(_active[_msgSender()], "NOT A VALID CASE");
         //Run
         _repAdd(contractAddr, tokenId, domain, rating, amount);
+        //TODO: Update Hub
+        
     }
 
     //** Role Management
