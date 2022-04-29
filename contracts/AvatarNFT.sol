@@ -88,7 +88,7 @@ contract AvatarNFT is
     //** Reputation **/
     
     /// Add Reputation (Positive or Negative)
-    function repAdd(uint256 tokenId, string calldata domain, DataTypes.Rating rating, uint8 amount) external override {
+    function repAdd(uint256 tokenId, string calldata domain, bool rating, uint8 amount) external override {
         //Validate - Only By Hub
         require(_msgSender() == address(_HUB), "UNAUTHORIZED_ACCESS");
         //Set

@@ -20,6 +20,9 @@ interface IHub {
     //Get Avatar Contract Address
     function avatarContract() external view returns (address);
 
+    /// Add Reputation (Positive or Negative)       /// Opinion Updated
+    function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external;
+
     //--- Events
 
     /// Case Implementation Contract Updated

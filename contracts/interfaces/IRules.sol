@@ -34,7 +34,7 @@ interface IRules {
     /// Rule's Effects
     // event RuleEffects(uint256 indexed id, int8 environmental, int8 personal, int8 social, int8 professional);
     /// Generic Role Effect
-    event RuleEffect(uint256 indexed id, bool direction, int8 value, string name);
+    event RuleEffect(uint256 indexed id, bool direction, uint8 value, string name);
 
     /// Action Confirmation Change
     event Confirmation(uint256 indexed id, string ruling, bool evidence, uint witness);

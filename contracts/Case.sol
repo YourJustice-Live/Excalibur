@@ -310,7 +310,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
             console.log("Case: Update Rep for Subject:", subjects[i], tokenId);
 
-            
+
             // console.log("Case: Update Rep for Subject:", subjects[i]);
             // console.log("Case: Update Rep for Subject Token:", tokenId);
             if(tokenId > 0){
@@ -318,12 +318,11 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
                 DataTypes.Effect[] memory effects = ruleGetEffects(ruleId);
                 //Run Each Effect
                 for (uint256 i = 0; i < effects.length; ++i) {
-
-                    //{name:'professional', value:5, direction:false}
-
-
+                    DataTypes.Effect memory effect = effects[i];
+                    bool direction = effect.direction;
                     //Register Rep in Jurisdiction
-                    // IJurisdiction(_jurisdiction).repAdd(address(avatarContract), tokenId, rule.effects.domain, rule.effects.rating, rule.effects.amount);
+                        //{name:'professional', value:5, direction:false}
+                    IJurisdiction(_jurisdiction).repAdd(address(avatarContract), tokenId, effect.name, direction, effect.value);
                 }
             }
 

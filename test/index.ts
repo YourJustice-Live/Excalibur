@@ -384,12 +384,8 @@ describe("Protocol", function () {
       // //Expect Event
       // await expect(tx).to.emit(avatarContract, 'ReputationChange').withArgs(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount);
 
-
-
       //Validate State
-      // getRepForDomain(address contractAddr, uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating) public view override returns (uint256){
-
-
+      // getRepForDomain(address contractAddr, uint256 tokenId, string domain, bool rating) public view override returns (uint256){
 
       // let rep = await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain, repCall.rating);
       // expect(rep).to.equal(repCall.amount);
@@ -405,7 +401,6 @@ describe("Protocol", function () {
    * Case Contract
    */
   describe("Case", function () {
-    
 
     it("Should be Created (by Jurisdiction)", async function () {
     
@@ -429,7 +424,6 @@ describe("Protocol", function () {
           uri: test_uri,
         }
       ];
-      // console.log("Make Case With Params:", ruleRefArr, roleRefArr);
       //Simulate - Get New Case Address
       let caseAddr = await jurisdictionContract.connect(admin).callStatic.caseMake(caseName, ruleRefArr, roleRefArr, posts);
       //Create New Case
@@ -438,11 +432,6 @@ describe("Protocol", function () {
       expect(caseAddr).to.be.properAddress;
       //Init Case Contract
       this.caseContract = await ethers.getContractFactory("Case").then(res => res.attach(caseAddr));
-
-      // console.log("case", this.caseContract);
-      // console.log("jurisdiction's Make Case TX:", tx);
-      // console.log("jurisdiction's Case #1:", caseAddr);
-
       //Expect Case Created Event
       await expect(tx).to.emit(jurisdictionContract, 'CaseCreated').withArgs(1, caseAddr);
       //Expect Post Event
@@ -454,7 +443,7 @@ describe("Protocol", function () {
       expect(await this.caseContract.roleHas(this.adminAddr, "admin")).to.equal(true);
     });
 
-    it("Tester should be in the subject role", async function () {
+    it("Tester expected to be in the subject role", async function () {
       expect(await this.caseContract.roleHas(this.tester2Addr, "subject")).to.equal(true);
     });
 

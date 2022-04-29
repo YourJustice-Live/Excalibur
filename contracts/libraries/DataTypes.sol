@@ -23,12 +23,13 @@ library DataTypes {
         Community,
         Professional
     }
+    /* DEPRECAED - Using Boolean
     /// Rating Categories
     enum Rating {
         Negative,   //0
         Positive    //1
     }
-    
+    */
 
     //--- Cases
     //Case Lifecycle
@@ -149,7 +150,7 @@ library DataTypes {
     struct Effect {
         string name;
         // value: 5
-        int8 value;
+        uint8 value;
         // Direction: -
         bool direction;
         // Confidence/Strictness: [?]
