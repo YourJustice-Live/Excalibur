@@ -14,8 +14,7 @@ import "../libraries/DataTypes.sol";
  * @dev To Extend or Be Used by Jurisdictions
  * - Hold, Update, Delete & Serve Rules
  */
-// abstract contract Rules is IRules, Opinions {
-contract Rules is IRules {
+abstract contract Rules is IRules {
     
     //--- Storage
 
@@ -102,13 +101,17 @@ contract Rules is IRules {
     function confirmationGet(uint256 id) public view override returns (DataTypes.Confirmation memory){
         return _ruleConfirmation[id];
     }
-
+    /* REMOVED - This should probably be in the implementing Contract
     /// Update Confirmation Method for Action
     function confirmationSet(uint256 id, DataTypes.Confirmation memory confirmation) external override {
         //TODO: Validate Caller's Permissions
         _confirmationSet(id, confirmation);
     }
-    
+    */
+    /// Get Rule's Effects
+    function effectsGet(uint256 id) public view override returns (DataTypes.Effect[] memory){
+        return _effects[id];
+    }
     /// Set Action's Confirmation Object
     function _confirmationSet(uint256 id, DataTypes.Confirmation memory confirmation) internal {
         _ruleConfirmation[id] = confirmation;

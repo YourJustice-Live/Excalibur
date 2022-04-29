@@ -147,6 +147,13 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         return IRules(_rules[ruleRefId].jurisdiction).confirmationGet(_rules[ruleRefId].ruleId);
     }
 
+    /// Get Rule's Effects
+    function ruleGetEffects(uint256 ruleRefId) public view returns (DataTypes.Effect[] memory){
+        //Validate
+        require (ruleRefExist(ruleRefId), "INEXISTENT_RULE_REF_ID");
+        return IRules(_rules[ruleRefId].jurisdiction).effectsGet(_rules[ruleRefId].ruleId);
+    }
+
     /// Add Post 
     /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
     // function post(uint256 token_id, string calldata uri) external override {     //Post by Token ID (May later use Entity GUID as Caller)
@@ -213,7 +220,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         //Validate - Has Subject
         require(uniqueRoleMembersCount("subject") > 0 , "ROLE:MISSING_SUBJECT");
         //Validate - Prevent Self Report? (subject != affected)
-        
+
         //Validate Witnesses
         for (uint256 ruleId = 1; ruleId <= _ruleIds.current(); ++ruleId) {
             // DataTypes.Rule memory rule = ruleGet(ruleId);

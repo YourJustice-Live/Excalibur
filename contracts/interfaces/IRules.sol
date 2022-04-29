@@ -12,10 +12,13 @@ interface IRules {
     function ruleGet(uint256 id) external view returns (DataTypes.Rule memory);
 
     /// Update Confirmation Method for Action
-    function confirmationSet(uint256 id, DataTypes.Confirmation memory confirmation) external;
+    // function confirmationSet(uint256 id, DataTypes.Confirmation memory confirmation) external;
 
     /// Get Rule's Confirmation Method
     function confirmationGet(uint256 id) external view returns (DataTypes.Confirmation memory);
+
+    /// Get Rule's Effects
+    function effectsGet(uint256 id) external view returns (DataTypes.Effect[] memory);
 
     //--- Events
 
