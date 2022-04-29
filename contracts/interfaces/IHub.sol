@@ -17,6 +17,9 @@ interface IHub {
     // function caseMake(string calldata name_) external returns (address);
     function caseMake(string calldata name_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external returns (address);
 
+    //Get Avatar Contract Address
+    function avatarContract() external view returns (address);
+
     //--- Events
 
     /// Case Implementation Contract Updated

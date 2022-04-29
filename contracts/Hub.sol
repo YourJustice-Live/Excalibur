@@ -55,17 +55,14 @@ contract Hub is IHub, Ownable {
     constructor(address config, address caseContract){
         //Set Protocol's Config Address
         _setConfig(config);
-        
         //Init Case Contract Beacon
         UpgradeableBeacon _beacon = new UpgradeableBeacon(caseContract);
         beaconCase = address(_beacon);
     }
-    
+
     /// @dev Returns the address of the current owner.
     function owner() public view override(IHub, Ownable) returns (address) {
         return _CONFIG.owner();
-        // address configContract = getConfig();
-        // return IConfig(configContract).owner();
     }
 
     /// Set Avatar Contaract Address

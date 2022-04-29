@@ -358,7 +358,7 @@ describe("Protocol", function () {
     });
     
 
-    it("Can collect rating", async function () {
+    it("[TODO] Can collect rating", async function () {
       //TODO: Tests for Collect Rating
       
       //Rep Call Data      
@@ -484,9 +484,13 @@ describe("Protocol", function () {
           expect(await this.caseContract.roleHas(this.tester3Addr, "witness")).to.equal(true);
     });
 
-    it("Should Open Case", async function () {
+    it("Plaintiff Can Open Case", async function () {
+      //Validate
+      await expect(
+        this.caseContract.connect(tester2).stageFile()
+      ).to.be.revertedWith("ROLE:PLAINTIFF_ONLY");
       //File Case
-      let tx = await this.caseContract.connect(tester2).stageFile();
+      let tx = await this.caseContract.connect(admin).stageFile();
       //Expect State Event
       await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(1);
     });

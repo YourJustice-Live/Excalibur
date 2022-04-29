@@ -9,6 +9,7 @@ import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/ERC1155RolesUpgradable.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IRules.sol";
+import "./interfaces/IAvatar.sol";
 import "./interfaces/IERC1155Roles.sol";
 import "./interfaces/IJurisdiction.sol";
 
@@ -205,25 +206,19 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     
     /// File the Case (Validate & Open Discussion)  --> Open
     function stageFile() public override {
-        
-        //TODO: Validate Caller
-
+        //Validate Caller
+        require(roleHas(_msgSender(), "plaintiff") , "ROLE:PLAINTIFF_ONLY");
         //Validate Lifecycle Stage
         require(stage == DataTypes.CaseStage.Draft, "STAGE:DRAFT_ONLY");
-
         //Validate Witnesses
         for (uint256 ruleId = 1; ruleId <= _ruleIds.current(); ++ruleId) {
             // DataTypes.Rule memory rule = ruleGet(ruleId);
             DataTypes.Confirmation memory confirmation = ruleGetConfirmation(ruleId);
             //Get Current Witness Headcount (Unique)
-            uint256 witnesses = uniqueMembers(_roleToId("witness"));
-
-            // console.log("Check Witness Count:", confirmation.witness, witnesses);
-
+            uint256 witnesses = uniqueMembersCount(_roleToId("witness"));
             //Validate Min Witness Requirements
             require(witnesses >= confirmation.witness, "INSUFFICIENT_WITNESSES");
         }
-
         //Case is now Open
         _setStage(DataTypes.CaseStage.Open);
     }
@@ -285,10 +280,19 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         // _rules[ruleId].jurisdiction = jurisdiction_;
         // _rules[ruleId].ruleId = ruleId_;
         
+        //Get Avatar Contract Address
+        // address avatarContract = _HUB.avatarContract();
+        IAvatar avatarContract = IAvatar(_HUB.avatarContract());
+        //Validate
+        // require(address(avatarContract) != address(0), "Failed to fetch Avatar Contract Address");
+        //TODO: Validate Contract Type
+        require(IERC165(address(avatarContract)).supportsInterface(type(IAvatar).interfaceId), "Invalid Avatar Contract");
 
-        //TODO! Get Token ID For Subject
+
+        //Each Subject
         // for (uint256 i = 0; i < assignRoles.length; ++i) {
-
+        //TODO! Get Token ID For Subject
+            // .tokenByAddress()
         // }
         // uint256 tokenId = 
 

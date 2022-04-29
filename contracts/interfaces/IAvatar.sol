@@ -8,9 +8,6 @@ interface IAvatar {
 
     //--- Functions
 
-    /// Arbitrary contract designation signature
-    // function role() external view returns (string memory);
-
     /// Get Token ID by Address
     function tokenByAddress(address owner) external view returns (uint256);
 
