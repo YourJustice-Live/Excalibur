@@ -9,6 +9,13 @@ pragma solidity 0.8.4;
 interface IERC1155Roles {
 
     //--- Functions
+
+    /// Unique Members Addresses
+    function uniqueMembers(string memory role) external view returns (address[] memory);
+
+    /// Unique Members Count (w/Token)
+    function uniqueMembersCount(string memory role) external view returns (uint256);    
+
     /// Check if Role Exists
     function roleExist(string memory role) external view returns (bool);
 

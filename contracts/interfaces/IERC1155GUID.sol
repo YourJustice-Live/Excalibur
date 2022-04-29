@@ -5,11 +5,11 @@ interface IERC1155GUID {
 
     //--- Functions 
 
-    /// Unique Members Count (w/Token)
-    function uniqueMembersCount(uint256 id) external view returns (uint256);
-    
     /// Unique Members Addresses
     function uniqueMembers(uint256 id) external view returns (address[] memory);
+    
+    /// Unique Members Count (w/Token)
+    function uniqueMembersCount(uint256 id) external view returns (uint256);
     
     /// Check if account is assigned to role
     function GUIDHas(address account, bytes32 guid) external view returns (bool);
