@@ -25,8 +25,11 @@ contract Rules is IRules {
     IActionRepo internal _actionRepo;   
     //Rule Data
     mapping(uint256 => DataTypes.Rule) internal _rules;
+    
     //Additional Rule Data
     mapping(uint256 => DataTypes.Confirmation) internal _ruleConfirmation;
+
+    mapping(uint256 => DataTypes.Effect[]) internal _effects;     //effects[id][] => {direction:true, value:5, name:'personal'}  // Generic, Iterable & Extendable/Flexible
     // mapping(uint256 => string) internal _uri;
 
     //--- Functions
@@ -57,15 +60,19 @@ contract Rules is IRules {
     }
 
     /// Add Rule
-    function _ruleAdd(DataTypes.Rule memory rule) internal returns (uint256) {
+    // function _ruleAdd(DataTypes.Rule memory rule) internal returns (uint256) {
+    function _ruleAdd(DataTypes.Rule memory rule, DataTypes.Effect[] memory effects) internal returns (uint256) {
         //Add New Rule
         _ruleIds.increment();
         uint256 id = _ruleIds.current();
         //Set
+        _ruleSet(id, rule, effects);
+        /*
         _rules[id] = rule;
         //Event
         emit Rule(id, rule.about, rule.affected, rule.uri, rule.negation);
         emit RuleEffects(id, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
+        */
         return id;
     }
 
@@ -77,12 +84,18 @@ contract Rules is IRules {
     }
 
     /// Update Rule
-    function _ruleUpdate(uint256 id, DataTypes.Rule memory rule) internal {
+    // function _ruleSet(uint256 id, DataTypes.Rule memory rule) internal {
+    function _ruleSet(uint256 id, DataTypes.Rule memory rule, DataTypes.Effect[] memory effects) internal {
         //Set
         _rules[id] = rule;
         //Event
         emit Rule(id, rule.about, rule.affected, rule.uri, rule.negation);
-        emit RuleEffects(id, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
+        // emit RuleEffects(id, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
+        for (uint256 i = 0; i < effects.length; ++i) {
+            // DataTypes.Effect effect = rule.effects[i]
+            emit RuleEffect(id, effects[i].direction, effects[i].value, effects[i].name);
+        }
+        
     }
 
     /// Get Rule's Confirmation Method

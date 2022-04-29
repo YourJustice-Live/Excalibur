@@ -215,7 +215,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
             // DataTypes.Rule memory rule = ruleGet(ruleId);
             DataTypes.Confirmation memory confirmation = ruleGetConfirmation(ruleId);
             //Get Current Witness Headcount (Unique)
-            uint256 witnesses = uniqueMembersCount("witness");
+            uint256 witnesses = uniqueRoleMembersCount("witness");
             //Validate Min Witness Requirements
             require(witnesses >= confirmation.witness, "INSUFFICIENT_WITNESSES");
         }
@@ -280,30 +280,39 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         // _rules[ruleId].jurisdiction = jurisdiction_;
         // _rules[ruleId].ruleId = ruleId_;
         
-        //Get Avatar Contract Address
-        // address avatarContract = _HUB.avatarContract();
+        //Get Avatar Contract
         IAvatar avatarContract = IAvatar(_HUB.avatarContract());
-        //Validate
-        // require(address(avatarContract) != address(0), "Failed to fetch Avatar Contract Address");
-        //TODO: Validate Contract Type
+        //Validate Avatar Contract Interface
         require(IERC165(address(avatarContract)).supportsInterface(type(IAvatar).interfaceId), "Invalid Avatar Contract");
 
 
+        console.log("Case: Rule Confirmed:", ruleId);
+
+        //Fetch Case's Subject(s)
+        address[] memory subjects = uniqueRoleMembers("subject");
         //Each Subject
-        // for (uint256 i = 0; i < assignRoles.length; ++i) {
-        //TODO! Get Token ID For Subject
-            // .tokenByAddress()
-        // }
-        // uint256 tokenId = 
+        for (uint256 i = 0; i < subjects.length; ++i) {
 
-        //Register Rep in Jurisdiction
-        // IJurisdiction(_jurisdiction).repAdd(contractAddr, tokenId, domain, rating, amount);
+            //TODO! Get Token ID For Subject
+            uint256 tokenId = avatarContract.tokenByAddress(subjects[i]);
 
 
-        //Check if Contract is Avatar Contract
-            //TODO: Register Rep To Avatar Contract
-            // _HUB.repAddAvatar()
+            console.log("Case: Update Rep for Subject:", subjects[i], tokenId);
+            // console.log("Case: Update Rep for Subject:", subjects[i]);
+            // console.log("Case: Update Rep for Subject Token:", tokenId);
+            if(tokenId > 0){
+                DataTypes.Rule memory rule = ruleGet(ruleId);
+                
+                //O1 - Run on each Domain
 
+                //O2 - Enum for Domains (Domain)
+                // for(){
+                    //Register Rep in Jurisdiction
+                    // IJurisdiction(_jurisdiction).repAdd(address(avatarContract), tokenId, rule.effects.domain, rule.effects.rating, rule.effects.amount);
+                // }
+            }
+
+        }
         
         //Rule Confirmed Event
         emit RuleConfirmed(ruleId);

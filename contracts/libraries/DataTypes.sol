@@ -102,44 +102,36 @@ library DataTypes {
         //     affected: "investors",  //Plaintiff Role (Filing the case)
         // string affected;    //[PONDER] Doest this really belong here? Is that part of the unique combination, or should this be an array, or an eadge?      //MOVED TO Rule
     }
-    /* DEPRECATED
-    struct RoleData {
-        // name: "Breach of contract",  //Title
-        // string name;   //On URI
-        // text: "The founder of the project must comply with the terms of the contract with investors",  //Text Description
-        // string text;   //On URI
-        string uri; //Misc Additional Info
-        Confirmation confirmation;
-    }
-    */
 
     //--- Rules
     
     // Rule Object
     struct Rule {
-        // uint256 about;    //About What (Token URI +? Contract Address)
-        bytes32 about;    //About What (Action's GUID)      //TODO: Maybe Call This 'action'? 
-
-        // affected: "investors",  //Plaintiff Role (Filing the case)
-        string affected;    //Moved Here
-
-        bool negation;  //0 - Commision  1 - Omission
+        // uint256 about;   //About What (Token URI +? Contract Address)
+        bytes32 about;      //About What (Action's GUID)      //TODO: Maybe Call This 'action'? 
+        string affected;    // affected: "investors",  //Plaintiff Role (Filing the case)
+        bool negation;      //0 - Commision  1 - Omission
 
         //text: "The founder of the project violated the contract, but this did not lead to the loss or freezing of funds for investors.", //Description For Humans
         // string text;
         // condition: "Investor funds were not frozen nor lost.",
-        // string condition;  
         string uri;     //Test & Conditions
 
+        // string condition;  
+
+        // Effect[3] effects;   //Bad, Would have to push all of them every time...
+        // Effects effects;     //Bad, difficult to work with can can't be sequenced.
         // effect: { //Reputation Change
         //     profiessional:-2,
         //     social: -4
         // }
-        // Effect[3] effects;
-        Effects effects;
-        // consequence:[{ func:'repAdd', param:5 }],    //TBD?
+        // mapping(int256 => int8) effects;     //effects[3] => -5      //Generic, Simple & Iterable
+        // mapping(string => int8) effects;     //effects[professional] => -5      //Generic, Simple & Backward Compatible
+        // Effect[] effects;                       //effects[] => {direction:true, value:5, name:'personal'}  // Generic, Iterable & Extendable/Flexible   //Externalized -- Mapping Shouldn't be in a Struct
+        // consequence:[{ func:'repAdd', param:5 }],    //TBD? - Generic Consequences 
     }
     
+
     // Effect Object (Changes to Reputation By Type)
     struct Effects {
         int8 environmental;
@@ -151,16 +143,18 @@ library DataTypes {
         // Effect social;
         // Effect professional;
     }
-    /* Maybe?
+
+    /* Maybe? */
     // Effect Structure
     struct Effect {
+        string name;
         // value: 5
         int8 value;
         // Direction: -
         bool direction;
         // Confidence/Strictness: [?]
     }
-    */
+    
 
     //Rule Confirmation Method
     struct Confirmation {

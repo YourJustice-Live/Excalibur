@@ -68,6 +68,8 @@ describe("Protocol", function () {
     it("Can mint only one", async function () {
       let tx = await avatarContract.connect(tester).mint(test_uri);
       tx.wait();
+      //Another One for Testing Purposes
+      avatarContract.connect(tester2).mint(test_uri);
       // console.log("minting", tx);
       //Fetch Token
       let result = await avatarContract.ownerOf(1);
@@ -94,17 +96,17 @@ describe("Protocol", function () {
 
     it("Can add other people", async function () {
       // let test_uri = "TEST_URI_2";
+      await avatarContract.connect(tester).add(test_uri);
+      await avatarContract.connect(tester).add(test_uri);
       let tx = await avatarContract.connect(tester).add(test_uri);
-      await avatarContract.connect(tester).add(test_uri);
-      await avatarContract.connect(tester).add(test_uri);
       tx.wait();
       // console.log("minting", tx);
       //Fetch Token
-      let result = await avatarContract.ownerOf(2);
+      let result = await avatarContract.ownerOf(3);
       //Check Owner
       expect(result).to.equal(await avatarContract.address);
       //Check URI
-      expect(await avatarContract.tokenURI(2)).to.equal(test_uri);
+      expect(await avatarContract.tokenURI(3)).to.equal(test_uri);
     });
 
     it("Should NOT be transferable", async function () {
@@ -293,6 +295,7 @@ describe("Protocol", function () {
         // string uri;     //Text, Conditions & additional data
         uri: "ADDITIONAL_DATA_URI",
         // Effect Object (Describes Changes to Rating By Type)
+        /*
         effects:{
           // int8 environmental;
           environmental: 0,
@@ -303,9 +306,14 @@ describe("Protocol", function () {
           // int8 personal;
           personal: 0,
         },
+        */
         // bool negation;  //false - Commision  true - Omission
         negation: false,
       };
+      let effects1 = [
+        {name:'professional', value:5, direction:false},
+        {name:'social', value:5, direction:true},
+      ];
       let rule2 = {
         // uint256 about;    //About What (Token URI +? Contract Address)
         about: actionGUID, //"0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2",
@@ -314,6 +322,7 @@ describe("Protocol", function () {
         // string uri;     //Text, Conditions & additional data
         uri: "ADDITIONAL_DATA_URI",
         // Effect Object (Describes Changes to Rating By Type)
+        /* DEPRECATED
         effects:{
           // int8 environmental;
           environmental: -10,
@@ -324,27 +333,35 @@ describe("Protocol", function () {
           // int8 personal;
           personal: 0,
         },
+        */
         // bool negation;  //false - Commision  true - Omission
         negation: false,
       };
+      let  effects2 = [
+        {name:'environmental', value:10, direction:false},
+        {name:'personal', value:4, direction:true},
+      ];
      
       //Add Rule
-      let tx = await jurisdictionContract.connect(admin).ruleAdd(rule, confirmation);
+      let tx = await jurisdictionContract.connect(admin).ruleAdd(rule, confirmation, effects1);
       // wait until the transaction is mined
       await tx.wait();
       // console.log("Rule Added", tx);
 
       //Expect Event
       await expect(tx).to.emit(jurisdictionContract, 'Rule').withArgs(1, rule.about, rule.affected, rule.uri, rule.negation);
-      await expect(tx).to.emit(jurisdictionContract, 'RuleEffects').withArgs(1, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
+      // await expect(tx).to.emit(jurisdictionContract, 'RuleEffects').withArgs(1, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
+      for(let effect of effects1){
+        await expect(tx).to.emit(jurisdictionContract, 'RuleEffect').withArgs(1, effect.direction, effect.value, effect.name);
+      }
       await expect(tx).to.emit(jurisdictionContract, 'Confirmation').withArgs(1, confirmation.ruling, confirmation.evidence, confirmation.witness);
 
       //Add Another Rule
-      let tx2 = await jurisdictionContract.connect(admin).ruleAdd(rule2, confirmation);
+      let tx2 = await jurisdictionContract.connect(admin).ruleAdd(rule2, confirmation, effects2);
             
       //Expect Event
       await expect(tx2).to.emit(jurisdictionContract, 'Rule').withArgs(2, rule2.about, rule2.affected, rule2.uri, rule2.negation);
-      await expect(tx2).to.emit(jurisdictionContract, 'RuleEffects').withArgs(2, rule2.effects.environmental, rule2.effects.personal, rule2.effects.social, rule2.effects.professional);
+      // await expect(tx2).to.emit(jurisdictionContract, 'RuleEffects').withArgs(2, rule2.effects.environmental, rule2.effects.personal, rule2.effects.social, rule2.effects.professional);
       await expect(tx2).to.emit(jurisdictionContract, 'Confirmation').withArgs(2, confirmation.ruling, confirmation.evidence, confirmation.witness);
 
       // expect(await jurisdictionContract.ruleAdd(actionContract.address)).to.equal("Hello, world!");
@@ -356,7 +373,6 @@ describe("Protocol", function () {
       
       // await expect(ruleData).to.include.members(Object.values(rule));
     });
-    
 
     it("[TODO] Can collect rating", async function () {
       //TODO: Tests for Collect Rating
@@ -420,7 +436,6 @@ describe("Protocol", function () {
       let tx = await jurisdictionContract.connect(admin).caseMake(caseName, ruleRefArr, roleRefArr, posts);
       //Expect Valid Address
       expect(caseAddr).to.be.properAddress;
-
       //Init Case Contract
       this.caseContract = await ethers.getContractFactory("Case").then(res => res.attach(caseAddr));
 
@@ -464,16 +479,13 @@ describe("Protocol", function () {
     it("Should Post", async function () {
       let post = {
         entRole:"subject",
-        // postRole:"evidence", 
         uri:test_uri,
       }
       //Post
-      // let tx = await this.caseContract.connect(tester2).post(post.entRole, post.postRole, post.uri);
       let tx = await this.caseContract.connect(tester2).post(post.entRole, post.uri);
       // wait until the transaction is mined
       await tx.wait();
       //Expect Event
-      // await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, post.entRole, post.postRole, post.uri);
       await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, post.entRole, post.uri);
     });
 
@@ -527,7 +539,7 @@ describe("Protocol", function () {
     });
     
     it("Should Accept Verdict URI & Close Case", async function () {
-      let verdict = [{ ruleId:1, decision: true }];
+      let verdict = [{ruleId:1, decision:true}];
       //Submit Verdict & Close Case
       let tx = await this.caseContract.connect(tester).stageVerdict(verdict, test_uri);
       //Expect Verdict Event
@@ -536,7 +548,6 @@ describe("Protocol", function () {
       await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(6);
     });
 
-    
   }); //Case
     
 });
