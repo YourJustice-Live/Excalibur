@@ -22,7 +22,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
     Counters.Counter internal _tokenIds; //Track Last Token ID
     
     using AddressArray for address[];
-    mapping(uint256 => address[]) private _uniqueMembers; //Index Unique Members by Role
+    mapping(uint256 => address[]) internal _uniqueMembers; //Index Unique Members by Role
     mapping(bytes32 => uint256) internal _GUID;     //NFTs as GUID
 
     //--- Modifiers
@@ -42,7 +42,7 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
 
     /// Unique Members Count (w/Token)
     function uniqueMembersCount(uint256 id) public view override returns (uint256) {
-        return _uniqueMembers[id].length;
+        return uniqueMembers(id).length;
     }
 
     /**

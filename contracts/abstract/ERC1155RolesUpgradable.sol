@@ -69,6 +69,16 @@ abstract contract ERC1155RolesUpgradable is IERC1155Roles, ERC1155GUIDUpgradable
 
     //** Role Functions
 
+    /// Unique Members Count (w/Token)
+    function uniqueMembers(string memory role) public override view returns (address[] memory) {
+        return uniqueMembers(_roleToId(role));
+    }
+
+    /// Unique Members Count (w/Token)
+    function uniqueMembersCount(string memory role) public override view returns (uint256) {
+        return uniqueMembers(_roleToId(role)).length;
+    }
+
     /// Check if Role Exists
     function roleExist(string memory role) public view override returns (bool) {
         return _GUIDExists(_stringToBytes32(role));

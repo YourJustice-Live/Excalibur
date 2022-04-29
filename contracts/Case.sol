@@ -215,7 +215,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
             // DataTypes.Rule memory rule = ruleGet(ruleId);
             DataTypes.Confirmation memory confirmation = ruleGetConfirmation(ruleId);
             //Get Current Witness Headcount (Unique)
-            uint256 witnesses = uniqueMembersCount(_roleToId("witness"));
+            uint256 witnesses = uniqueMembersCount("witness");
             //Validate Min Witness Requirements
             require(witnesses >= confirmation.witness, "INSUFFICIENT_WITNESSES");
         }
