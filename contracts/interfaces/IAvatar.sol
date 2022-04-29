@@ -21,7 +21,7 @@ interface IAvatar {
     function update(uint256 tokenId, string memory uri) external returns (uint256);
 
     /// Add Reputation (Positive or Negative)
-    function repAdd(uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating, uint8 amount) external;
+    function repAdd(uint256 tokenId, string calldata domain, DataTypes.Rating rating, uint8 amount) external;
 
     //--- Events
     
@@ -29,6 +29,6 @@ interface IAvatar {
     event URI(string value, uint256 indexed id);    //Copied from ERC1155
 
     /// Reputation Changed
-    event ReputationChange(uint256 indexed id, DataTypes.Domain domain, DataTypes.Rating rating, uint256 score);
+    event ReputationChange(uint256 indexed id, string domain, DataTypes.Rating rating, uint256 score);
 
 }

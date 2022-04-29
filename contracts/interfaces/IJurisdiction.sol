@@ -46,6 +46,9 @@ interface IJurisdiction {
     //     PostInput[] calldata posts
     // ) external returns (uint256, address);
     
+    /// Add Reputation (Positive or Negative)
+    function repAdd(address contractAddr, uint256 tokenId, string calldata domain, DataTypes.Rating rating, uint8 amount) external;
+
     //-- Rule Func.
 
     /// Create New Rule

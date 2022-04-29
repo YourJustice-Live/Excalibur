@@ -25,8 +25,8 @@ library DataTypes {
     }
     /// Rating Categories
     enum Rating {
-        Negative,
-        Positive
+        Negative,   //0
+        Positive    //1
     }
     
 
@@ -131,7 +131,7 @@ library DataTypes {
         // consequence:[{ func:'repAdd', param:5 }],    //TBD? - Generic Consequences 
     }
     
-
+    /* DEPRECATED
     // Effect Object (Changes to Reputation By Type)
     struct Effects {
         int8 environmental;
@@ -143,8 +143,8 @@ library DataTypes {
         // Effect social;
         // Effect professional;
     }
-
-    /* Maybe? */
+    */
+    
     // Effect Structure
     struct Effect {
         string name;
@@ -155,7 +155,6 @@ library DataTypes {
         // Confidence/Strictness: [?]
     }
     
-
     //Rule Confirmation Method
     struct Confirmation {
         //     ruling: "judge"|"jury"|"democracy",  //Decision Maker

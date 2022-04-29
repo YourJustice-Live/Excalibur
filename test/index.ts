@@ -143,7 +143,7 @@ describe("Protocol", function () {
 
     it("Should protect from unauthorized reputation changes", async function () {
       //Rep Call Data      
-      let repCall = { tokenId:1, domain:1, rating:1, amount:2};
+      let repCall = { tokenId:1, domain:"personal", rating:1, amount:2};
       //Should Fail - Require Permissions
       await expect(
         avatarContract.repAdd(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount)
@@ -529,7 +529,7 @@ describe("Protocol", function () {
       ).to.be.revertedWith("User Required to hold same role in Jurisdiction");
     });
 
-    it("Should Appoint Judge From the parent jurisdiction", async function () {
+    it("Should Accept a Judge From the parent jurisdiction", async function () {
       //Check Before
       // expect(await this.jurisdictionContract.roleHas(this.testerAddr, "judge")).to.equal(true);
       //Assign Judge

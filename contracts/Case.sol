@@ -309,18 +309,22 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
 
 
             console.log("Case: Update Rep for Subject:", subjects[i], tokenId);
+
+            
             // console.log("Case: Update Rep for Subject:", subjects[i]);
             // console.log("Case: Update Rep for Subject Token:", tokenId);
             if(tokenId > 0){
-                DataTypes.Rule memory rule = ruleGet(ruleId);
-                
-                //O1 - Run on each Domain
+                // DataTypes.Rule memory rule = ruleGet(ruleId);
+                DataTypes.Effect[] memory effects = ruleGetEffects(ruleId);
+                //Run Each Effect
+                for (uint256 i = 0; i < effects.length; ++i) {
 
-                //O2 - Enum for Domains (Domain)
-                // for(){
+                    //{name:'professional', value:5, direction:false}
+
+
                     //Register Rep in Jurisdiction
                     // IJurisdiction(_jurisdiction).repAdd(address(avatarContract), tokenId, rule.effects.domain, rule.effects.rating, rule.effects.amount);
-                // }
+                }
             }
 
         }
