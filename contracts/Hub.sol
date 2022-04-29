@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
@@ -12,6 +12,7 @@ import "./interfaces/IConfig.sol";
 import "./interfaces/IHub.sol";
 import "./interfaces/IJurisdiction.sol";
 import "./interfaces/ICase.sol";
+import "./interfaces/IAvatar.sol";
 import "./libraries/DataTypes.sol";
 import "./abstract/CommonYJ.sol";
 
@@ -41,8 +42,9 @@ contract Hub is IHub, Ownable {
     // address internal _CONFIG;    //Configuration Contract
     IConfig private _CONFIG;  //Configuration Contract       //Try This
 
-    mapping(uint256 => address) private _jurisdictions; //Track all Jurisdiction contracts (on Creation)        //[TBD]
+    // mapping(uint256 => address) private _jurisdictions; //Track all Jurisdiction contracts (on Creation)        //[TBD]
     // mapping(address => mapping(address => bool)) internal _active;      // Mapping for Case Contracts  [J][C] => bool
+    mapping(address => bool) internal _jurisdictions; // Mapping for Active Jurisdictions   //[TBD]
     mapping(address => address) internal _cases;      // Mapping for Case Contracts  [C] => [J]
 
 
@@ -93,6 +95,14 @@ contract Hub is IHub, Ownable {
 
     //--- Factory 
 
+    /// Make a new Jurisdiction
+    // function jurisdictionMake() public override returns (address) {
+
+        //Register Jurisdiction
+        // _jurisdictions[] = true;
+
+    // }
+
     /// Make a new Case
     function caseMake(
         string calldata name_
@@ -130,33 +140,26 @@ contract Hub is IHub, Ownable {
         //Return
         return address(newCaseProxy);
     }
-    /// Add Repuation to Avatar
-    function repAddAvatar(uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating, uint8 amount) external {
-        require(avatarContract != address(0), "AVATAR_CONTRACT_UNKNOWN");
-        repAdd(avatarContract, tokenId, domain, rating, amount);
-    }
 
     /// Add Reputation (Positive or Negative)       /// Opinion Updated
-    function repAdd(address contractAddr, uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating, uint8 amount) public {
+    function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) public override {
 
         //TODO: Validate - Known Jurisdiction
+        // require(_jurisdictions[_msgSender()], "NOT A VALID JURISDICTION");
 
+        console.log("Hub: Add Reputation to Contract:", contractAddr, tokenId, amount);
 
-        //TODO: Update Avatar's Reputation //?
+        //Update Avatar's Reputation
+        if(avatarContract != address(0) && avatarContract == contractAddr){
+            _repAddAvatar(tokenId, domain, rating, amount);
+        }
+    }
 
-
-        //Check if Jurisdiction is owned (Optional)
-        
-
-        //Check if Jurisdiction Ackgnoladges Case
-        // IJurisdiction().caseHas(msg.sender);
-
-        //Update Jurisdiction's Rating
-
-
-        //Update Avatar's Rating
-        // if(contractAddr == 'AvatarAccount')
-
+    /// Add Repuation to Avatar
+    function _repAddAvatar(uint256 tokenId, string calldata domain, bool rating, uint8 amount) internal {
+        require(avatarContract != address(0), "AVATAR_CONTRACT_UNKNOWN");
+        // repAdd(avatarContract, tokenId, domain, rating, amount);
+        IAvatar(avatarContract).repAdd(tokenId, domain, rating, amount);
     }
 
     //-- Upgrades
@@ -174,7 +177,7 @@ contract Hub is IHub, Ownable {
 
     /// Upgrade Jurisdiction Implementation [TBD]
     // function upgradeCaseImplementation(address newImplementation) public onlyOwner {
-        
+
     // }
 
 }
