@@ -210,6 +210,10 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         require(roleHas(_msgSender(), "plaintiff") , "ROLE:PLAINTIFF_ONLY");
         //Validate Lifecycle Stage
         require(stage == DataTypes.CaseStage.Draft, "STAGE:DRAFT_ONLY");
+        //Validate - Has Subject
+        require(uniqueRoleMembersCount("subject") > 0 , "ROLE:MISSING_SUBJECT");
+        //Validate - Prevent Self Report? (subject != affected)
+        
         //Validate Witnesses
         for (uint256 ruleId = 1; ruleId <= _ruleIds.current(); ++ruleId) {
             // DataTypes.Rule memory rule = ruleGet(ruleId);
