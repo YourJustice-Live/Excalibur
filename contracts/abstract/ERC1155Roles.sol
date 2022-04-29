@@ -54,12 +54,12 @@ abstract contract ERC1155Roles is IERC1155Roles, ERC1155GUID {
     //** Role Functions
 
     /// Unique Members Addresses
-    function uniqueMembers(string memory role) public override view returns (address[] memory) {
+    function uniqueRoleMembers(string memory role) public override view returns (address[] memory) {
         return uniqueMembers(_roleToId(role));
     }
 
     /// Unique Members Count (w/Token)
-    function uniqueMembersCount(string memory role) public override view returns (uint256) {
+    function uniqueRoleMembersCount(string memory role) public override view returns (uint256) {
         return uniqueMembers(_roleToId(role)).length;
     }
 
