@@ -26,7 +26,6 @@ abstract contract ERC1155GUIDUpgradable is IERC1155GUID, ERC1155Upgradeable {
     CountersUpgradeable.Counter internal _tokenIds; //Track Last Token ID
     using AddressArray for address[];
     mapping(uint256 => address[]) private _uniqueMembers; //Index Unique Members by Role
-    // mapping(uint256 => uint256) private _uniqueMembersCount; //Index Unique Members by Role
     mapping(bytes32 => uint256) internal _GUID;     //NFTs as GUID
 
     //--- Modifiers
@@ -39,8 +38,12 @@ abstract contract ERC1155GUIDUpgradable is IERC1155GUID, ERC1155Upgradeable {
     //--- Functions
 
     /// Unique Members Count (w/Token)
-    function uniqueMembers(uint256 id) public view override returns (uint256) {
-        // return _uniqueMembersCount[id];
+    function uniqueMembers(uint256 id) public view override returns (address[] memory) {
+        return _uniqueMembers[id];
+    }
+
+    /// Unique Members Count (w/Token)
+    function uniqueMembersCount(uint256 id) public view override returns (uint256) {
         return _uniqueMembers[id].length;
     }
 
@@ -117,10 +120,7 @@ abstract contract ERC1155GUIDUpgradable is IERC1155GUID, ERC1155Upgradeable {
             for (uint256 i = 0; i < ids.length; ++i) {
                 uint256 id = ids[i];
                 if(balanceOf(to, id) == 0){
-                    unchecked {
-                        // ++_uniqueMembersCount[id];
-                        _uniqueMembers[id].push(to);
-                    }
+                    _uniqueMembers[id].push(to);
                 }
             }
         }
@@ -128,7 +128,6 @@ abstract contract ERC1155GUIDUpgradable is IERC1155GUID, ERC1155Upgradeable {
             for (uint256 i = 0; i < ids.length; ++i) {
                 uint256 id = ids[i];
                 if(balanceOf(from, id) == amounts[i]){   //Burn All
-                    // --_uniqueMembersCount[id];
                     _uniqueMembers[id].removeItem(from);
                 }
             }
