@@ -69,7 +69,7 @@ contract Hub is IHub, Ownable {
 
     /// Set Avatar Contaract Address
     function setAvatarContract(address avatarContract_) external onlyOwner {
-        require(avatarContract == address(0), "ADDRESS_ALREADY_SET");
+        // require(avatarContract == address(0), "ADDRESS_ALREADY_SET");    //Allow Changes, For Now
         //Set
         avatarContract = avatarContract_;
     }
