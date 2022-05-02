@@ -17,6 +17,7 @@ The Excalibur Protocol is an on-chain justice system, carefully designed to imit
 
 - [Docs (Notion)](https://www.notion.so/yourjustice/Smart-Contracts-b9b89738497647b4beb3c353284f49b1)
 - [Architecture (Miro)](https://miro.com/app/board/uXjVOGibO84=/)
+- [Changelog](https://github.com/YourJustice-Live/Excalibur/releases)
 
 ## Getting Started
 
