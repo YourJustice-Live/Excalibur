@@ -2,7 +2,7 @@
 
 # The Excalibur Protocol 
 
-* Version 0.2
+<img src="https://media.discordapp.net/attachments/951793998362705950/970763106286460968/contracts.png" alt="Version 0.2"/>
 
 Using the magic of cryptographic technology to bring balance to the world and promote decentralized justice.
 
