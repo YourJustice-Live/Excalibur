@@ -283,14 +283,9 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         emit Stage(stage);
     }
 
-    /// Rule (Action) Confirmed
+    /// Rule (Action) Confirmed (Currently Only Judging Avatars)
     function _ruleConfirmed(uint256 ruleId) internal {
 
-        // DataTypes.Rule memory rule = ruleGet(ruleId);
-        
-        // _rules[ruleId].jurisdiction = jurisdiction_;
-        // _rules[ruleId].ruleId = ruleId_;
-        
         //Get Avatar Contract
         IAvatar avatarContract = IAvatar(_HUB.avatarContract());
         //Validate Avatar Contract Interface
@@ -308,15 +303,11 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
             // console.log("Case: Update Rep for Subject:", subjects[i]);
 
             if(tokenId > 0){
-                // DataTypes.Rule memory rule = ruleGet(ruleId);
                 DataTypes.Effect[] memory effects = ruleGetEffects(ruleId);
-                // console.log("Case: Update Rep for tokenId:", tokenId, effects.length);
-                // console.log("Case Rule:", ruleId, "Effects Count:", effects.length);
-
                 //Run Each Effect
-                for (uint256 i = 0; i < effects.length; ++i) {
-                    // console.log("Case Running Effect", i);
-                    DataTypes.Effect memory effect = effects[i];
+                for (uint256 j = 0; j < effects.length; ++j) {
+                    // console.log("Case Running Effect", j);
+                    DataTypes.Effect memory effect = effects[j];
                     bool direction = effect.direction;
                     //Register Rep in Jurisdiction      //{name:'professional', value:5, direction:false}
                     IJurisdiction(_jurisdiction).repAdd(address(avatarContract), tokenId, effect.name, direction, effect.value);

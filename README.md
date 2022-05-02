@@ -2,7 +2,7 @@
 
 # The Excalibur Protocol 
 
-* Version 0.1
+* Version 0.2
 
 Using the magic of cryptographic technology to bring balance to the world and promote decentralized justice.
 

@@ -7,12 +7,12 @@ import { ethers } from "hardhat";
 
 //Track Addresses (Fill in present addresses to prevent new deplopyment)
 const contractAddr = {
-  config:"0x14E5D5B68A41665E86225e6830a69bb2b5F6E484",  //V2
-  case:"0xd61FE3544Bd678421022Be63A91E18980c0895d4",  //Case Instance //V0.4
-  hub:"0x731bAa306685d6db7e2a6bAAbe12cf8A874Bd16E", //V2
-  avatar:"0x41966B4485CBd781fE9e82f90ABBA96958C096CF",  //V1
-  history:"0x8b382adbfC940eae42AfC11eF389e5dA6597Fa06", //V4
-  jurisdiction:"0x93Cb004fd336f9918d1198bA193e04B396925940", //V0.6
+  config:"0x14E5D5B68A41665E86225e6830a69bb2b5F6E484",  //V2.0
+  case:"0xB40102c50fEcF14fD8339f3C9A16ef4dec0C0352",  //Case Instance //V1.0
+  hub:"0xce92b64ba4b9a2905605c8c04e9F1e27C5D6E559", //V2.1
+  avatar:"0xE7254468763a8d4f791f30F5e8dcA635DF850772",  //V1.1
+  history:"0xe699f8dd6968F7a60786E846899CEf56154D3573", //V4.0
+  jurisdiction:"0x22A339004E2a005ED5D5b94C83EEA2E47BE249EB", //V1.0
 };
 
 async function main() {
@@ -67,8 +67,13 @@ async function main() {
     console.log("Deployed Avatar Contract to " + contractAddr.avatar);
 
     if(!!hubContract){  //If Deployed Together
-      //Set to HUB
-      hubContract.setAvatarContract(contractAddr.avatar);
+      try{
+        //Set to HUB
+        hubContract.setAvatarContract(contractAddr.avatar);
+      }
+      catch(error){
+        console.error("Failed to Set Avatar Contract to Hub", error);
+      }
     }
   }
 
@@ -85,9 +90,7 @@ async function main() {
 
   //--- Jurisdiction
   if(!contractAddr.jurisdiction){
-    //Deploy Avatar
-    // const JurisdictionContract = await ethers.getContractFactory("Jurisdiction");
-    // let jurisdictionContract = await JurisdictionContract.deploy(contractAddr.hub, contractAddr.history);
+    //Deploy Jurisdiction
     let jurisdictionContract = await ethers.getContractFactory("Jurisdiction").then(res => res.deploy(contractAddr.hub, contractAddr.history));
     await jurisdictionContract.deployed();
     
