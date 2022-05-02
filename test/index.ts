@@ -61,7 +61,7 @@ describe("Protocol", function () {
 
   describe("Avatar", function () {
 
-    it("Can inherit owner", async function () {
+    it("Should inherit protocol owner", async function () {
       expect(await avatarContract.owner()).to.equal(await owner.getAddress());
     });
     
@@ -84,10 +84,25 @@ describe("Protocol", function () {
     });
 
     it("Should Index Addresses", async function () {
+      //Expected Token ID
+      let tokenId = 1;
       //Fetch Token ID By Address
       let result = await avatarContract.tokenByAddress(this.testerAddr);
       //Check Token
-      expect(result).to.equal(1);
+      expect(result).to.equal(tokenId);
+    });
+
+    it("Allow Multiple Owner Accounts per Avatar", async function () {
+      let miscAddr = await addrs[0].getAddress();
+      let tokenId = 1;
+      //Fetch Token ID By Address
+      let tx = await avatarContract.tokenOwnerAdd(miscAddr, tokenId);
+      tx.wait();
+      //Validate
+      //Fetch Token For Owner
+      let result = await avatarContract.tokenByAddress(miscAddr);
+      //Check Token
+      expect(result).to.equal(tokenId);
     });
 
     // it("[TBD] Should Merge Avatars", async function () {
