@@ -1,8 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 // import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 // import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";  //Track Token Supply & Check 
@@ -117,11 +116,10 @@ contract Jurisdiction is
         DataTypes.RuleRef[] calldata addRules, 
         DataTypes.InputRole[] calldata assignRoles, 
         PostInput[] calldata posts
-    // ) public returns (uint256, address) {
     ) public returns (address) {
         //TODO: Validate Caller Permissions (Member of Jurisdiction)
-        // roleHas(_msgSender(), "admin")  
-        // roleHas(_msgSender(), "member") 
+        // roleHas(_msgSender(), "admin")
+        // roleHas(_msgSender(), "member")
 
         //Assign Case ID
         _caseIds.increment(); //Start with 1
@@ -157,13 +155,14 @@ contract Jurisdiction is
     //** Custom Rating Functions
     
     /// Add Reputation (Positive or Negative)
-    function repAdd(address contractAddr, uint256 tokenId, DataTypes.Domain domain, DataTypes.Rating rating, uint8 amount) external {
+    // function repAdd(address contractAddr, uint256 tokenId, string calldata domain, DataTypes.Rating rating, uint8 amount) external override {
+    function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external override {
         //Validate - Called by Child Case
-        require(_active[_msgSender()], "NOT A VALID CASE");
+        require(caseHas(_msgSender()), "NOT A VALID CASE");
         //Run
         _repAdd(contractAddr, tokenId, domain, rating, amount);
-        //TODO: Update Hub
-        
+        //Update Hub
+        _HUB.repAdd(contractAddr, tokenId, domain, rating, amount);
     }
 
     //** Role Management
@@ -235,22 +234,23 @@ contract Jurisdiction is
     //** Rule Management
 
     /// Create New Rule
-    function ruleAdd(DataTypes.Rule memory rule, DataTypes.Confirmation memory confirmation) public override returns (uint256) {
+    function ruleAdd(DataTypes.Rule memory rule, DataTypes.Confirmation memory confirmation, DataTypes.Effect[] memory effects) public override returns (uint256) {
         //Validate Caller's Permissions
         require(roleHas(_msgSender(), "admin"), "Admin Only");
         //Add Rule
-        uint256 id = _ruleAdd(rule);
+        uint256 id = _ruleAdd(rule, effects);
         //Set Confirmations
         _confirmationSet(id, confirmation);
         return id;
     }
     
     /// Update Rule
-    function ruleUpdate(uint256 id, DataTypes.Rule memory rule) external override {
+    // function ruleUpdate(uint256 id, DataTypes.Rule memory rule) external override {
+    function ruleUpdate(uint256 id, DataTypes.Rule memory rule, DataTypes.Effect[] memory effects) external override {
         //Validate Caller's Permissions
         require(roleHas(_msgSender(), "admin"), "Admin Only");
         //Update Rule
-        _ruleUpdate(id, rule);
+        _ruleSet(id, rule, effects);
     }
 
     /// Get Token URI

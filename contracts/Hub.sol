@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
@@ -95,7 +95,7 @@ contract Hub is IHub, Ownable {
 
     //--- Factory 
 
-    /// Make a new Jurisdiction
+    /// TODO: Make a new Jurisdiction
     // function jurisdictionMake() public override returns (address) {
 
         //Register Jurisdiction
@@ -147,9 +147,10 @@ contract Hub is IHub, Ownable {
         //TODO: Validate - Known Jurisdiction
         // require(_jurisdictions[_msgSender()], "NOT A VALID JURISDICTION");
 
-        console.log("Hub: Add Reputation to Contract:", contractAddr, tokenId, amount);
-
-        //Update Avatar's Reputation
+        // console.log("Hub: Add Reputation to Contract:", contractAddr, tokenId, amount);
+        // console.log("Hub: Add Reputation in Domain:", domain);
+        
+        //Update Avatar's Reputation    //TODO: Just Check if Contract Implements IRating
         if(avatarContract != address(0) && avatarContract == contractAddr){
             _repAddAvatar(tokenId, domain, rating, amount);
         }

@@ -66,12 +66,7 @@ abstract contract Rules is IRules {
         uint256 id = _ruleIds.current();
         //Set
         _ruleSet(id, rule, effects);
-        /*
-        _rules[id] = rule;
-        //Event
-        emit Rule(id, rule.about, rule.affected, rule.uri, rule.negation);
-        emit RuleEffects(id, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
-        */
+        //Return
         return id;
     }
 
@@ -91,10 +86,10 @@ abstract contract Rules is IRules {
         emit Rule(id, rule.about, rule.affected, rule.uri, rule.negation);
         // emit RuleEffects(id, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
         for (uint256 i = 0; i < effects.length; ++i) {
-            // DataTypes.Effect effect = rule.effects[i]
+            _effects[id].push(effects[i]);
+            //Effect Added Event
             emit RuleEffect(id, effects[i].direction, effects[i].value, effects[i].name);
         }
-        
     }
 
     /// Get Rule's Confirmation Method
@@ -108,15 +103,16 @@ abstract contract Rules is IRules {
         _confirmationSet(id, confirmation);
     }
     */
+
     /// Get Rule's Effects
     function effectsGet(uint256 id) public view override returns (DataTypes.Effect[] memory){
         return _effects[id];
     }
+   
     /// Set Action's Confirmation Object
     function _confirmationSet(uint256 id, DataTypes.Confirmation memory confirmation) internal {
         _ruleConfirmation[id] = confirmation;
         emit Confirmation(id, confirmation.ruling, confirmation.evidence, confirmation.witness);
     }
-
 
 }

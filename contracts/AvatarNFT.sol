@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
+// import "hardhat/console.sol";
+
 // import "@openzeppelin/contracts/token/ERC721/ERC721.sol";		//https://eips.ethereum.org/EIPS/eip-721
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";  //Individual Metadata URI Storage Functions
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -91,6 +93,9 @@ contract AvatarNFT is
     function repAdd(uint256 tokenId, string calldata domain, bool rating, uint8 amount) external override {
         //Validate - Only By Hub
         require(_msgSender() == address(_HUB), "UNAUTHORIZED_ACCESS");
+
+        // console.log("Avatar: Add Reputation to Token:", tokenId, domain, amount);
+
         //Set
         _repAdd(address(this), tokenId, domain, rating, amount);
     }

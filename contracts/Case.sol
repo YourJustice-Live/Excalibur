@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./libraries/DataTypes.sol";
@@ -296,32 +296,29 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         //Validate Avatar Contract Interface
         require(IERC165(address(avatarContract)).supportsInterface(type(IAvatar).interfaceId), "Invalid Avatar Contract");
 
-
-        console.log("Case: Rule Confirmed:", ruleId);
+        // console.log("Case: Rule Confirmed:", ruleId);
 
         //Fetch Case's Subject(s)
         address[] memory subjects = uniqueRoleMembers("subject");
         //Each Subject
         for (uint256 i = 0; i < subjects.length; ++i) {
-
-            //TODO! Get Token ID For Subject
+            //Get Subject's Token ID For 
             uint256 tokenId = avatarContract.tokenByAddress(subjects[i]);
 
-
-            console.log("Case: Update Rep for Subject:", subjects[i], tokenId);
-
-
             // console.log("Case: Update Rep for Subject:", subjects[i]);
-            // console.log("Case: Update Rep for Subject Token:", tokenId);
+
             if(tokenId > 0){
                 // DataTypes.Rule memory rule = ruleGet(ruleId);
                 DataTypes.Effect[] memory effects = ruleGetEffects(ruleId);
+                // console.log("Case: Update Rep for tokenId:", tokenId, effects.length);
+                // console.log("Case Rule:", ruleId, "Effects Count:", effects.length);
+
                 //Run Each Effect
                 for (uint256 i = 0; i < effects.length; ++i) {
+                    // console.log("Case Running Effect", i);
                     DataTypes.Effect memory effect = effects[i];
                     bool direction = effect.direction;
-                    //Register Rep in Jurisdiction
-                        //{name:'professional', value:5, direction:false}
+                    //Register Rep in Jurisdiction      //{name:'professional', value:5, direction:false}
                     IJurisdiction(_jurisdiction).repAdd(address(avatarContract), tokenId, effect.name, direction, effect.value);
                 }
             }
