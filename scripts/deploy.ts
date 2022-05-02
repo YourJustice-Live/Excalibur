@@ -126,24 +126,3 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-
-/*
-function etherscanVerify(address, contract, contractArguments){
-  try{
-    // Verify your contracts with Etherscan
-    console.log("Start code verification on etherscan");
-    await run("verify:verify", {
-        // address: "0x938Ce74dee47035C58a9aFeA1FC13B48BA8Dbe3d",
-        // contract: "contracts/Config.sol:Config",
-        // contractArguments: [],
-        address,
-        contract,
-        contractArguments,
-    });
-    console.log("End code verification on etherscan");
-  }
-  catch(error){
-      console.error("Faild Etherscan Verification", error);
-  }
-}
-*/
