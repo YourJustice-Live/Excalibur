@@ -85,6 +85,8 @@ contract AvatarNFT is
         require(_exists(tokenId), "nonexistent token");
         require(_owners[owner] == 0, "Account Already Mapped to Token");
         _owners[owner] = tokenId;
+        //Faux Transfer Event
+        emit Transfer(address(0), owner, tokenId);
     }
 
     //** Reputation **/

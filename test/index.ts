@@ -3,7 +3,9 @@ import { Contract, ContractReceipt, Signer } from "ethers";
 import { ethers } from "hardhat";
 
 //Test Data
+const ZERO_ADDR = '0x0000000000000000000000000000000000000000';
 let test_uri = "ipfs://QmQxkoWcpFgMa7bCzxaANWtSt43J1iMgksjNnT4vM1Apd7"; //"TEST_URI";
+
 
 describe("Protocol", function () {
   //Contract Instances
@@ -98,10 +100,11 @@ describe("Protocol", function () {
       //Fetch Token ID By Address
       let tx = await avatarContract.tokenOwnerAdd(miscAddr, tokenId);
       tx.wait();
-      //Validate
+      //Expected Event
+      await expect(tx).to.emit(avatarContract, 'Transfer').withArgs(ZERO_ADDR, miscAddr, tokenId);
       //Fetch Token For Owner
       let result = await avatarContract.tokenByAddress(miscAddr);
-      //Check Token
+      //Validate
       expect(result).to.equal(tokenId);
     });
 
