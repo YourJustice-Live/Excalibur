@@ -392,27 +392,6 @@ describe("Protocol", function () {
       // await expect(ruleData).to.include.members(Object.values(rule));
     });
 
-    it("[TODO] Can collect rating", async function () {
-      //TODO: Tests for Collect Rating
-      
-      //Rep Call Data      
-      // let repCall = { tokenId:1, domain:1, rating:1, amount:2};
-      // let tx = await avatarContract.repAdd(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount);
-
-      // //Expect Event
-      // await expect(tx).to.emit(avatarContract, 'ReputationChange').withArgs(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount);
-
-      //Validate State
-      // getRepForDomain(address contractAddr, uint256 tokenId, string domain, bool rating) public view override returns (uint256){
-
-      // let rep = await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain, repCall.rating);
-      // expect(rep).to.equal(repCall.amount);
-
-      // //Other Domain Rep - Should be 0
-      // expect(await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain + 1, repCall.rating)).to.equal(0);
-
-    });
-
   }); //Jurisdiction
 
   /**
@@ -507,7 +486,7 @@ describe("Protocol", function () {
       //Validate
       await expect(
         this.caseContract.connect(tester2).stageFile()
-      ).to.be.revertedWith("ROLE:PLAINTIFF_ONLY");
+      ).to.be.revertedWith("ROLE:PLAINTIFF_OR_ADMIN");
       //File Case
       let tx = await this.caseContract.connect(admin).stageFile();
       //Expect State Event
@@ -553,6 +532,29 @@ describe("Protocol", function () {
       await expect(tx).to.emit(this.caseContract, 'Verdict').withArgs(test_uri, this.testerAddr);
       //Expect State Event
       await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(6);
+    });
+
+    
+    it("[TODO] Can Change Rating", async function () {
+      
+      //TODO: Tests for Collect Rating
+      // let repCall = { tokenId:?, domain:?, rating:?};
+      // let result = this.jurisdictionContract.getRepForDomain(avatarContract.address,repCall. tokenId, repCall.domain, repCall.rating);
+
+      
+
+      // //Expect Event
+      // await expect(tx).to.emit(avatarContract, 'ReputationChange').withArgs(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount);
+
+      //Validate State
+      // getRepForDomain(address contractAddr, uint256 tokenId, string domain, bool rating) public view override returns (uint256){
+
+      // let rep = await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain, repCall.rating);
+      // expect(rep).to.equal(repCall.amount);
+
+      // //Other Domain Rep - Should be 0
+      // expect(await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain + 1, repCall.rating)).to.equal(0);
+
     });
 
   }); //Case
