@@ -435,6 +435,47 @@ describe("Protocol", function () {
       // await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].postRole, posts[0].uri);
       await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].uri);
     });
+    
+    it("Should be Created & Opened (by Jurisdiction)", async function () {
+    
+      let caseName = "Test Case #1";
+      let ruleRefArr = [
+        {
+          jurisdiction: jurisdictionContract.address, 
+          ruleId: 1,
+        }
+      ];
+      let roleRefArr = [
+        {
+          role: "subject",
+          account: this.tester2Addr, 
+        },
+        {
+          role: "witness",
+          account: this.tester3Addr, 
+        }
+      ];
+      let posts = [
+        {
+          entRole: "admin",
+          // postRole: "evidence",
+          uri: test_uri,
+        }
+      ];
+      //Simulate - Get New Case Address
+      let caseAddr = await jurisdictionContract.connect(admin).callStatic.caseMake(caseName, ruleRefArr, roleRefArr, posts);
+      //Create New Case
+      let tx = await jurisdictionContract.connect(admin).caseMakeOpen(caseName, ruleRefArr, roleRefArr, posts);
+      //Expect Valid Address
+      expect(caseAddr).to.be.properAddress;
+      //Init Case Contract
+      let caseContract = await ethers.getContractFactory("Case").then(res => res.attach(caseAddr));
+      //Expect Case Created Event
+      await expect(tx).to.emit(jurisdictionContract, 'CaseCreated').withArgs(2, caseAddr);
+      //Expect Post Event
+      // await expect(tx).to.emit(caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].postRole, posts[0].uri);
+      await expect(tx).to.emit(caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].uri);
+    });
 
     it("Should Auto-Appoint creator as Admin", async function () {
       expect(await this.caseContract.roleHas(this.adminAddr, "admin")).to.equal(true);
@@ -532,6 +573,15 @@ describe("Protocol", function () {
       await expect(tx).to.emit(this.caseContract, 'Verdict').withArgs(test_uri, this.testerAddr);
       //Expect State Event
       await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(6);
+
+
+      //[DEBUG]
+      // console.log(tx);
+      // let receipt = await tx.wait();
+      // console.log("Emited "+receipt.events.length+" Events", receipt.events);
+
+
+
     });
 
     
