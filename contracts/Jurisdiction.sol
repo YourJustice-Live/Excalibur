@@ -79,7 +79,8 @@ contract Jurisdiction is
         return interfaceId == type(IJurisdiction).interfaceId || interfaceId == type(IRules).interfaceId || super.supportsInterface(interfaceId);
     }
 
-    constructor(address hub, address actionRepo) CommonYJ(hub) ERC1155("") Rules(actionRepo){
+    constructor(address hub, address actionRepo) CommonYJ(hub) ERC1155(""){
+        _setActionsContract(actionRepo);
         name = "Anti-Scam Jurisdiction";
         // symbol = "YJ_J1";
         //Init Default Jurisdiction Roles

@@ -33,10 +33,12 @@ abstract contract Rules is IRules {
 
     //--- Functions
 
+    /* DEPRECATED
     constructor(address actionRepo_) {
         _setActionsContract(actionRepo_);
     }
-
+    */
+    
     /// Get Rule
     function ruleGet(uint256 id) public view override returns (DataTypes.Rule memory) {
         return _rules[id];
