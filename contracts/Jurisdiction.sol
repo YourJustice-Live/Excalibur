@@ -133,7 +133,6 @@ contract Jurisdiction is
         emit CaseCreated(caseId, caseContract);
         //Posts
         for (uint256 i = 0; i < posts.length; ++i) {
-            // ICase(caseContract).post(posts[i].entRole, posts[i].postRole, posts[i].uri);
             ICase(caseContract).post(posts[i].entRole, posts[i].uri);
         }
         // return (caseId, caseContract);
@@ -260,7 +259,7 @@ contract Jurisdiction is
     //     return _tokenURIs[token_id];
     // }
     
-    /// Set Action's Metadata URI
+    /// Set Token's Metadata URI
     // function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
     //     require(_exists(tokenId), "ERC721URIStorage: URI set of nonexistent token");
     //     _tokenURIs[tokenId] = _tokenURI;
