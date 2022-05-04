@@ -50,7 +50,7 @@ contract AvatarNFT is
     //--- Functions
 
     /// Constructor
-    constructor(address hub) CommonYJ(hub) ERC721("Avatar", "AVATAR") {
+    constructor(address hub) CommonYJ(hub) ERC721("Avatar (YourJustice.life)", "AVATAR") {
 
     }
 
