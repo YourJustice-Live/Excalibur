@@ -214,7 +214,7 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
     /// File the Case (Validate & Open Discussion)  --> Open
     function stageFile() public override {
         //Validate Caller
-        require(roleHas(_msgSender(), "plaintiff") , "ROLE:PLAINTIFF_ONLY");
+        require(roleHas(_msgSender(), "plaintiff") || roleHas(_msgSender(), "admin") , "ROLE:PLAINTIFF_OR_ADMIN");
         //Validate Lifecycle Stage
         require(stage == DataTypes.CaseStage.Draft, "STAGE:DRAFT_ONLY");
         //Validate - Has Subject
