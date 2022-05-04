@@ -8,7 +8,7 @@ import { ethers } from "hardhat";
 //Track Addresses (Fill in present addresses to prevent new deplopyment)
 const contractAddr = {
   config:"0x14E5D5B68A41665E86225e6830a69bb2b5F6E484",  //V2.0
-  case:"0xa9ad60ddc255de7d53afd6c56966b5695d6ef080",  //Case Instance //V1.1
+  case:"0x500a7f031571848e32490444c33d513F1a7c8e9b",  //Case Instance //V1.11
   hub:"0xce92b64ba4b9a2905605c8c04e9F1e27C5D6E559", //V2.1
   avatar:"0xE7254468763a8d4f791f30F5e8dcA635DF850772",  //V1.1
   history:"0xe699f8dd6968F7a60786E846899CEf56154D3573", //V4.0
