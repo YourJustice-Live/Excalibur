@@ -77,7 +77,7 @@ abstract contract Rules is IRules {
         emit RuleRemoved(id);
     }
 
-    /// Update Rule
+    /// Set Rule
     // function _ruleSet(uint256 id, DataTypes.Rule memory rule) internal {
     function _ruleSet(uint256 id, DataTypes.Rule memory rule, DataTypes.Effect[] memory effects) internal {
         //Set
@@ -92,6 +92,14 @@ abstract contract Rules is IRules {
         }
     }
 
+    /// Update Rule
+    function _ruleUpdate(uint256 id, DataTypes.Rule memory rule, DataTypes.Effect[] memory effects) internal {
+        //Remove Current Effects
+        delete _effects[id];
+        //Update Rule
+        _ruleSet(id, rule, effects);
+    }
+    
     /// Get Rule's Confirmation Method
     function confirmationGet(uint256 id) public view override returns (DataTypes.Confirmation memory){
         return _ruleConfirmation[id];

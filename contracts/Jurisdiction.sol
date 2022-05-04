@@ -233,7 +233,11 @@ contract Jurisdiction is
     //** Rule Management
 
     /// Create New Rule
-    function ruleAdd(DataTypes.Rule memory rule, DataTypes.Confirmation memory confirmation, DataTypes.Effect[] memory effects) public override returns (uint256) {
+    function ruleAdd(
+        DataTypes.Rule memory rule, 
+        DataTypes.Confirmation memory confirmation, 
+        DataTypes.Effect[] memory effects
+    ) public override returns (uint256) {
         //Validate Caller's Permissions
         require(roleHas(_msgSender(), "admin"), "Admin Only");
         //Add Rule
@@ -245,11 +249,15 @@ contract Jurisdiction is
     
     /// Update Rule
     // function ruleUpdate(uint256 id, DataTypes.Rule memory rule) external override {
-    function ruleUpdate(uint256 id, DataTypes.Rule memory rule, DataTypes.Effect[] memory effects) external override {
+    function ruleUpdate(
+        uint256 id, 
+        DataTypes.Rule memory rule, 
+        DataTypes.Effect[] memory effects
+    ) external override {
         //Validate Caller's Permissions
         require(roleHas(_msgSender(), "admin"), "Admin Only");
         //Update Rule
-        _ruleSet(id, rule, effects);
+        _ruleUpdate(id, rule, effects);
     }
 
     /// Get Token URI

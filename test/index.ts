@@ -392,6 +392,26 @@ describe("Protocol", function () {
       // await expect(ruleData).to.include.members(Object.values(rule));
     });
 
+    it("Should Update Rule", async function () {
+      let actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2';
+      let rule = {
+        about: actionGUID, //"0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2",
+        affected: "god",  //Plaintiff / Beneficiary
+        uri: "ADDITIONAL_DATA_URI",
+        negation: false,
+      };
+      let  effects = [
+        {name:'environmental', value:1, direction:false},
+        {name:'personal', value:1, direction:true},
+      ];
+      let tx = await jurisdictionContract.connect(admin).ruleUpdate(2, rule, effects);
+
+      // let curEffects = await jurisdictionContract.effectsGet(2);
+      // console.log("Effects", curEffects);
+      // expect(curEffects).to.include.members(Object.values(effects));
+
+    });
+
   }); //Jurisdiction
 
   /**
