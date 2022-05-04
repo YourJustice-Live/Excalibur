@@ -12,7 +12,7 @@ const contractAddr = {
   hub:"0xce92b64ba4b9a2905605c8c04e9F1e27C5D6E559", //V2.1
   avatar:"0xE7254468763a8d4f791f30F5e8dcA635DF850772",  //V1.1
   history:"0xe699f8dd6968F7a60786E846899CEf56154D3573", //V4.0
-  jurisdiction:"0x22A339004E2a005ED5D5b94C83EEA2E47BE249EB", //V1.0
+  jurisdiction:"0x37E2db964E4394d20e66CD302C01D08208019DEa", //V1.1
 };
 
 async function main() {
