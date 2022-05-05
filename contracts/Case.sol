@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "./libraries/DataTypes.sol";
 import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/ERC1155RolesUpgradable.sol";
+import "./abstract/Posts.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/IAvatar.sol";
@@ -17,7 +18,11 @@ import "./interfaces/IJurisdiction.sol";
  * @title Case Contract
  * @dev Version 0.2.0
  */
-contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
+contract Case is 
+    ICase, 
+    Posts, 
+    CommonYJUpgradable, 
+    ERC1155RolesUpgradable {
 
     //--- Storage
 
@@ -154,6 +159,12 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         return IRules(_rules[ruleRefId].jurisdiction).effectsGet(_rules[ruleRefId].ruleId);
     }
 
+    // function post(string entRole, string uri) 
+    // - Post by account + role (in the case, since an account may have multiple roles)
+
+    // function post(uint256 token_id, string entRole, string uri) 
+    //- Post by Entity (Token ID or a token identifier struct)
+
     /// Add Post 
     /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
     // function post(uint256 token_id, string calldata uri) external override {     //Post by Token ID (May later use Entity GUID as Caller)
@@ -167,14 +178,9 @@ contract Case is ICase, CommonYJUpgradable, ERC1155RolesUpgradable {
         //Post Event
         // emit Post(_msgSender(), entRole, postRole, uri);
         // emit Post(tx.origin, entRole, postRole, uri);
-        emit Post(tx.origin, entRole, uri);
+        // emit Post(tx.origin, entRole, uri);
+        _post(tx.origin, entRole, uri);
     }
-
-    // function post(string entRole, string uri) 
-    // - Post by account + role (in the case, since an account may have multiple roles)
-
-    // function post(uint256 token_id, string entRole, string uri) 
-    //- Post by Entity (Token ID or a token identifier struct)
 
 
     //--- Rule Reference 

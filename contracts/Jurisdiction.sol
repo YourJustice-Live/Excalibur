@@ -16,6 +16,7 @@ import "./abstract/CommonYJ.sol";
 import "./abstract/Rules.sol";
 import "./abstract/Opinions.sol";
 import "./abstract/Recursion.sol";
+import "./abstract/Posts.sol";
 
 
 /**
@@ -39,6 +40,7 @@ contract Jurisdiction is
         IJurisdiction, 
         Rules, 
         Opinions, 
+        Posts, 
         CommonYJ, 
         Recursion, 
         ERC1155Roles {
@@ -64,13 +66,6 @@ contract Jurisdiction is
 
     // mapping(uint256 => string) internal _rulesURI; // Mapping Metadata URIs for Individual Role 
     // mapping(uint256 => string) internal _uri;
-
-    //Post Input Struct
-    struct PostInput {
-        string entRole;
-        // string postRole;
-        string uri;
-    }
 
     //--- Functions
 

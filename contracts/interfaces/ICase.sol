@@ -56,10 +56,6 @@ interface ICase {
     /// Case Cancelation Data
     event Cancelled(string uri, address account);
 
-    /// General Post / Evidence, etc'
-    // event Post(address indexed account, string entRole, string postRole, string uri);        //postRole Moved to uri
-    event Post(address indexed account, string entRole, string uri);
-
     /// Rule Reference Added
     event RuleAdded(address jurisdiction, uint256 ruleId);
 
