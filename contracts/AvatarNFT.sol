@@ -6,7 +6,7 @@ pragma solidity 0.8.4;
 // import "@openzeppelin/contracts/token/ERC721/ERC721.sol";		//https://eips.ethereum.org/EIPS/eip-721
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";  //Individual Metadata URI Storage Functions
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";  //To Hold NFTs on Contract
+// import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";  //To Hold NFTs on Contract
 // import "@openzeppelin/contracts/access/Ownable.sol";
 // import "./interfaces/IConfig.sol";
 import "./interfaces/IAvatar.sol";
@@ -31,8 +31,8 @@ contract AvatarNFT is
         IAvatar, 
         CommonYJ, 
         Opinions,
-        ERC721URIStorage, 
-        IERC721Receiver {
+        ERC721URIStorage {
+        // IERC721Receiver {
     
     //--- Storage
     
@@ -170,10 +170,27 @@ contract AvatarNFT is
         );
     }
 
-    /// For Holding NFTs on Contract
+    /// Receiver Function For Holding NFTs on Contract
+    /*
     function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4) {
     // function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external pure override returns (bytes4) {
         return IERC721Receiver.onERC721Received.selector;
+    }
+    */
+
+    /// Receiver Function For Holding NFTs on Contract
+    function onERC721Received(address, address, uint256, bytes memory) public pure returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
+
+    /// Receiver Function For Holding NFTs on Contract (Allow for internal NFTs to assume Roles)
+    function onERC1155Received(address, address, uint256, uint256, bytes memory) public pure returns (bytes4) {
+        return this.onERC1155Received.selector;
+    }
+
+    /// Receiver Function For Holding NFTs on Contract
+    function onERC1155BatchReceived(address, address, uint256[] memory, uint256[] memory, bytes memory) public pure returns (bytes4) {
+        return this.onERC1155BatchReceived.selector;
     }
 
 }
