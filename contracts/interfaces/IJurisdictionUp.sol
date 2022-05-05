@@ -9,7 +9,7 @@ interface IJurisdiction {
     //--- Functions
 
     /// Initialize
-    // function initialize(address hub) external;
+    function initialize(address hub) external;
 
     /// Symbol As Arbitrary contract designation signature
     function symbol() external view returns (string memory);

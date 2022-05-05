@@ -8,6 +8,7 @@ import { ethers } from "hardhat";
 //Track Addresses (Fill in present addresses to prevent new deplopyment)
 const contractAddr = {
   config:"0x14E5D5B68A41665E86225e6830a69bb2b5F6E484",  //V2.0
+  jurisdictionUp:"",
   case:"0x500a7f031571848e32490444c33d513F1a7c8e9b",  //Case Instance //V1.11
   hub:"0xce92b64ba4b9a2905605c8c04e9F1e27C5D6E559", //V2.1
   avatar:"0xE7254468763a8d4f791f30F5e8dcA635DF850772",  //V1.1
@@ -30,28 +31,40 @@ async function main() {
     console.log("Deployed Config Contract to " + contractAddr.config);
   }
 
-  //--- Case
+  //--- Case Implementation
   if(!contractAddr.case){
     //Deploy Case
-    hubContract = await ethers.getContractFactory("Case").then(res => res.deploy());
-    await hubContract.deployed();
+    let contract = await ethers.getContractFactory("Case").then(res => res.deploy());
+    await contract.deployed();
     //Set Address
-    contractAddr.case = hubContract.address;
+    contractAddr.case = contract.address;
     //Log
     console.log("Deployed Case Contract to " + contractAddr.case);
+  }
+
+  //--- JurisdictionUp Implementation
+  if(!contractAddr.jurisdictionUp){
+    //Deploy JurisdictionUp
+    let contract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
+    await contract.deployed();
+    //Set Address
+    contractAddr.jurisdictionUp = contract.address;
+    //Log
+    console.log("Deployed JurisdictionUp Contract to " + contractAddr.jurisdictionUp);
   }
 
   //--- Hub
   if(!contractAddr.hub){
     //Deploy Hub
-    let caseContract = await ethers.getContractFactory("Hub").then(res => res.deploy(
+    hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(
         contractAddr.config, 
         // contractAddr.avatar, 
+        contractAddr.jurisdictionUp,
         contractAddr.case,
       ));
-    await caseContract.deployed();
+    await hubContract.deployed();
     //Set Address
-    contractAddr.hub = caseContract.address;
+    contractAddr.hub = hubContract.address;
     //Log
     console.log("Deployed Hub Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " Case: "+ contractAddr.case);
   }

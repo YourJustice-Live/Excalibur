@@ -13,6 +13,7 @@ describe("Protocol", function () {
   let hubContract: Contract;
   let avatarContract: Contract;
   let jurisdictionContract: Contract;
+  let jurisdictionUpContract: Contract;
   let actionContract: Contract;
   let caseContract: Contract;
 
@@ -33,9 +34,12 @@ describe("Protocol", function () {
 
     //Deploy Case Implementation
     this.caseContract = await ethers.getContractFactory("Case").then(res => res.deploy());
+    //Jurisdiction Upgradable Implementation
+    this.jurisdictionUpContract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
 
     //Deploy Hub
-    hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.caseContract.address));
+    // hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.caseContract.address));
+    hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.jurisdictionUpContract.address, this.caseContract.address));
 
     //Deploy Avatar
     avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract.address));
@@ -235,8 +239,9 @@ describe("Protocol", function () {
     
     before(async function () {
         //Deploy Jurisdiction
-        jurisdictionContract=  await ethers.getContractFactory("Jurisdiction").then(res => res.deploy(hubContract.address, actionContract.address));
+        jurisdictionContract = await ethers.getContractFactory("Jurisdiction").then(res => res.deploy(hubContract.address, actionContract.address));
         this.jurisdictionContract = jurisdictionContract;
+
     });
 
     it("Users can join as a member", async function () {

@@ -7,7 +7,7 @@ import "hardhat/console.sol";
 // import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";  //Track Token Supply & Check 
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "./interfaces/IJurisdiction.sol";
+import "./interfaces/IJurisdictionUp.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
 // import "./libraries/DataTypes.sol";
@@ -85,11 +85,15 @@ contract JurisdictionUpgradable is
     }
     
     /// Initializer
-    function initialize (address hub, address actionRepo) public initializer {
+    function initialize (address hub) public override initializer {
         //Initializers
         __ERC1155RolesUpgradable_init("");
         __CommonYJ_init(hub);
-        _setActionsContract(actionRepo);
+
+        //Fetch & Set Current History Contract
+        // address actionRepo = _HUB.historyContract();
+        // _setActionsContract(actionRepo);
+        // _setActionsContract(_HUB.historyContract());
 
         //Identifiers
         name = "Anti-Scam Jurisdiction";
@@ -278,10 +282,9 @@ contract JurisdictionUpgradable is
         // require(exists(token_id), "NONEXISTENT_TOKEN");
         return _tokenURIs[token_id];
     }
-    // function uri(string role) public view override roleExists(role) returns (string memory) {
-        // require(exists(token_id), "NONEXISTENT_TOKEN");
-        // return _tokenURIs[token_id];
-    // }
+    function uri(string calldata role) public view roleExists(role) returns (string memory) {
+        return _tokenURIs[_roleToId(role)];
+    }
     
     /// Set Token's Metadata URI
     // function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {

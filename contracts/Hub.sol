@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 // import "@openzeppelin/contracts/utils/Counters.sol";
 import "./interfaces/IConfig.sol";
 import "./interfaces/IHub.sol";
-import "./interfaces/IJurisdiction.sol";
+import "./interfaces/IJurisdictionUp.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IAvatar.sol";
 import "./libraries/DataTypes.sol";
@@ -73,8 +73,10 @@ contract Hub is IHub, Ownable {
         //Set Protocol's Config Address
         _setConfig(config);
         //Init Jurisdiction Contract Beacon
+        console.log("jurisdictionContract", jurisdictionContract);
         UpgradeableBeacon _beaconJ = new UpgradeableBeacon(jurisdictionContract);
         beaconJurisdiction = address(_beaconJ);
+
         //Init Case Contract Beacon
         UpgradeableBeacon _beaconC = new UpgradeableBeacon(caseContract);
         beaconCase = address(_beaconC);
