@@ -25,10 +25,14 @@ import "./abstract/CommonYJ.sol";
 contract Hub is IHub, Ownable {
     //---Storage
     address public beaconCase;
-    // address public beaconJurisdiction;  //TBD
+    address public beaconJurisdiction;  //TBD
+
+    // mapping(string => address) internal _contracts;      // Mapping for Used Contracts
 
     //Avatar Contract Address
     address public override avatarContract;
+    //Action Repo
+    address public override historyContract;
 
     // using Counters for Counters.Counter;
     // Counters.Counter internal _tokenIds; //Track Last Token ID
@@ -47,6 +51,7 @@ contract Hub is IHub, Ownable {
     mapping(address => bool) internal _jurisdictions; // Mapping for Active Jurisdictions   //[TBD]
     mapping(address => address) internal _cases;      // Mapping for Case Contracts  [C] => [J]
 
+    
 
     //--- Events
     //TODO: Owner 
@@ -54,6 +59,7 @@ contract Hub is IHub, Ownable {
 
     //--- Functions
 
+    /*
     constructor(address config, address caseContract){
         //Set Protocol's Config Address
         _setConfig(config);
@@ -61,6 +67,19 @@ contract Hub is IHub, Ownable {
         UpgradeableBeacon _beacon = new UpgradeableBeacon(caseContract);
         beaconCase = address(_beacon);
     }
+    */
+    /* [TBD] Upgradable J */
+    constructor(address config, address jurisdictionContract, address caseContract){
+        //Set Protocol's Config Address
+        _setConfig(config);
+        //Init Jurisdiction Contract Beacon
+        UpgradeableBeacon _beaconJ = new UpgradeableBeacon(jurisdictionContract);
+        beaconJurisdiction = address(_beaconJ);
+        //Init Case Contract Beacon
+        UpgradeableBeacon _beaconC = new UpgradeableBeacon(caseContract);
+        beaconCase = address(_beaconC);
+    }
+
 
     /// @dev Returns the address of the current owner.
     function owner() public view override(IHub, Ownable) returns (address) {
@@ -68,10 +87,17 @@ contract Hub is IHub, Ownable {
     }
 
     /// Set Avatar Contaract Address
-    function setAvatarContract(address avatarContract_) external onlyOwner {
+    function setAvatarContract(address contract_) external onlyOwner {
         // require(avatarContract == address(0), "ADDRESS_ALREADY_SET");    //Allow Changes, For Now
         //Set
-        avatarContract = avatarContract_;
+        avatarContract = contract_;
+    }
+
+    /// Set History Contaract Address
+    function setHistoryContract(address contract_) external onlyOwner {
+        // require(historyContract == address(0), "ADDRESS_ALREADY_SET");    //Allow Changes, For Now
+        //Set
+        historyContract = contract_;
     }
 
     /// Get Configurations Contract Address
@@ -95,20 +121,42 @@ contract Hub is IHub, Ownable {
 
     //--- Factory 
 
-    /// TODO: Make a new Jurisdiction
-    // function jurisdictionMake() public override returns (address) {
+    /// Make a new Jurisdiction
+    function jurisdictionMake() external override returns (address) {
+        //Validate
+        // require(beaconJurisdiction != address(0), "Jurisdiction Beacon Missing");      //Redundant
 
-        //Register Jurisdiction
-        // _jurisdictions[] = true;
+        //Deploy
+        BeaconProxy newJurisdictionProxy = new BeaconProxy(
+            beaconCase,
+            abi.encodeWithSelector(
+                IJurisdiction( payable(address(0)) ).initialize.selector,
+                // name_,          //Name
+                // "YJ_CASE",      //Symbol
+                address(this),   //Hub
+                address(this)   //Action Repo           //TODO: Action Repo
+                // _msgSender()    //Birth Parent (Container)
+            )
+        );
 
-    // }
+        //Remember
+        // _active[msg.sender][address(newJurisdictionProxy)] = true;
+        // _cases[address(newJurisdictionProxy)] = msg.sender;
+        _jurisdictions[address(newJurisdictionProxy)] = true;
+
+        //Return
+        return address(newJurisdictionProxy);
+
+
+
+    }
 
     /// Make a new Case
     function caseMake(
         string calldata name_
         , DataTypes.RuleRef[] memory addRules
         , DataTypes.InputRole[] memory assignRoles
-    ) public override returns (address) {
+    ) external override returns (address) {
         //TODO: Validate Caller Permissions (A Jurisdiction)
 
         //Rules
@@ -118,7 +166,7 @@ contract Hub is IHub, Ownable {
         // uint256 caseId = _caseIds.current();
 
         //Validate
-        require(beaconCase != address(0), "Case Beacon Missing");
+        // require(beaconCase != address(0), "Case Beacon Missing");    //Redundant
         //Deploy
         BeaconProxy newCaseProxy = new BeaconProxy(
             beaconCase,
