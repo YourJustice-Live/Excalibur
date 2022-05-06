@@ -135,15 +135,9 @@ contract Hub is IHub, Ownable {
         );
 
         //Remember
-        // _active[msg.sender][address(newJurisdictionProxy)] = true;
-        // _cases[address(newJurisdictionProxy)] = msg.sender;
         _jurisdictions[address(newJurisdictionProxy)] = true;
-
         //Return
         return address(newJurisdictionProxy);
-
-
-
     }
 
     /// Make a new Case

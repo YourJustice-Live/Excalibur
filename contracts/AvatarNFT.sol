@@ -6,8 +6,6 @@ pragma solidity 0.8.4;
 // import "@openzeppelin/contracts/token/ERC721/ERC721.sol";		//https://eips.ethereum.org/EIPS/eip-721
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";  //Individual Metadata URI Storage Functions
 import "@openzeppelin/contracts/utils/Counters.sol";
-// import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";  //To Hold NFTs on Contract
-// import "@openzeppelin/contracts/access/Ownable.sol";
 // import "./interfaces/IConfig.sol";
 import "./interfaces/IAvatar.sol";
 import "./libraries/DataTypes.sol";
@@ -32,7 +30,6 @@ contract AvatarNFT is
         CommonYJ, 
         Opinions,
         ERC721URIStorage {
-        // IERC721Receiver {
     
     //--- Storage
     
