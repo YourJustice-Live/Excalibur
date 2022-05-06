@@ -58,15 +58,20 @@ async function main() {
     //Deploy Hub
     hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(
         contractAddr.config, 
-        // contractAddr.avatar, 
         contractAddr.jurisdictionUp,
         contractAddr.case,
       ));
     await hubContract.deployed();
+
+    //Set Avatars
+    if(!!contractAddr.avatar) hubContract.setAssoc("avatar", contractAddr.avatar);
+    //Set to History
+    if(!!contractAddr.history) hubContract.setAssoc("history", contractAddr.history);
+
     //Set Address
     contractAddr.hub = hubContract.address;
     //Log
-    console.log("Deployed Hub Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " Case: "+ contractAddr.case);
+    console.log("Deployed Hub Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " jurisdiction: "+ contractAddr.jurisdictionUp+ " Case: "+ contractAddr.case);
   }
 
   //--- Avatar
@@ -82,7 +87,7 @@ async function main() {
     if(!!hubContract){  //If Deployed Together
       try{
         //Set to HUB
-        hubContract.setAvatarContract(contractAddr.avatar);
+        hubContract.setAssoc("avatar", contractAddr.avatar);
       }
       catch(error){
         console.error("Failed to Set Avatar Contract to Hub", error);
@@ -99,6 +104,16 @@ async function main() {
     contractAddr.history = actionContract.address;
     //Log
     console.log("Deployed ActionRepo Contract to " + contractAddr.history);
+
+    if(!!hubContract){  //If Deployed Together
+      try{
+        //Set to HUB
+        hubContract.setAssoc("history", contractAddr.history);
+      }
+      catch(error){
+        console.error("Failed to Set History Contract to Hub", error);
+      }
+    }
   }
 
   //--- Jurisdiction

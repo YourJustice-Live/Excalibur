@@ -18,10 +18,11 @@ import "./abstract/CommonYJ.sol";
 
 
 /**
- * Case Contract
- * - [TODO] Hold Public Avatar NFT Contract Address
+ * YJ Hub Contract
+ * - Hold Known Contract Addresses (Avatar, History)
+ * - Contract Factory (Jurisdictions & Cases)
+ * - Remember Products (Jurisdictions & Cases)
  */
-// contract Hub is CommonYJ, Ownable{
 contract Hub is IHub, Ownable {
     //---Storage
     address public beaconCase;
@@ -30,10 +31,13 @@ contract Hub is IHub, Ownable {
     // mapping(string => address) internal _contracts;      // Mapping for Used Contracts
 
     //Avatar Contract Address
-    address public override avatarContract;
+    // address public override avatarContract;
     //Action Repo
-    address public override historyContract;
+    // address public override historyContract;
 
+    //Contract Associations
+    mapping(string => address) internal _assoc;
+    
     // using Counters for Counters.Counter;
     // Counters.Counter internal _tokenIds; //Track Last Token ID
     // Counters.Counter internal _caseIds;  //Track Last Case ID
@@ -46,12 +50,9 @@ contract Hub is IHub, Ownable {
     // address internal _CONFIG;    //Configuration Contract
     IConfig private _CONFIG;  //Configuration Contract       //Try This
 
-    // mapping(uint256 => address) private _jurisdictions; //Track all Jurisdiction contracts (on Creation)        //[TBD]
-    // mapping(address => mapping(address => bool)) internal _active;      // Mapping for Case Contracts  [J][C] => bool
     mapping(address => bool) internal _jurisdictions; // Mapping for Active Jurisdictions   //[TBD]
     mapping(address => address) internal _cases;      // Mapping for Case Contracts  [C] => [J]
 
-    
 
     //--- Events
     //TODO: Owner 
@@ -59,47 +60,20 @@ contract Hub is IHub, Ownable {
 
     //--- Functions
 
-    /*
-    constructor(address config, address caseContract){
-        //Set Protocol's Config Address
-        _setConfig(config);
-        //Init Case Contract Beacon
-        UpgradeableBeacon _beacon = new UpgradeableBeacon(caseContract);
-        beaconCase = address(_beacon);
-    }
-    */
-    /* [TBD] Upgradable J */
     constructor(address config, address jurisdictionContract, address caseContract){
         //Set Protocol's Config Address
         _setConfig(config);
         //Init Jurisdiction Contract Beacon
-        console.log("jurisdictionContract", jurisdictionContract);
         UpgradeableBeacon _beaconJ = new UpgradeableBeacon(jurisdictionContract);
         beaconJurisdiction = address(_beaconJ);
-
         //Init Case Contract Beacon
         UpgradeableBeacon _beaconC = new UpgradeableBeacon(caseContract);
         beaconCase = address(_beaconC);
     }
 
-
     /// @dev Returns the address of the current owner.
     function owner() public view override(IHub, Ownable) returns (address) {
         return _CONFIG.owner();
-    }
-
-    /// Set Avatar Contaract Address
-    function setAvatarContract(address contract_) external onlyOwner {
-        // require(avatarContract == address(0), "ADDRESS_ALREADY_SET");    //Allow Changes, For Now
-        //Set
-        avatarContract = contract_;
-    }
-
-    /// Set History Contaract Address
-    function setHistoryContract(address contract_) external onlyOwner {
-        // require(historyContract == address(0), "ADDRESS_ALREADY_SET");    //Allow Changes, For Now
-        //Set
-        historyContract = contract_;
     }
 
     /// Get Configurations Contract Address
@@ -119,6 +93,25 @@ contract Hub is IHub, Ownable {
         require(keccak256(abi.encodePacked(IConfig(config).symbol())) == keccak256(abi.encodePacked("YJConfig")), "Invalid Config Contract");
         //Set
         _CONFIG = IConfig(config);
+    }
+
+    //-- Assoc
+
+    ////Get Contract Association
+    function getAssoc(string memory key) public view override returns(address) {
+        //Validate
+        require(_assoc[key] != address(0) , string(abi.encodePacked("Faild to Get Assoc: ", key)));
+        return _assoc[key];
+    }
+
+    //Set Association
+    function setAssoc(string memory key, address contract_) external onlyOwner {
+        _setAssoc(key, contract_);
+    }
+
+    //Set Association
+    function _setAssoc(string memory key, address contract_) internal {
+        _assoc[key] = contract_;
     }
 
     //--- Factory 
@@ -199,7 +192,7 @@ contract Hub is IHub, Ownable {
 
         // console.log("Hub: Add Reputation to Contract:", contractAddr, tokenId, amount);
         // console.log("Hub: Add Reputation in Domain:", domain);
-        
+        address avatarContract = getAssoc("avatar");
         //Update Avatar's Reputation    //TODO: Just Check if Contract Implements IRating
         if(avatarContract != address(0) && avatarContract == contractAddr){
             _repAddAvatar(tokenId, domain, rating, amount);
@@ -208,7 +201,8 @@ contract Hub is IHub, Ownable {
 
     /// Add Repuation to Avatar
     function _repAddAvatar(uint256 tokenId, string calldata domain, bool rating, uint8 amount) internal {
-        require(avatarContract != address(0), "AVATAR_CONTRACT_UNKNOWN");
+        address avatarContract = getAssoc("avatar");
+        // require(avatarContract != address(0), "AVATAR_CONTRACT_UNKNOWN");
         // repAdd(avatarContract, tokenId, domain, rating, amount);
         IAvatar(avatarContract).repAdd(tokenId, domain, rating, amount);
     }
@@ -223,12 +217,19 @@ contract Hub is IHub, Ownable {
         //Upgrade Beacon
         UpgradeableBeacon(beaconCase).upgradeTo(newImplementation);
         //Upgrade Event
-        emit UpdatedCaseImplementation(newImplementation);
+        // emit UpdatedCaseImplementation(newImplementation);
+        emit UpdatedImplementation("case", newImplementation);
     }
 
     /// Upgrade Jurisdiction Implementation [TBD]
-    // function upgradeCaseImplementation(address newImplementation) public onlyOwner {
+    function upgradeJurisdictionImplementation(address newImplementation) public onlyOwner {
+        //Validate Interface
+        // require(IERC165(newImplementation).supportsInterface(type(ICase).interfaceId), "Implmementation Does Not Support Case Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
 
-    // }
+        //Upgrade Beacon
+        UpgradeableBeacon(beaconJurisdiction).upgradeTo(newImplementation);
+        //Upgrade Event
+        emit UpdatedImplementation("jurisdiction", newImplementation);
+    }
 
 }

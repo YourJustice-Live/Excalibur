@@ -5,14 +5,14 @@ pragma solidity 0.8.4;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./libraries/DataTypes.sol";
-import "./abstract/CommonYJUpgradable.sol";
-import "./abstract/ERC1155RolesUpgradable.sol";
-import "./abstract/Posts.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/IAvatar.sol";
 import "./interfaces/IERC1155Roles.sol";
 import "./interfaces/IJurisdiction.sol";
+import "./abstract/CommonYJUpgradable.sol";
+import "./abstract/ERC1155RolesUpgradable.sol";
+import "./abstract/Posts.sol";
 
 /**
  * @title Case Contract
@@ -291,13 +291,10 @@ contract Case is
 
     /// Rule (Action) Confirmed (Currently Only Judging Avatars)
     function _ruleConfirmed(uint256 ruleId) internal {
-
         //Get Avatar Contract
-        IAvatar avatarContract = IAvatar(_HUB.avatarContract());
+        IAvatar avatarContract = IAvatar(_HUB.getAssoc("avatar"));
         //Validate Avatar Contract Interface
         require(IERC165(address(avatarContract)).supportsInterface(type(IAvatar).interfaceId), "Invalid Avatar Contract");
-
-        // console.log("Case: Rule Confirmed:", ruleId);
 
         //Fetch Case's Subject(s)
         address[] memory subjects = uniqueRoleMembers("subject");
@@ -305,9 +302,6 @@ contract Case is
         for (uint256 i = 0; i < subjects.length; ++i) {
             //Get Subject's Token ID For 
             uint256 tokenId = avatarContract.tokenByAddress(subjects[i]);
-
-            // console.log("Case: Update Rep for Subject:", subjects[i]);
-
             if(tokenId > 0){
                 DataTypes.Effect[] memory effects = ruleGetEffects(ruleId);
                 //Run Each Effect

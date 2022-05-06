@@ -43,9 +43,14 @@ describe("Protocol", function () {
 
     //Deploy Avatar
     avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract.address));
-
     //Set Avatar Contract to Hub
-    hubContract.setAvatarContract(avatarContract.address);
+    // hubContract.setAvatarContract(avatarContract.address);
+    hubContract.setAssoc("avatar", avatarContract.address);
+
+    //Deploy History
+    actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
+    //Set Avatar Contract to Hub
+    hubContract.setAssoc("history", actionContract.address);
 
     //Populate Accounts
     [owner, admin, tester, tester2, tester3, tester4, ...addrs] = await ethers.getSigners();
@@ -179,12 +184,12 @@ describe("Protocol", function () {
    */
   describe("Action Repository", function () {
   
-    before(async function () {
+    // before(async function () {
       //Deploy Action Repo / History Contract
       // const ActionContract = await ethers.getContractFactory("ActionRepo");
       // actionContract = await ActionContract.deploy(hubContract.address);
-      actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
-    });
+      // actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
+    // });
   
     it("Should store Actions", async function () {
       let action = {

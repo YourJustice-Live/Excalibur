@@ -21,20 +21,24 @@ interface IHub {
     function caseMake(string calldata name_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external returns (address);
 
     //Get Avatar Contract Address
-    function avatarContract() external view returns (address);
+    // function avatarContract() external view returns (address);
 
     //Get History Contract Address
-    function historyContract() external view returns (address);
+    // function historyContract() external view returns (address);
 
     /// Add Reputation (Positive or Negative)       /// Opinion Updated
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external;
 
+    //Get Contract Association
+    function getAssoc(string memory key) external view returns(address);
+
     //--- Events
 
     /// Case Implementation Contract Updated
-    event UpdatedCaseImplementation(address implementation);
-
+    // event UpdatedCaseImplementation(address implementation);
     /// Jurisdiction Implementation Contract Updated
-    event UpdatedJurisdictionImplementation(address implementation);
+    // event UpdatedJurisdictionImplementation(address implementation);
+
+    event UpdatedImplementation(string name, address implementation);
 
 }
