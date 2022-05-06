@@ -94,8 +94,10 @@ contract JurisdictionUpgradable is
         address actionRepo = _HUB.getAssoc("history");
         console.log("Init WJ W/History:", actionRepo);
         _setActionsContract(actionRepo);
-
         // _setActionsContract(_HUB.getAssoc("history"));
+
+        //TODO: Set Contract URI
+        // _contract_uri = uri_;
 
         //Identifiers
         name = name_; //"Anti-Scam Jurisdiction";
@@ -299,7 +301,17 @@ contract JurisdictionUpgradable is
     //     emit ActionURI(guid, uri);
     // }
 
-   /**
+    /// Set Contract URI
+    function setContractURI(string calldata contract_uri) external override {
+        //Validate Permissions
+        require( owner() == _msgSender()      //Owner
+            || roleHas(_msgSender(), "admin")    //Admin Role
+            , "INVALID_PERMISSIONS");
+        //Set
+        _contract_uri = contract_uri;
+    }
+    
+    /**
      * @dev Contract URI
      *  https://docs.opensea.io/docs/contract-level-metadata
      */

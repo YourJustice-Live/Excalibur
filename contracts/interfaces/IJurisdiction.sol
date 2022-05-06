@@ -8,11 +8,11 @@ interface IJurisdiction {
     
     //--- Functions
 
-    /// Initialize
-    // function initialize(address hub, string calldata name_) external;
-
     /// Symbol As Arbitrary contract designation signature
     function symbol() external view returns (string memory);
+
+    /// Set Contract URI
+    function setContractURI(string calldata contract_uri) external;
 
     /// Contract URI
     function contractURI() external view returns (string memory);

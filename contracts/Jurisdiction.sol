@@ -276,6 +276,16 @@ contract Jurisdiction is
     //     emit ActionURI(guid, uri);
     // }
 
+    /// Set Contract URI
+    function setContractURI(string calldata contract_uri) external override {
+        //Validate Permissions
+        require( owner() == _msgSender()      //Owner
+            || roleHas(_msgSender(), "admin")    //Admin Role
+            , "INVALID_PERMISSIONS");
+        //Set
+        _contract_uri = contract_uri;
+    }
+
    /**
      * @dev Contract URI
      *  https://docs.opensea.io/docs/contract-level-metadata

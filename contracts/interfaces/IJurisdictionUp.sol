@@ -8,6 +8,9 @@ interface IJurisdiction {
     
     //--- Functions
 
+    /// Set Contract URI
+    function setContractURI(string calldata contract_uri) external;
+
     /// Initialize
     function initialize(address hub, string calldata name_) external;
 
