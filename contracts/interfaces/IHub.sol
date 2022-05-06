@@ -14,7 +14,7 @@ interface IHub {
     function owner() external view returns (address);
     
     /// Make a new Jurisdiction
-    function jurisdictionMake(string calldata name_) external returns (address);
+    function jurisdictionMake(string calldata name_, string calldata uri_) external returns (address);
 
     /// Make a new Case
     // function caseMake(string calldata name_) external returns (address);

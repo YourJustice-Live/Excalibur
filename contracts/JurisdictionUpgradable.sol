@@ -85,7 +85,7 @@ contract JurisdictionUpgradable is
     }
     
     /// Initializer
-    function initialize (address hub, string calldata name_) public override initializer {
+    function initialize (address hub, string calldata name_, string calldata uri_) public override initializer {
         //Initializers
         __ERC1155RolesUpgradable_init("");
         __CommonYJ_init(hub);
@@ -97,7 +97,7 @@ contract JurisdictionUpgradable is
         // _setActionsContract(_HUB.getAssoc("history"));
 
         //TODO: Set Contract URI
-        // _contract_uri = uri_;
+        _contract_uri = uri_;
 
         //Identifiers
         name = name_; //"Anti-Scam Jurisdiction";

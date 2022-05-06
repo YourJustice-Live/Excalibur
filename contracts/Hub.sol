@@ -117,7 +117,7 @@ contract Hub is IHub, Ownable {
     //--- Factory 
 
     /// Make a new Jurisdiction
-    function jurisdictionMake(string calldata name_) external override returns (address) {
+    function jurisdictionMake(string calldata name_, string calldata uri_) external override returns (address) {
         //Validate
         // require(beaconJurisdiction != address(0), "Jurisdiction Beacon Missing");      //Redundant
 
@@ -127,7 +127,8 @@ contract Hub is IHub, Ownable {
             abi.encodeWithSelector(
                 IJurisdiction( payable(address(0)) ).initialize.selector,
                 address(this),   //Hub
-                name_          //Name
+                name_,          //Name
+                uri_            //Contract URI
                 // "Anti-Scam Jurisdiction",
                 // "YJ_CASE",      //Symbol
                 // _msgSender()    //Birth Parent (Container)
