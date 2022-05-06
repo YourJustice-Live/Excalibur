@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
@@ -117,7 +117,7 @@ contract Hub is IHub, Ownable {
     //--- Factory 
 
     /// Make a new Jurisdiction
-    function jurisdictionMake() external override returns (address) {
+    function jurisdictionMake(string calldata name_) external override returns (address) {
         //Validate
         // require(beaconJurisdiction != address(0), "Jurisdiction Beacon Missing");      //Redundant
 
@@ -126,10 +126,10 @@ contract Hub is IHub, Ownable {
             beaconCase,
             abi.encodeWithSelector(
                 IJurisdiction( payable(address(0)) ).initialize.selector,
-                // name_,          //Name
-                // "YJ_CASE",      //Symbol
                 address(this),   //Hub
-                address(this)   //Action Repo           //TODO: Action Repo
+                name_          //Name
+                // "Anti-Scam Jurisdiction",
+                // "YJ_CASE",      //Symbol
                 // _msgSender()    //Birth Parent (Container)
             )
         );

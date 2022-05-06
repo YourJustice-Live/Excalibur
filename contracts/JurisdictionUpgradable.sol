@@ -85,18 +85,20 @@ contract JurisdictionUpgradable is
     }
     
     /// Initializer
-    function initialize (address hub) public override initializer {
+    function initialize (address hub, string calldata name_) public override initializer {
         //Initializers
         __ERC1155RolesUpgradable_init("");
         __CommonYJ_init(hub);
 
         //Fetch & Set Current History Contract
-        // address actionRepo = _HUB.historyContract();
-        // _setActionsContract(actionRepo);
-        // _setActionsContract(_HUB.historyContract());
+        address actionRepo = _HUB.getAssoc("history");
+        console.log("Init WJ W/History:", actionRepo);
+        _setActionsContract(actionRepo);
+
+        // _setActionsContract(_HUB.getAssoc("history"));
 
         //Identifiers
-        name = "Anti-Scam Jurisdiction";
+        name = name_; //"Anti-Scam Jurisdiction";
         // symbol = "YJ_J1";
         //Init Default Jurisdiction Roles
         _roleCreate("admin"); 
