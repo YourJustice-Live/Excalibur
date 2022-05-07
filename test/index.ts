@@ -247,6 +247,21 @@ describe("Protocol", function () {
         jurisdictionContract = await ethers.getContractFactory("Jurisdiction").then(res => res.deploy(hubContract.address, actionContract.address));
         this.jurisdictionContract = jurisdictionContract;
 
+
+      //Simulate to Get New Jurisdiction Address
+      // let JAddr = await hubContract.callStatic.jurisdictionMake("Test Jurisdiction", test_uri);
+      // let JAddr = await hubContract.connect(admin).callStatic.jurisdictionMake("Test Jurisdiction", test_uri);
+
+      //Create New Jurisdiction
+      let tx = await hubContract.jurisdictionMake("Test Jurisdiction", test_uri);
+      
+      //Expect Valid Address
+      // expect(JAddr).to.be.properAddress;
+      //Expect Case Created Event
+      // await expect(tx).to.emit(hubContract, 'ContractCreated').withArgs("jurisdiction", JAddr);
+      //Init Jurisdiction Contract Object
+      // this.jurisdictionContract = await ethers.getContractFactory("JurisdictionUp").then(res => res.attach(JAddr));
+
     });
 
     it("Users can join as a member", async function () {

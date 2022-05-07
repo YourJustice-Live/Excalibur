@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
@@ -121,9 +121,11 @@ contract Hub is IHub, Ownable {
         //Validate
         // require(beaconJurisdiction != address(0), "Jurisdiction Beacon Missing");      //Redundant
 
+        console.log("Deploy J", beaconJurisdiction);
+
         //Deploy
         BeaconProxy newJurisdictionProxy = new BeaconProxy(
-            beaconCase,
+            beaconJurisdiction,
             abi.encodeWithSelector(
                 IJurisdiction( payable(address(0)) ).initialize.selector,
                 address(this),   //Hub
@@ -134,7 +136,8 @@ contract Hub is IHub, Ownable {
                 // _msgSender()    //Birth Parent (Container)
             )
         );
-
+        //Event
+        emit ContractCreated("jurisdiction", address(newJurisdictionProxy));
         //Remember
         _jurisdictions[address(newJurisdictionProxy)] = true;
         //Return
@@ -148,8 +151,6 @@ contract Hub is IHub, Ownable {
         , DataTypes.InputRole[] memory assignRoles
     ) external override returns (address) {
         //TODO: Validate Caller Permissions (A Jurisdiction)
-
-        //Rules
 
         //Assign Case ID
         // _caseIds.increment(); //Start with 1
@@ -170,11 +171,10 @@ contract Hub is IHub, Ownable {
                 _msgSender()    //Birth Parent (Container)
             )
         );
-
+        //Event
+        emit ContractCreated("case", address(newCaseProxy));
         //Remember
-        // _active[msg.sender][address(newCaseProxy)] = true;
         _cases[address(newCaseProxy)] = msg.sender;
-
         //Return
         return address(newCaseProxy);
     }

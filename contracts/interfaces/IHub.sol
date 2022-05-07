@@ -41,4 +41,6 @@ interface IHub {
 
     event UpdatedImplementation(string name, address implementation);
 
+    /// New Contract Created
+    event ContractCreated(string name, address contractAddress);
 }

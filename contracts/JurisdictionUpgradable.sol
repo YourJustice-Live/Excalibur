@@ -91,12 +91,12 @@ contract JurisdictionUpgradable is
         __CommonYJ_init(hub);
 
         //Fetch & Set Current History Contract
-        address actionRepo = _HUB.getAssoc("history");
-        console.log("Init WJ W/History:", actionRepo);
-        _setActionsContract(actionRepo);
-        // _setActionsContract(_HUB.getAssoc("history"));
+        // address actionRepo = _HUB.getAssoc("history");
+        // console.log("Init WJ W/History:", actionRepo);
+        // _setActionsContract(actionRepo);
+        _setActionsContract(_HUB.getAssoc("history"));  //TODO: Hot History?
 
-        //TODO: Set Contract URI
+        //Set Contract URI
         _contract_uri = uri_;
 
         //Identifiers
@@ -106,8 +106,10 @@ contract JurisdictionUpgradable is
         _roleCreate("admin"); 
         _roleCreate("member");
         _roleCreate("judge");
+        
         //Assign Creator as First Admin
         _roleAssign(tx.origin, "admin");
+
     }
 
     //** Case Functions
