@@ -44,7 +44,7 @@ contract Hub is IHub, Ownable {
 
     // Arbitrary contract designation signature
     string public constant override role = "YJHub";
-    // string public constant symbol = "YJHub"; //TODO: Use This
+    string public constant symbol = "YJHub";
 
     //--- Storage
     // address internal _CONFIG;    //Configuration Contract
