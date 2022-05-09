@@ -120,9 +120,6 @@ contract Hub is IHub, Ownable {
     function jurisdictionMake(string calldata name_, string calldata uri_) external override returns (address) {
         //Validate
         // require(beaconJurisdiction != address(0), "Jurisdiction Beacon Missing");      //Redundant
-
-        console.log("Deploy J", beaconJurisdiction);
-
         //Deploy
         BeaconProxy newJurisdictionProxy = new BeaconProxy(
             beaconJurisdiction,
