@@ -13,9 +13,10 @@ describe("Protocol", function () {
   let hubContract: Contract;
   let avatarContract: Contract;
   let jurisdictionContract: Contract;
-  let jurisdictionUpContract: Contract;
+
   let actionContract: Contract;
-  let caseContract: Contract;
+  // let jurisdictionUpContract: Contract;
+  // let caseContract: Contract;
 
   //Addresses
   let owner: Signer;
@@ -243,25 +244,23 @@ describe("Protocol", function () {
   describe("Jurisdiction", function () {
     
     before(async function () {
-        //Deploy Jurisdiction
-        jurisdictionContract = await ethers.getContractFactory("Jurisdiction").then(res => res.deploy(hubContract.address, actionContract.address));
-        this.jurisdictionContract = jurisdictionContract;
-
+      //Deploy Jurisdiction
+      // jurisdictionContract = await ethers.getContractFactory("Jurisdiction").then(res => res.deploy(hubContract.address, actionContract.address));
+      // this.jurisdictionContract = jurisdictionContract;
 
       //Simulate to Get New Jurisdiction Address
-      // let JAddr = await hubContract.callStatic.jurisdictionMake("Test Jurisdiction", test_uri);
+      let JAddr = await hubContract.callStatic.jurisdictionMake("Test Jurisdiction", test_uri);
       // let JAddr = await hubContract.connect(admin).callStatic.jurisdictionMake("Test Jurisdiction", test_uri);
 
       //Create New Jurisdiction
       let tx = await hubContract.jurisdictionMake("Test Jurisdiction", test_uri);
-      
       //Expect Valid Address
-      // expect(JAddr).to.be.properAddress;
+      expect(JAddr).to.be.properAddress;
       //Expect Case Created Event
-      // await expect(tx).to.emit(hubContract, 'ContractCreated').withArgs("jurisdiction", JAddr);
+      await expect(tx).to.emit(hubContract, 'ContractCreated').withArgs("jurisdiction", JAddr);
       //Init Jurisdiction Contract Object
-      // this.jurisdictionContract = await ethers.getContractFactory("JurisdictionUp").then(res => res.attach(JAddr));
-
+      jurisdictionContract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.attach(JAddr));
+      this.jurisdictionContract = jurisdictionContract;
     });
 
     it("Users can join as a member", async function () {
@@ -445,7 +444,6 @@ describe("Protocol", function () {
   describe("Case", function () {
 
     it("Should be Created (by Jurisdiction)", async function () {
-    
       let caseName = "Test Case #1";
       let ruleRefArr = [
         {
