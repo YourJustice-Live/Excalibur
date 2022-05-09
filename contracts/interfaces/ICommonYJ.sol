@@ -9,4 +9,7 @@ interface ICommonYJ {
     /// Inherit owner from Protocol's config
     function owner() external view returns (address);
     
+    // Change Hub (Move To a New Hub)
+    function setHub(address hubAddr) external;
+
 }

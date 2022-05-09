@@ -35,12 +35,18 @@ abstract contract CommonYJUpgradable is ICommonYJ, OwnableUpgradeable {
     }
 
     /// Set Hub Contract
-    function _setHub(address config) internal {
+    function _setHub(address hubAddr) internal {
         //Validate Contract's Designation
-        require(keccak256(abi.encodePacked(IHub(config).role())) == keccak256(abi.encodePacked("YJHub")), "Invalid Hub Contract");
+        require(keccak256(abi.encodePacked(IHub(hubAddr).role())) == keccak256(abi.encodePacked("YJHub")), "Invalid Hub Contract");
         //TODO: Check for ERC165 Interface
         //Set
-        _HUB = IHub(config);
+        _HUB = IHub(hubAddr);
+    }
+
+    /// Change Hub (Move To a New Hub)
+    function setHub(address hubAddr) external override {
+        require(_msgSender() == address(_HUB), "HUB:UNAUTHORIZED_CALLER");
+        _setHub(hubAddr);
     }
 
     /// Set Hub Contract
