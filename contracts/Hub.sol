@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 // import "@openzeppelin/contracts/access/Ownable.sol";
 // import "@openzeppelin/contracts/utils/Counters.sol";
 import "./interfaces/IConfig.sol";
+import "./interfaces/ICommonYJ.sol";
 import "./interfaces/IHub.sol";
 import "./interfaces/IJurisdictionUp.sol";
 import "./interfaces/ICase.sol";
@@ -35,7 +36,7 @@ contract Hub is IHub, Ownable {
     //Action Repo
     // address public override historyContract;
 
-    //Contract Associations
+    //Contract Associations (avatar, history)
     mapping(string => address) internal _assoc;
     
     // using Counters for Counters.Counter;
@@ -93,6 +94,22 @@ contract Hub is IHub, Ownable {
         require(keccak256(abi.encodePacked(IConfig(config).symbol())) == keccak256(abi.encodePacked("YJConfig")), "Invalid Config Contract");
         //Set
         _CONFIG = IConfig(config);
+    }
+
+    /// Update Hub
+    function hubChange(address newHubAddr) external override onlyOwner {
+        //Avatar
+        address avatarContract = getAssoc("avatar");
+        if(avatarContract != address(0)){
+            ICommonYJ(avatarContract).setHub(newHubAddr);
+        }
+        //History
+        address actionRepo = getAssoc("history");
+        if(actionRepo != address(0)){
+            ICommonYJ(actionRepo).setHub(newHubAddr);
+        }
+        //Emit Hub Change Event
+        emit HubChanged(newHubAddr);
     }
 
     //-- Assoc
@@ -175,6 +192,8 @@ contract Hub is IHub, Ownable {
         //Return
         return address(newCaseProxy);
     }
+
+    //--- Reputation
 
     /// Add Reputation (Positive or Negative)       /// Opinion Updated
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) public override {

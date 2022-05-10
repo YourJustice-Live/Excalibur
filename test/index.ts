@@ -12,9 +12,8 @@ describe("Protocol", function () {
   let configContract: Contract;
   let hubContract: Contract;
   let avatarContract: Contract;
-  let jurisdictionContract: Contract;
-
   let actionContract: Contract;
+  let jurisdictionContract: Contract;
   // let jurisdictionUpContract: Contract;
   // let caseContract: Contract;
 
@@ -39,13 +38,11 @@ describe("Protocol", function () {
     this.jurisdictionUpContract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
 
     //Deploy Hub
-    // hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.caseContract.address));
     hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.jurisdictionUpContract.address, this.caseContract.address));
 
     //Deploy Avatar
     avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract.address));
     //Set Avatar Contract to Hub
-    // hubContract.setAvatarContract(avatarContract.address);
     hubContract.setAssoc("avatar", avatarContract.address);
 
     //Deploy History
@@ -61,7 +58,7 @@ describe("Protocol", function () {
     this.tester2Addr = await tester2.getAddress();
     this.tester3Addr = await tester3.getAddress();
     this.tester4Addr = await tester4.getAddress();
-  })
+  });
 
   describe("Config", function () {
 
@@ -184,13 +181,6 @@ describe("Protocol", function () {
    * Action Repository
    */
   describe("Action Repository", function () {
-  
-    // before(async function () {
-      //Deploy Action Repo / History Contract
-      // const ActionContract = await ethers.getContractFactory("ActionRepo");
-      // actionContract = await ActionContract.deploy(hubContract.address);
-      // actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
-    // });
   
     it("Should store Actions", async function () {
       let action = {

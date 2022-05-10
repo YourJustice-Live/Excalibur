@@ -20,6 +20,9 @@ interface IHub {
     // function caseMake(string calldata name_) external returns (address);
     function caseMake(string calldata name_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external returns (address);
 
+    /// Update Hub
+    function hubChange(address newHubAddr) external;
+
     //Get Avatar Contract Address
     // function avatarContract() external view returns (address);
 
@@ -34,13 +37,13 @@ interface IHub {
 
     //--- Events
 
-    /// Case Implementation Contract Updated
-    // event UpdatedCaseImplementation(address implementation);
-    /// Jurisdiction Implementation Contract Updated
-    // event UpdatedJurisdictionImplementation(address implementation);
-
+    /// Beacon Contract Chnaged
     event UpdatedImplementation(string name, address implementation);
 
     /// New Contract Created
     event ContractCreated(string name, address contractAddress);
+
+    /// New Contract Created
+    event HubChanged(address contractAddress);
+
 }
