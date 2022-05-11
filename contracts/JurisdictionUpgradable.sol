@@ -11,7 +11,6 @@ import "./interfaces/IJurisdictionUp.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
 // import "./libraries/DataTypes.sol";
-// import "./abstract/ERC1155Roles.sol";
 import "./abstract/ERC1155RolesUpgradable.sol";
 import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/Rules.sol";
@@ -64,18 +63,6 @@ contract JurisdictionUpgradable is
     // mapping(string => uint256) internal _roles;    //NFTs as Roles
     // mapping(uint256 => address) internal _cases;   // Mapping for Case Contracts      //DEPRECATED - No need for Case IDs, Use Hash
     mapping(address => bool) internal _active;        // Mapping for Case Contracts
-
-    // mapping(uint256 => string) internal _rulesURI; // Mapping Metadata URIs for Individual Role 
-    mapping(uint256 => string) internal _tokenURIs; //Role Metadata URI
-
-    /* MOVED
-    //Post Input Struct
-    struct PostInput {
-        string entRole;
-        // string postRole;
-        string uri;
-    }
-    */
 
     //--- Functions
 
@@ -292,17 +279,15 @@ contract JurisdictionUpgradable is
         return _tokenURIs[_roleToId(role)];
     }
     
-    /// Set Token's Metadata URI
-    // function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
-    //     require(_exists(tokenId), "ERC721URIStorage: URI set of nonexistent token");
-    //     _tokenURIs[tokenId] = _tokenURI;
-    // }
-
-    // function _actionSetURI(bytes32 guid, string memory uri) internal {
-    //     _uri[_GUIDToId(guid)] = uri;
-    //     emit ActionURI(guid, uri);
-    // }
-
+    /// Set Metadata URI For Role
+    function setRoleURI(string memory role, string memory _tokenURI) external override {
+        //Validate Permissions
+        require(owner() == _msgSender()      //Owner
+            || roleHas(_msgSender(), "admin")    //Admin Role
+            , "INVALID_PERMISSIONS");
+        _setRoleURI(role, _tokenURI);
+    }
+    
     /// Set Contract URI
     function setContractURI(string calldata contract_uri) external override {
         //Validate Permissions

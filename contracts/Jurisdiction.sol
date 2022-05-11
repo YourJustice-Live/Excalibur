@@ -258,24 +258,15 @@ contract Jurisdiction is
         _ruleUpdate(id, rule, effects);
     }
 
-    /// Get Token URI
-    // function tokenURI(uint256 token_id) public view returns (string memory) {
-    // function uri(uint256 token_id) public view returns (string memory) {
-    //     require(exists(token_id), "NONEXISTENT_TOKEN");
-    //     return _tokenURIs[token_id];
-    // }
+    /// Set Metadata URI For Role
+    function setRoleURI(string memory role, string memory _tokenURI) external override {
+        //Validate Permissions
+        require(owner() == _msgSender()      //Owner
+            || roleHas(_msgSender(), "admin")    //Admin Role
+            , "INVALID_PERMISSIONS");
+        _setRoleURI(role, _tokenURI);
+    }
     
-    /// Set Token's Metadata URI
-    // function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
-    //     require(_exists(tokenId), "ERC721URIStorage: URI set of nonexistent token");
-    //     _tokenURIs[tokenId] = _tokenURI;
-    // }
-
-    // function _actionSetURI(bytes32 guid, string memory uri) internal {
-    //     _uri[_GUIDToId(guid)] = uri;
-    //     emit ActionURI(guid, uri);
-    // }
-
     /// Set Contract URI
     function setContractURI(string calldata contract_uri) external override {
         //Validate Permissions
@@ -286,7 +277,7 @@ contract Jurisdiction is
         _contract_uri = contract_uri;
     }
 
-   /**
+    /**
      * @dev Contract URI
      *  https://docs.opensea.io/docs/contract-level-metadata
      */

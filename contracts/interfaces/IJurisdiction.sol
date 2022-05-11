@@ -62,6 +62,9 @@ interface IJurisdiction {
     // function ruleUpdate(uint256 id, DataTypes.Rule memory rule) external;
     function ruleUpdate(uint256 id, DataTypes.Rule memory rule, DataTypes.Effect[] memory effects) external;
     
+    /// Set Metadata URI For Role
+    function setRoleURI(string memory role, string memory _tokenURI) external;
+
 
     //--- Events
 
