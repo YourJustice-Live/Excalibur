@@ -59,7 +59,7 @@ contract AvatarNFT is
     //** Token Owner Index **/
 
     /// Map Account to Existing Token
-    function tokenOwnerAdd(address owner, uint256 tokenId) external onlyOwner {
+    function tokenOwnerAdd(address owner, uint256 tokenId) external override onlyOwner {
         _tokenOwnerAdd(owner, tokenId);
     }
 

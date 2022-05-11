@@ -23,6 +23,9 @@ interface IAvatar {
     /// Add Reputation (Positive or Negative)
     function repAdd(uint256 tokenId, string calldata domain, bool rating, uint8 amount) external;
 
+    /// Map Account to Existing Token
+    function tokenOwnerAdd(address owner, uint256 tokenId) external;
+
     //--- Events
     
 	/// URI Change Event
