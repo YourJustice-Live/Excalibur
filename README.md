@@ -1,4 +1,3 @@
-<img src="https://i.ibb.co/MMVvLZp/Excalibur-transparent-2.png" align="right" style="width:42%"/>
 
 # The Excalibur Protocol 
 
