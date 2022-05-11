@@ -25,6 +25,9 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
     mapping(uint256 => address[]) internal _uniqueMembers; //Index Unique Members by Role
     mapping(bytes32 => uint256) internal _GUID;     //NFTs as GUID
 
+    //Token Metadata URI
+    mapping(uint256 => string) internal _tokenURIs; //Token Metadata URI
+
     //--- Modifiers
 
     /// Check if GUID Exists
@@ -95,6 +98,19 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
     /// Translate GUID to Token ID
     function _GUIDToId(bytes32 guid) internal view GUIDExists(guid) returns(uint256) {
         return _GUID[guid];
+    }
+
+    /// Set Token's Metadata URI
+    function _setGUIDURI(bytes32 guid, string memory _tokenURI) internal virtual GUIDExists(guid) {
+        uint256 tokenId = _GUIDToId(guid);
+        _tokenURIs[tokenId] = _tokenURI;
+        //URI Changed Event
+        emit GUIDURIChange(_tokenURI, guid);
+    }
+
+    /// Get Metadata URI by GUID
+    function GUIDURI(bytes32 guid) public view override returns(string memory) {
+        return _tokenURIs[_GUIDToId(guid)];
     }
 
     /// Track Unique Tokens

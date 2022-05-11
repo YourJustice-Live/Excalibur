@@ -40,7 +40,7 @@ contract ERC1155TrackerUpgradable is Initializable, ContextUpgradeable, ERC165Up
 
 
     //TODO: Balances
-    mapping(uint256 => mapping(uint256 => uint256)) private _balances;
+    // mapping(uint256 => mapping(uint256 => uint256)) private _balances;
 
     //TODO: Target Contract
     address _targetContract;
