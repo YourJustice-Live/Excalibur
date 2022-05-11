@@ -188,9 +188,7 @@ contract JurisdictionUpgradable is
     /// Assign Someone Else to a Role
     function roleAssign(address account, string memory role) public override roleExists(role) {
         //Validate Permissions
-        require(
-            _msgSender() == account         //Self
-            || owner() == _msgSender()      //Owner
+        require(owner() == _msgSender()      //Owner
             || roleHas(_msgSender(), "admin")    //Admin Role
             , "INVALID_PERMISSIONS");
         //Add
@@ -200,10 +198,8 @@ contract JurisdictionUpgradable is
     /// Remove Someone Else from a Role
     function roleRemove(address account, string memory role) public override roleExists(role) {
         //Validate Permissions
-        require(
-            _msgSender() == account         //Self
-            || owner() == _msgSender()      //Owner
-            || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Token
+        require(owner() == _msgSender()      //Owner
+            || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Role
             , "INVALID_PERMISSIONS");
         //Remove
         _roleRemove(account, role);
