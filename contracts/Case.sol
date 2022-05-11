@@ -125,8 +125,6 @@ contract Case is
         _roleAssign(account, role);
     }
 
-    // roleAssign()
-
     // roleRequest() => Event [Communication]
 
     // roleOffer() (Upon Reception)
