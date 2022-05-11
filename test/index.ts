@@ -422,8 +422,20 @@ describe("Protocol", function () {
 
       // let curEffects = await jurisdictionContract.effectsGet(2);
       // console.log("Effects", curEffects);
-      // expect(curEffects).to.include.members(Object.values(effects));
+      // expect(curEffects).to.include.members(Object.values(effects));    //Doesn't Work...
 
+    });
+
+    it("Should Update Token URI", async function () {
+      //Protected
+      await expect(
+        jurisdictionContract.connect(tester3).setRoleURI("admin", test_uri)
+      ).to.be.revertedWith("INVALID_PERMISSIONS");
+
+      //Set Admin Token URI
+      await jurisdictionContract.connect(admin).setRoleURI("admin", test_uri);
+      //Validate
+      expect(await jurisdictionContract.roleURI("admin")).to.equal(test_uri);
     });
 
   }); //Jurisdiction
@@ -547,6 +559,18 @@ describe("Protocol", function () {
       await tx.wait();
       //Expect Event
       await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, post.entRole, post.uri);
+    });
+
+    it("Should Update Token URI", async function () {
+      //Protected
+      await expect(
+        this.caseContract.connect(tester3).setRoleURI("admin", test_uri)
+      ).to.be.revertedWith("INVALID_PERMISSIONS");
+
+      //Set Admin Token URI
+      await this.caseContract.connect(admin).setRoleURI("admin", test_uri);
+      //Validate
+      expect(await this.caseContract.roleURI("admin")).to.equal(test_uri);
     });
 
     it("Should Assign Witness", async function () {
