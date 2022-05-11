@@ -8,12 +8,12 @@ import { ethers } from "hardhat";
 //Track Addresses (Fill in present addresses to prevent new deplopyment)
 const contractAddr = {
   config:"0x14E5D5B68A41665E86225e6830a69bb2b5F6E484",  //V2.0
-  jurisdictionUp:"",
-  case:"0x500a7f031571848e32490444c33d513F1a7c8e9b",  //Case Instance //V1.11
-  hub:"0xce92b64ba4b9a2905605c8c04e9F1e27C5D6E559", //V2.1
+  jurisdictionUp:"0x67D565A030cdbaf377176b398525723CAEf02Fd9",  //V1.1
+  case:"0xEB1293f6A0FB119fE8A0e66086EC78462EC1921c",  //Case Instance //V1.2
+  hub:"0xD062b90B1Dd4d2A41e8829Cf3779aFd4C234e6E1", //V3
   avatar:"0xE7254468763a8d4f791f30F5e8dcA635DF850772",  //V1.1
   history:"0xe699f8dd6968F7a60786E846899CEf56154D3573", //V4.0
-  jurisdiction:"0x37E2db964E4394d20e66CD302C01D08208019DEa", //V1.1
+  // jurisdiction:"0x37E2db964E4394d20e66CD302C01D08208019DEa", //V1.1
 };
 
 async function main() {
@@ -31,17 +31,6 @@ async function main() {
     console.log("Deployed Config Contract to " + contractAddr.config);
   }
 
-  //--- Case Implementation
-  if(!contractAddr.case){
-    //Deploy Case
-    let contract = await ethers.getContractFactory("Case").then(res => res.deploy());
-    await contract.deployed();
-    //Set Address
-    contractAddr.case = contract.address;
-    //Log
-    console.log("Deployed Case Contract to " + contractAddr.case);
-  }
-
   //--- JurisdictionUp Implementation
   if(!contractAddr.jurisdictionUp){
     //Deploy JurisdictionUp
@@ -51,6 +40,20 @@ async function main() {
     contractAddr.jurisdictionUp = contract.address;
     //Log
     console.log("Deployed JurisdictionUp Contract to " + contractAddr.jurisdictionUp);
+    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.jurisdictionUp);
+  }
+
+  //--- Case Implementation
+  if(!contractAddr.case){
+    //Deploy Case
+    let contract = await ethers.getContractFactory("Case").then(res => res.deploy());
+    await contract.deployed();
+    //Set Address
+    contractAddr.case = contract.address;
+    //Log
+    console.log("Deployed Case Contract to " + contractAddr.case);
+    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.case);
+
   }
 
   //--- Hub
@@ -64,14 +67,15 @@ async function main() {
     await hubContract.deployed();
 
     //Set Avatars
-    if(!!contractAddr.avatar) hubContract.setAssoc("avatar", contractAddr.avatar);
+    if(!!contractAddr.avatar) await hubContract.setAssoc("avatar", contractAddr.avatar);
     //Set to History
-    if(!!contractAddr.history) hubContract.setAssoc("history", contractAddr.history);
+    if(!!contractAddr.history) await hubContract.setAssoc("history", contractAddr.history);
 
     //Set Address
     contractAddr.hub = hubContract.address;
     //Log
     console.log("Deployed Hub Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " jurisdiction: "+ contractAddr.jurisdictionUp+ " Case: "+ contractAddr.case);
+    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.hub+ " "+ contractAddr.config+ " "+ contractAddr.jurisdictionUp+ " "+ contractAddr.case);
   }
 
   //--- Avatar
@@ -116,6 +120,7 @@ async function main() {
     }
   }
 
+  /* DEPRECATED - Replaced by the Upgradable Jurisdiction
   //--- Jurisdiction
   if(!contractAddr.jurisdiction){
     //Deploy Jurisdiction
@@ -130,6 +135,7 @@ async function main() {
     //Log
     console.log("Deployed Jurisdiction Contract to " + contractAddr.jurisdiction+ " Hub: "+ contractAddr.hub+ " History: "+ contractAddr.history);
   }
+  */
 
   /*
   try{
