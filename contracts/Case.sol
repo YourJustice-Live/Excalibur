@@ -325,6 +325,15 @@ contract Case is
         // if (sha3(myEnum) == sha3("Bar")) return MyEnum.Bar;
     // }
 
+    /// Set Metadata URI For Role
+    function setRoleURI(string memory role, string memory _tokenURI) external override {
+        //Validate Permissions
+        require(owner() == _msgSender()      //Owner
+            || roleHas(_msgSender(), "admin")    //Admin Role
+            , "INVALID_PERMISSIONS");
+        _setRoleURI(role, _tokenURI);
+    }
+    
     /**
      * @dev Contract URI
      *  https://docs.opensea.io/docs/contract-level-metadata
@@ -332,7 +341,6 @@ contract Case is
     function contractURI() public view override returns (string memory) {
         return _contract_uri;
     }
-
 
     //--- Dev Playground [WIP]
 

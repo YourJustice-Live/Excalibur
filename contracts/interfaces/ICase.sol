@@ -45,6 +45,9 @@ interface ICase {
     // function post(string calldata entRole, string calldata postRole, string calldata uri) external;
     function post(string calldata entRole, string calldata uri) external;
 
+    /// Set Metadata URI For Role
+    function setRoleURI(string memory role, string memory _tokenURI) external;
+
     //--- Events
 
     /// Case Stage Change
