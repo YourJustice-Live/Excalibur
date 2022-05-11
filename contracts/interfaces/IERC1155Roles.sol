@@ -22,9 +22,14 @@ interface IERC1155Roles {
     /// Check if account is assigned to role
     function roleHas(address account, string calldata role) external view returns (bool);
     
+    /// Get Metadata URI by Role
+    function roleURI(string calldata role) external view returns(string memory);
+
     //--- Events
 
     /// New Role Created
     event RoleCreated(uint256 indexed id, string role);
 
+    /// URI Change Event
+    event RoleURIChange(string value, string role);
 }
