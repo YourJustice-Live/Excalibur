@@ -7,6 +7,7 @@ pragma solidity ^0.8.0;
 // import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 // import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 // import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/IERC1155MetadataURIUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
@@ -15,16 +16,8 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 import "../interfaces/IERC1155TrackerUpgradable.sol";
 
-// import "./IERC1155Upgradeable.sol";
-// import "./IERC1155ReceiverUpgradeable.sol";
-// import "./extensions/IERC1155MetadataURIUpgradeable.sol";
-// import "../../utils/AddressUpgradeable.sol";
-// import "../../utils/ContextUpgradeable.sol";
-// import "../../utils/introspection/ERC165Upgradeable.sol";
-// import "../../proxy/utils/Initializable.sol";
-
 /**
- * @title ERC1155 Composable Upgradable
+ * @title ERC1155 Tracker Upgradable
  * @dev This contract is to be attached to an ERC721 contract and mapped to its tokens
  */
 contract ERC1155TrackerUpgradable is  Initializable, ContextUpgradeable, ERC165Upgradeable, IERC1155TrackerUpgradable {
@@ -51,6 +44,8 @@ contract ERC1155TrackerUpgradable is  Initializable, ContextUpgradeable, ERC165U
 
     /// Set Target Contract
     function _setTargetContract(address targetContract) internal virtual {
+        //Validate IERC721
+        require(IERC165(targetContract).supportsInterface(type(IERC721).interfaceId), "Target Expected to Support IERC721");
         _targetContract = targetContract;
     }
 
