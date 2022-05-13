@@ -4,14 +4,16 @@
 pragma solidity ^0.8.0;
 
 // import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
 // import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/IERC1155MetadataURIUpgradeable.sol";
+// import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
+// import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/IERC1155MetadataURIUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
+import "../interfaces/IERC1155TrackerUpgradable.sol";
 
 // import "./IERC1155Upgradeable.sol";
 // import "./IERC1155ReceiverUpgradeable.sol";
@@ -25,7 +27,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
  * @title ERC1155 Composable Upgradable
  * @dev This contract is to be attached to an ERC721 contract and mapped to its tokens
  */
-contract ERC1155TrackerUpgradable is Initializable, ContextUpgradeable, ERC165Upgradeable, IERC1155Upgradeable, IERC1155MetadataURIUpgradeable {
+contract ERC1155TrackerUpgradable is  Initializable, ContextUpgradeable, ERC165Upgradeable, IERC1155TrackerUpgradable {
     using AddressUpgradeable for address;
 
     // Mapping from token ID to account balances
@@ -34,10 +36,6 @@ contract ERC1155TrackerUpgradable is Initializable, ContextUpgradeable, ERC165Up
     // Mapping from account to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
-    // Used as the URI for all token types by relying on ID substitution, e.g. https://token-cdn-domain/{id}.json
-    string private _uri;
-
-
 
     //TODO: Balances
     // mapping(uint256 => mapping(uint256 => uint256)) private _balances;
@@ -45,17 +43,28 @@ contract ERC1155TrackerUpgradable is Initializable, ContextUpgradeable, ERC165Up
     //TODO: Target Contract
     address _targetContract;
 
-    /// Set Target Contract
 
     /// Get Target Contract
+    function getTargetContract() public view virtual override returns (address) {
+        return _targetContract;
+    }
+
+    /// Set Target Contract
+    function _setTargetContract(address targetContract) internal virtual {
+        _targetContract = targetContract;
+    }
 
 
 
 
-
+    /* REMOVED - Unecessary
+    // Used as the URI for all token types by relying on ID substitution, e.g. https://token-cdn-domain/{id}.json
+    string private _uri;
+    */
     /**
      * @dev See {_setURI}.
      */
+     /* REMOVED - Unecessary
     function __ERC1155_init(string memory uri_) internal onlyInitializing {
         __ERC1155_init_unchained(uri_);
     }
@@ -63,14 +72,17 @@ contract ERC1155TrackerUpgradable is Initializable, ContextUpgradeable, ERC165Up
     function __ERC1155_init_unchained(string memory uri_) internal onlyInitializing {
         _setURI(uri_);
     }
+    */
+
+
 
     /**
      * @dev See {IERC165-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165Upgradeable, IERC165Upgradeable) returns (bool) {
         return
-            interfaceId == type(IERC1155Upgradeable).interfaceId ||
-            interfaceId == type(IERC1155MetadataURIUpgradeable).interfaceId ||
+            // interfaceId == type(IERC1155Upgradeable).interfaceId ||
+            // interfaceId == type(IERC1155MetadataURIUpgradeable).interfaceId ||
             super.supportsInterface(interfaceId);
     }
 
@@ -84,9 +96,11 @@ contract ERC1155TrackerUpgradable is Initializable, ContextUpgradeable, ERC165Up
      * Clients calling this function must replace the `\{id\}` substring with the
      * actual token type ID.
      */
+     /* REMOVED - Unecessary
     function uri(uint256) public view virtual override returns (string memory) {
         return _uri;
     }
+    */
 
     /**
      * @dev See {IERC1155-balanceOf}.
@@ -276,9 +290,11 @@ contract ERC1155TrackerUpgradable is Initializable, ContextUpgradeable, ERC165Up
      * Because these URIs cannot be meaningfully represented by the {URI} event,
      * this function emits no events.
      */
+     /* REMOVED - Unecessary
     function _setURI(string memory newuri) internal virtual {
         _uri = newuri;
     }
+    */
 
     /**
      * @dev Creates `amount` tokens of token type `id`, and assigns them to `to`.
