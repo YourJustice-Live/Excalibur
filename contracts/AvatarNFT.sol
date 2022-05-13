@@ -4,18 +4,19 @@ pragma solidity 0.8.4;
 // import "hardhat/console.sol";
 
 // import "@openzeppelin/contracts/token/ERC721/ERC721.sol";		//https://eips.ethereum.org/EIPS/eip-721
+// import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";  //Individual Metadata URI Storage Functions
 import "@openzeppelin/contracts/utils/Counters.sol";
 // import "./interfaces/IConfig.sol";
-import "./interfaces/IAvatar.sol";
 import "./libraries/DataTypes.sol";
+import "./interfaces/IAvatar.sol";
 import "./abstract/CommonYJ.sol";
 import "./abstract/Opinions.sol";
 
 
 /**
  * @title Avatar as NFT
- * @dev Version 0.3.0
+ * @dev Version 1.1
  *  - Contract is open for everyone to mint.
  *  - Max of one NFT assigned for each account
  *  - Can create un-assigned NFT (Kept on contract)
