@@ -211,7 +211,7 @@ contract ERC1155TrackerUpgradable is Initializable, ContextUpgradeable, ERC165Up
 
         _afterTokenTransfer(operator, from, to, ids, amounts, data);
 
-        _doSafeTransferAcceptanceCheck(operator, from, to, id, amount, data);
+        // _doSafeTransferAcceptanceCheck(operator, from, to, id, amount, data);
     }
 
     /**
@@ -254,7 +254,7 @@ contract ERC1155TrackerUpgradable is Initializable, ContextUpgradeable, ERC165Up
 
         _afterTokenTransfer(operator, from, to, ids, amounts, data);
 
-        _doSafeBatchTransferAcceptanceCheck(operator, from, to, ids, amounts, data);
+        // _doSafeBatchTransferAcceptanceCheck(operator, from, to, ids, amounts, data);
     }
 
     /**
@@ -310,7 +310,7 @@ contract ERC1155TrackerUpgradable is Initializable, ContextUpgradeable, ERC165Up
 
         _afterTokenTransfer(operator, address(0), to, ids, amounts, data);
 
-        _doSafeTransferAcceptanceCheck(operator, address(0), to, id, amount, data);
+        // _doSafeTransferAcceptanceCheck(operator, address(0), to, id, amount, data);
     }
 
     /**
@@ -343,7 +343,7 @@ contract ERC1155TrackerUpgradable is Initializable, ContextUpgradeable, ERC165Up
 
         _afterTokenTransfer(operator, address(0), to, ids, amounts, data);
 
-        _doSafeBatchTransferAcceptanceCheck(operator, address(0), to, ids, amounts, data);
+        // _doSafeBatchTransferAcceptanceCheck(operator, address(0), to, ids, amounts, data);
     }
 
     /**
@@ -486,6 +486,7 @@ contract ERC1155TrackerUpgradable is Initializable, ContextUpgradeable, ERC165Up
         bytes memory data
     ) internal virtual {}
 
+    /* Unecessary, because token's aren't really controlled by that account anymore
     function _doSafeTransferAcceptanceCheck(
         address operator,
         address from,
@@ -529,6 +530,7 @@ contract ERC1155TrackerUpgradable is Initializable, ContextUpgradeable, ERC165Up
             }
         }
     }
+    */
 
     function _asSingletonArray(uint256 element) private pure returns (uint256[] memory) {
         uint256[] memory array = new uint256[](1);
