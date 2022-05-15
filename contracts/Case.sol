@@ -292,9 +292,10 @@ contract Case is
     function _ruleConfirmed(uint256 ruleId) internal {
         //Get Avatar Contract
         IAvatar avatarContract = IAvatar(_HUB.getAssoc("avatar"));
+        /* REMOVED for backward compatibility while in dev mode.
         //Validate Avatar Contract Interface
         require(IERC165(address(avatarContract)).supportsInterface(type(IAvatar).interfaceId), "Invalid Avatar Contract");
-
+        */
         //Fetch Case's Subject(s)
         address[] memory subjects = uniqueRoleMembers("subject");
         //Each Subject
