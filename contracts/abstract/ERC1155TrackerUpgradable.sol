@@ -3,6 +3,8 @@
 
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
+
 // import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 // import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 // import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
@@ -14,26 +16,32 @@ import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-import "../interfaces/IERC1155TrackerUpgradable.sol";
+import "../interfaces/IERC1155Tracker.sol";
+import "../interfaces/IAvatar.sol";
 
 /**
  * @title ERC1155 Tracker Upgradable
  * @dev This contract is to be attached to an ERC721 contract and mapped to its tokens
  */
-contract ERC1155TrackerUpgradable is  Initializable, ContextUpgradeable, ERC165Upgradeable, IERC1155TrackerUpgradable {
+abstract contract ERC1155TrackerUpgradable is 
+        Initializable, 
+        ContextUpgradeable, 
+        ERC165Upgradeable, 
+        IERC1155Tracker {
+
     using AddressUpgradeable for address;
 
     // Mapping from token ID to account balances
-    mapping(uint256 => mapping(address => uint256)) private _balances;
+    // mapping(uint256 => mapping(address => uint256)) private _balances;
 
     // Mapping from account to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
 
     //TODO: Balances
-    // mapping(uint256 => mapping(uint256 => uint256)) private _balances;
+    mapping(uint256 => mapping(uint256 => uint256)) private _balances;
 
-    //TODO: Target Contract
+    //Target Contract
     address _targetContract;
 
 
@@ -43,33 +51,36 @@ contract ERC1155TrackerUpgradable is  Initializable, ContextUpgradeable, ERC165U
     }
 
     /// Set Target Contract
-    function _setTargetContract(address targetContract) internal virtual {
+    function __setTargetContract(address targetContract) internal virtual {
         //Validate IERC721
-        require(IERC165(targetContract).supportsInterface(type(IERC721).interfaceId), "Target Expected to Support IERC721");
+        // require(IERC165(targetContract).supportsInterface(type(IERC721).interfaceId), "Target Expected to Support IERC721");
+        require(IERC165(targetContract).supportsInterface(type(IAvatar).interfaceId), "Target contract expected to support IAvatar");
         _targetContract = targetContract;
+        // _targetContract = IERC721(targetContract);
     }
 
-
-
-
-    /* REMOVED - Unecessary
-    // Used as the URI for all token types by relying on ID substitution, e.g. https://token-cdn-domain/{id}.json
-    string private _uri;
-    */
-    /**
-     * @dev See {_setURI}.
-     */
-     /* REMOVED - Unecessary
-    function __ERC1155_init(string memory uri_) internal onlyInitializing {
-        __ERC1155_init_unchained(uri_);
+    /// Get a Token ID Based on account address (Throws)
+    function getExtTokenId(address account) public view returns(uint256) {
+        //Get
+        uint256 ownerToken = _getExtTokenId(account);
+        //Validate
+        require(ownerToken != 0, "ERC1155Tracker: account not found on source contract");
+        //Return
+        return ownerToken;
     }
 
-    function __ERC1155_init_unchained(string memory uri_) internal onlyInitializing {
-        _setURI(uri_);
+    /// Get a Token ID Based on account address
+    function _getExtTokenId(address account) internal view returns(uint256) {
+        require(account != address(0), "ERC1155Tracker: address zero is not a valid account");
+        require(account != _targetContract, "ERC1155Tracker: source contract address is not a valid account");
+        //Run function on destination contract
+        // return IAvatar(_targetContract).tokenByAddress(account);
+        uint256 ownerToken = IAvatar(_targetContract).tokenByAddress(account);
+        //Validate
+        // require(ownerToken != 0, "ERC1155Tracker: account not found on source contract");
+        //Return
+        return ownerToken;
     }
-    */
-
-
 
     /**
      * @dev See {IERC165-supportsInterface}.
@@ -106,7 +117,8 @@ contract ERC1155TrackerUpgradable is  Initializable, ContextUpgradeable, ERC165U
      */
     function balanceOf(address account, uint256 id) public view virtual override returns (uint256) {
         require(account != address(0), "ERC1155: address zero is not a valid owner");
-        return _balances[id][account];
+        // return _balances[id][account];
+        return _balances[id][getExtTokenId(account)];
     }
 
     /**
@@ -209,12 +221,18 @@ contract ERC1155TrackerUpgradable is  Initializable, ContextUpgradeable, ERC165U
 
         _beforeTokenTransfer(operator, from, to, ids, amounts, data);
 
-        uint256 fromBalance = _balances[id][from];
+        uint256 ownerFrom = getExtTokenId(from);
+        uint256 ownerTo = getExtTokenId(to);
+
+        // uint256 fromBalance = _balances[id][from];
+        uint256 fromBalance = _balances[id][ownerFrom];
         require(fromBalance >= amount, "ERC1155: insufficient balance for transfer");
         unchecked {
-            _balances[id][from] = fromBalance - amount;
+            // _balances[id][from] = fromBalance - amount;
+            _balances[id][ownerFrom] = fromBalance - amount;
         }
-        _balances[id][to] += amount;
+        // _balances[id][to] += amount;
+        _balances[id][ownerTo] += amount;
 
         emit TransferSingle(operator, from, to, id, amount);
 
@@ -247,16 +265,22 @@ contract ERC1155TrackerUpgradable is  Initializable, ContextUpgradeable, ERC165U
 
         _beforeTokenTransfer(operator, from, to, ids, amounts, data);
 
+        uint256 ownerFrom = getExtTokenId(from);
+        uint256 ownerTo = getExtTokenId(to);
+
         for (uint256 i = 0; i < ids.length; ++i) {
             uint256 id = ids[i];
             uint256 amount = amounts[i];
 
-            uint256 fromBalance = _balances[id][from];
+            // uint256 fromBalance = _balances[id][from];
+            uint256 fromBalance = _balances[id][ownerFrom];
             require(fromBalance >= amount, "ERC1155: insufficient balance for transfer");
             unchecked {
-                _balances[id][from] = fromBalance - amount;
+                // _balances[id][from] = fromBalance - amount;
+                _balances[id][ownerFrom] = fromBalance - amount;
             }
-            _balances[id][to] += amount;
+            // _balances[id][to] += amount;
+            _balances[id][ownerTo] += amount;
         }
 
         emit TransferBatch(operator, from, to, ids, amounts);
@@ -316,7 +340,9 @@ contract ERC1155TrackerUpgradable is  Initializable, ContextUpgradeable, ERC165U
 
         _beforeTokenTransfer(operator, address(0), to, ids, amounts, data);
 
-        _balances[id][to] += amount;
+        // _balances[id][to] += amount;
+        _balances[id][getExtTokenId(to)] += amount;
+
         emit TransferSingle(operator, address(0), to, id, amount);
 
         _afterTokenTransfer(operator, address(0), to, ids, amounts, data);
@@ -347,7 +373,8 @@ contract ERC1155TrackerUpgradable is  Initializable, ContextUpgradeable, ERC165U
         _beforeTokenTransfer(operator, address(0), to, ids, amounts, data);
 
         for (uint256 i = 0; i < ids.length; i++) {
-            _balances[ids[i]][to] += amounts[i];
+            // _balances[ids[i]][to] += amounts[i];
+            _balances[ids[i]][getExtTokenId(to)] += amounts[i];
         }
 
         emit TransferBatch(operator, address(0), to, ids, amounts);
@@ -378,10 +405,12 @@ contract ERC1155TrackerUpgradable is  Initializable, ContextUpgradeable, ERC165U
 
         _beforeTokenTransfer(operator, from, address(0), ids, amounts, "");
 
-        uint256 fromBalance = _balances[id][from];
+        // uint256 fromBalance = _balances[id][from];
+        uint256 fromBalance = _balances[id][getExtTokenId(from)];
         require(fromBalance >= amount, "ERC1155: burn amount exceeds balance");
         unchecked {
-            _balances[id][from] = fromBalance - amount;
+            // _balances[id][from] = fromBalance - amount;
+            _balances[id][getExtTokenId(from)] = fromBalance - amount;
         }
 
         emit TransferSingle(operator, from, address(0), id, amount);
@@ -412,10 +441,12 @@ contract ERC1155TrackerUpgradable is  Initializable, ContextUpgradeable, ERC165U
             uint256 id = ids[i];
             uint256 amount = amounts[i];
 
-            uint256 fromBalance = _balances[id][from];
+            // uint256 fromBalance = _balances[id][from];
+            uint256 fromBalance = _balances[id][getExtTokenId(from)];
             require(fromBalance >= amount, "ERC1155: burn amount exceeds balance");
             unchecked {
-                _balances[id][from] = fromBalance - amount;
+                // _balances[id][from] = fromBalance - amount;
+                _balances[id][getExtTokenId(from)] = fromBalance - amount;
             }
         }
 
