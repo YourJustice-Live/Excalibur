@@ -12,7 +12,7 @@ import "@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeab
  *
  * _Available since v3.1._
  */
-interface IERC1155TrackerUpgradable is IERC165Upgradeable {
+interface IERC1155Tracker is IERC165Upgradeable {
 
     
     /// Get Target Contract
