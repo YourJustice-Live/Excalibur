@@ -64,7 +64,7 @@ abstract contract ERC1155TrackerUpgradable is
         //Get
         uint256 ownerToken = _getExtTokenId(account);
         //Validate
-        require(ownerToken != 0, "ERC1155Tracker: account not found on source contract");
+        require(ownerToken != 0, "ERC1155Tracker: requested account not found on source contract");
         //Return
         return ownerToken;
     }
