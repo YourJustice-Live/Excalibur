@@ -13,6 +13,7 @@ import "./interfaces/IJurisdictionUp.sol";
 // import "./interfaces/IJurisdiction.sol";
 import "./interfaces/IAssoc.sol";
 // import "./abstract/ERC1155RolesUpgradable.sol";
+import "./abstract/ContractBase.sol";
 import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/Posts.sol";
@@ -25,6 +26,7 @@ contract Case is
     ICase, 
     Posts, 
     CommonYJUpgradable, 
+    ContractBase,
     ERC1155RolesTrackerUp {
     // ERC1155RolesUpgradable {
 
@@ -40,7 +42,7 @@ contract Case is
     //Jurisdiction
     address private _jurisdiction;
     //Contract URI
-    string internal _contract_uri;
+    // string internal _contract_uri;
 
     //Stage (Case Lifecycle)
     DataTypes.CaseStage public stage;
@@ -342,10 +344,10 @@ contract Case is
         _setRoleURI(role, _tokenURI);
     }
     
-    /**
+    /** MOVED TO ContractBase
      * @dev Contract URI
      *  https://docs.opensea.io/docs/contract-level-metadata
-     */ 
+     * / 
     function contractURI() public view override returns (string memory) {
         return _contract_uri;
     }
