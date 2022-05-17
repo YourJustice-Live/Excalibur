@@ -70,8 +70,8 @@ abstract contract ERC1155TrackerUpgradable is
     }
 
     /// Get a Token ID Based on account address
-    function _getExtTokenId(address account) internal view returns(uint256) {
-        require(account != address(0), "ERC1155Tracker: address zero is not a valid account");
+    function _getExtTokenId(address account) internal view returns (uint256) {
+        // require(account != address(0), "ERC1155Tracker: address zero is not a valid account");       //Redundant 
         require(account != _targetContract, "ERC1155Tracker: source contract address is not a valid account");
         //Run function on destination contract
         // return IAvatar(_targetContract).tokenByAddress(account);
@@ -80,6 +80,15 @@ abstract contract ERC1155TrackerUpgradable is
         // require(ownerToken != 0, "ERC1155Tracker: account not found on source contract");
         //Return
         return ownerToken;
+    }
+
+    /// Check if External Token Exists
+    // function _ExtTokenExists(uint256 extTokenId) internal view {
+    //     return (_getAccount(extTokenId) != address(0));
+    // }
+
+    function _getAccount(uint256 extTokenId) internal view returns (address) {
+        return IERC721(_targetContract).ownerOf(extTokenId);
     }
 
     /**
@@ -115,10 +124,18 @@ abstract contract ERC1155TrackerUpgradable is
      *
      * - `account` cannot be the zero address.
      */
-    function balanceOf(address account, uint256 id) public view virtual override returns (uint256) {
+    function balanceOf(address account, uint256 id) public view override returns (uint256) {
         require(account != address(0), "ERC1155: address zero is not a valid owner");
         // return _balances[id][account];
-        return _balances[id][getExtTokenId(account)];
+        // return _balances[id][getExtTokenId(account)];
+        return balanceOfToken(getExtTokenId(account), id);
+    }
+
+    /**
+     * Check balance by External Token ID
+     */
+    function balanceOfToken(uint256 extTokenId, uint256 id) public view override returns (uint256) {
+        return _balances[id][extTokenId];
     }
 
     /**
@@ -315,6 +332,16 @@ abstract contract ERC1155TrackerUpgradable is
     }
     */
 
+    /// Mint for Address Owner
+    function _mint(address to, uint256 id, uint256 amount, bytes memory data) internal virtual {
+        _mintActual(to, getExtTokenId(to), id, amount, data);
+    }
+    
+    /// Mint for External Token Owner
+    function _mintForToken(uint256 toToken, uint256 id, uint256 amount, bytes memory data) internal virtual {
+        _mintActual(_getAccount(toToken), toToken, id, amount, data);
+    }
+
     /**
      * @dev Creates `amount` tokens of token type `id`, and assigns them to `to`.
      *
@@ -326,8 +353,9 @@ abstract contract ERC1155TrackerUpgradable is
      * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the
      * acceptance magic value.
      */
-    function _mint(
+    function _mintActual(
         address to,
+        uint256 toToken,
         uint256 id,
         uint256 amount,
         bytes memory data
@@ -341,7 +369,7 @@ abstract contract ERC1155TrackerUpgradable is
         _beforeTokenTransfer(operator, address(0), to, ids, amounts, data);
 
         // _balances[id][to] += amount;
-        _balances[id][getExtTokenId(to)] += amount;
+        _balances[id][toToken] += amount;
 
         emit TransferSingle(operator, address(0), to, id, amount);
 

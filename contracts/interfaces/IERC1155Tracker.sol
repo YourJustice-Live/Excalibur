@@ -63,6 +63,11 @@ interface IERC1155Tracker is IERC165Upgradeable {
     function balanceOf(address account, uint256 id) external view returns (uint256);
 
     /**
+     * Check balance by Origin Token ID
+     */
+    function balanceOfToken(uint256 originTokenId, uint256 id) external view returns (uint256);
+
+    /**
      * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {balanceOf}.
      *
      * Requirements:
