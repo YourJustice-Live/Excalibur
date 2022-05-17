@@ -57,7 +57,7 @@ contract Hub is
 
     //--- Storage
     // address internal _CONFIG;    //Configuration Contract
-    IConfig private _CONFIG;  //Configuration Contract       //Try This
+    IConfig private _CONFIG;  //Configuration Contract       //DEPRECATE
 
     mapping(address => bool) internal _jurisdictions; // Mapping for Active Jurisdictions   //[TBD]
     mapping(address => address) internal _cases;      // Mapping for Case Contracts  [C] => [J]
@@ -75,6 +75,7 @@ contract Hub is
             || interfaceId == type(IAssoc).interfaceId 
             || super.supportsInterface(interfaceId);
     }
+
     constructor(address config, address jurisdictionContract, address caseContract){
         //Set Protocol's Config Address
         _setConfig(config);
@@ -88,13 +89,15 @@ contract Hub is
 
     /// @dev Returns the address of the current owner.
     function owner() public view override(IHub, Ownable) returns (address) {
-        return _CONFIG.owner();
+        // return _CONFIG.owner();
+        return IConfig(getConfig()).owner();
     }
 
     /// Get Configurations Contract Address
     function getConfig() public view returns (address) {
         // return _CONFIG;
-        return address(_CONFIG);
+        // return address(_CONFIG);
+        return getAssoc("config");
     }
 
     /// Expose Configurations Set for Current Owner
@@ -107,7 +110,8 @@ contract Hub is
         //Validate Contract's Designation
         require(keccak256(abi.encodePacked(IConfig(config).symbol())) == keccak256(abi.encodePacked("YJConfig")), "Invalid Config Contract");
         //Set
-        _CONFIG = IConfig(config);
+        // _CONFIG = IConfig(config);
+        _setAssoc("config", config);
     }
 
     /// Update Hub

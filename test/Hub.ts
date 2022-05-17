@@ -60,6 +60,10 @@ describe("Hub", function () {
           ).to.be.revertedWith("Ownable: caller is not the owner");
     });
 
+    it("Should Remember & Serve Config", async function () {
+        expect(await hubContract.getConfig()).to.equal(configContract1.address);
+    });
+
     it("Should Move Children Contracts to a New Hub", async function () {
         //Validate Configs
         expect(await configContract1.owner()).to.equal(this.addr1);
