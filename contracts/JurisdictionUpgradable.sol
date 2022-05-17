@@ -15,6 +15,7 @@ import "./interfaces/IAssoc.sol";
 import "./abstract/ERC1155RolesUpgradable.sol";
 import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/Rules.sol";
+import "./abstract/ContractBase.sol";
 import "./abstract/Opinions.sol";
 import "./abstract/Recursion.sol";
 import "./abstract/Posts.sol";
@@ -40,8 +41,9 @@ import "./abstract/Posts.sol";
 contract JurisdictionUpgradable is 
         IJurisdiction, 
         Rules, 
-        Opinions, 
+        ContractBase,
         CommonYJUpgradable, 
+        Opinions, 
         Recursion, 
         Posts,
         ERC1155RolesUpgradable {
@@ -58,8 +60,6 @@ contract JurisdictionUpgradable is
     string public name;
     // Contract symbol
     // string public symbol;
-    //Contract URI
-    string internal _contract_uri;
 
     // mapping(string => uint256) internal _roles;    //NFTs as Roles
     // mapping(uint256 => address) internal _cases;   // Mapping for Case Contracts      //DEPRECATED - No need for Case IDs, Use Hash
@@ -86,7 +86,7 @@ contract JurisdictionUpgradable is
         _setActionsContract(IAssoc(address(_HUB)).getAssoc("history"));  //TODO: Hot History?
 
         //Set Contract URI
-        _contract_uri = uri_;
+        _setContractURI(uri_);
 
         //Identifiers
         name = name_; //"Anti-Scam Jurisdiction";
@@ -291,14 +291,6 @@ contract JurisdictionUpgradable is
     }
     
 
-    /**
-     * @dev Contract URI
-     *  https://docs.opensea.io/docs/contract-level-metadata
-     */
-    function contractURI() public view override returns (string memory) {
-        return _contract_uri;
-    }
-    
     /// Set Contract URI
     function setContractURI(string calldata contract_uri) external override {
         //Validate Permissions
@@ -309,12 +301,5 @@ contract JurisdictionUpgradable is
         _setContractURI(contract_uri);
     }
     
-    /// Set Contract URI
-    function _setContractURI(string calldata contract_uri) internal {
-        //Set
-        _contract_uri = contract_uri;
-        //
-        emit ContractURI(contract_uri);
-    }
 
 }

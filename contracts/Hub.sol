@@ -124,22 +124,6 @@ contract Hub is
         _setAssoc(key, contractAddr);
     }
 
-    /* Inherited from IAssoc
-    /// Get Contract Association
-    function getAssoc(string memory key) public view override returns(address) {
-        //Validate
-        require(_assoc[key] != address(0) , string(abi.encodePacked("Faild to Get Assoc: ", key)));
-        return _assoc[key];
-    }
-
-    //Set Association
-    function _setAssoc(string memory key, address contractAddr) internal {
-        _assoc[key] = contractAddr;
-        //Association Changed Event
-        emit Assoc(key, contractAddr);
-    }
-    */
-
     //--- Factory 
 
     /// Make a new Jurisdiction

@@ -12,6 +12,7 @@ import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
 // import "./libraries/DataTypes.sol";
 import "./abstract/ERC1155Roles.sol";
+import "./abstract/ContractBase.sol";
 import "./abstract/CommonYJ.sol";
 import "./abstract/Rules.sol";
 import "./abstract/Opinions.sol";
@@ -38,10 +39,11 @@ import "./abstract/Posts.sol";
  */
 contract Jurisdiction is 
         IJurisdiction, 
+        ContractBase,
+        CommonYJ, 
         Rules, 
         Opinions, 
         Posts, 
-        CommonYJ, 
         Recursion, 
         ERC1155Roles {
 
@@ -58,7 +60,7 @@ contract Jurisdiction is
     // Contract symbol
     // string public symbol;
     //Contract URI
-    string internal _contract_uri;
+    // string internal _contract_uri;
 
     // mapping(string => uint256) internal _roles;    //NFTs as Roles
     // mapping(uint256 => address) internal _cases;   // Mapping for Case Contracts      //DEPRECATED - No need for Case IDs, Use Hash
@@ -270,14 +272,6 @@ contract Jurisdiction is
             || roleHas(_msgSender(), "admin")    //Admin Role
             , "INVALID_PERMISSIONS");
         //Set
-        _contract_uri = contract_uri;
-    }
-
-    /**
-     * @dev Contract URI
-     *  https://docs.opensea.io/docs/contract-level-metadata
-     */
-    function contractURI() public view override returns (string memory) {
-        return _contract_uri;
+        _setContractURI(contract_uri);
     }
 }

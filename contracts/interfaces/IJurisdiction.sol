@@ -14,9 +14,6 @@ interface IJurisdiction {
     /// Set Contract URI
     function setContractURI(string calldata contract_uri) external;
 
-    /// Contract URI
-    function contractURI() external view returns (string memory);
-
     /// Disable Case
     function caseDisable(address caseContract) external;
 
