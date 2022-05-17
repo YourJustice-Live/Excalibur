@@ -234,9 +234,10 @@ describe("Protocol", function () {
   describe("Jurisdiction", function () {
     
     before(async function () {
-      //Deploy Jurisdiction
-      // jurisdictionContract = await ethers.getContractFactory("Jurisdiction").then(res => res.deploy(hubContract.address, actionContract.address));
-      // this.jurisdictionContract = jurisdictionContract;
+      //Mint Avatars for Participants
+      await avatarContract.connect(owner).mint(test_uri);
+      await avatarContract.connect(admin).mint(test_uri);
+      await avatarContract.connect(tester3).mint(test_uri);
 
       //Simulate to Get New Jurisdiction Address
       let JAddr = await hubContract.callStatic.jurisdictionMake("Test Jurisdiction", test_uri);
@@ -468,6 +469,8 @@ describe("Protocol", function () {
       ];
       //Simulate - Get New Case Address
       let caseAddr = await jurisdictionContract.connect(admin).callStatic.caseMake(caseName, ruleRefArr, roleRefArr, posts);
+      // console.log("New Case Address: ", caseAddr);
+
       //Create New Case
       let tx = await jurisdictionContract.connect(admin).caseMake(caseName, ruleRefArr, roleRefArr, posts);
       //Expect Valid Address
@@ -477,7 +480,6 @@ describe("Protocol", function () {
       //Expect Case Created Event
       await expect(tx).to.emit(jurisdictionContract, 'CaseCreated').withArgs(1, caseAddr);
       //Expect Post Event
-      // await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].postRole, posts[0].uri);
       await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].uri);
     });
     
@@ -545,7 +547,7 @@ describe("Protocol", function () {
         // affected: "investor",
       };
       // await this.caseContract.ruleAdd(ruleRef.jurisdiction,  ruleRef.id, ruleRef.affected);
-      await this.caseContract.ruleAdd(ruleRef.jurisdiction,  ruleRef.id);
+      await this.caseContract.connect(admin).ruleAdd(ruleRef.jurisdiction,  ruleRef.id);
     });
     
     it("Should Post", async function () {
