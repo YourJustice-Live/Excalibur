@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./libraries/DataTypes.sol";
@@ -221,7 +221,6 @@ contract Case is
         DataTypes.Rule memory rule = ruleGet(ruleId);
         if(!roleExist(rule.affected)){
             _roleCreate(rule.affected);
-            console.log("** Role Created", rule.affected);
         }
 
         //Event: Rule Reference Added 
@@ -312,6 +311,7 @@ contract Case is
         //Validate Avatar Contract Interface
         require(IERC165(address(avatarContract)).supportsInterface(type(IAvatar).interfaceId), "Invalid Avatar Contract");
         */
+        
         //Fetch Case's Subject(s)
         address[] memory subjects = uniqueRoleMembers("subject");
         //Each Subject
@@ -322,7 +322,6 @@ contract Case is
                 DataTypes.Effect[] memory effects = ruleGetEffects(ruleId);
                 //Run Each Effect
                 for (uint256 j = 0; j < effects.length; ++j) {
-                    // console.log("Case Running Effect", j);
                     DataTypes.Effect memory effect = effects[j];
                     bool direction = effect.direction;
                     //Register Rep in Jurisdiction      //{name:'professional', value:5, direction:false}
