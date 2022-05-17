@@ -12,4 +12,9 @@ interface ICommonYJ {
     // Change Hub (Move To a New Hub)
     function setHub(address hubAddr) external;
 
+    //-- Events
+    
+    /// Contract URI Changed
+    event ContractURI(string);
+
 }

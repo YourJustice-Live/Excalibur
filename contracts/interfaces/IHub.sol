@@ -32,9 +32,11 @@ interface IHub {
     /// Add Reputation (Positive or Negative)       /// Opinion Updated
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external;
 
+    /* MOVED to IAssoc
     //Get Contract Association
     function getAssoc(string memory key) external view returns(address);
-
+    */
+    
     //--- Events
 
     /// Beacon Contract Chnaged

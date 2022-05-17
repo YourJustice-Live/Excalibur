@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 // import "@openzeppelin/contracts/access/Ownable.sol";
 // import "@openzeppelin/contracts/utils/Counters.sol";
 import "./interfaces/IConfig.sol";
+// import "./interfaces/IAssoc.sol";
 import "./interfaces/ICommonYJ.sol";
 import "./interfaces/IHub.sol";
 import "./interfaces/IJurisdictionUp.sol";
@@ -16,6 +17,7 @@ import "./interfaces/ICase.sol";
 import "./interfaces/IAvatar.sol";
 import "./libraries/DataTypes.sol";
 import "./abstract/CommonYJ.sol";
+import "./abstract/Assoc.sol";
 
 
 /**
@@ -24,7 +26,10 @@ import "./abstract/CommonYJ.sol";
  * - Contract Factory (Jurisdictions & Cases)
  * - Remember Products (Jurisdictions & Cases)
  */
-contract Hub is IHub, Ownable {
+contract Hub is 
+        IHub, 
+        Assoc,
+        Ownable {
     //---Storage
     address public beaconCase;
     address public beaconJurisdiction;  //TBD
@@ -37,7 +42,7 @@ contract Hub is IHub, Ownable {
     // address public override historyContract;
 
     //Contract Associations (avatar, history)
-    mapping(string => address) internal _assoc;
+    // mapping(string => address) internal _assoc;
     
     // using Counters for Counters.Counter;
     // Counters.Counter internal _tokenIds; //Track Last Token ID
@@ -114,7 +119,13 @@ contract Hub is IHub, Ownable {
 
     //-- Assoc
 
-    ////Get Contract Association
+    /// Set Association
+    function setAssoc(string memory key, address contractAddr) external onlyOwner {
+        _setAssoc(key, contractAddr);
+    }
+
+    /* Inherited from IAssoc
+    /// Get Contract Association
     function getAssoc(string memory key) public view override returns(address) {
         //Validate
         require(_assoc[key] != address(0) , string(abi.encodePacked("Faild to Get Assoc: ", key)));
@@ -122,14 +133,12 @@ contract Hub is IHub, Ownable {
     }
 
     //Set Association
-    function setAssoc(string memory key, address contract_) external onlyOwner {
-        _setAssoc(key, contract_);
+    function _setAssoc(string memory key, address contractAddr) internal {
+        _assoc[key] = contractAddr;
+        //Association Changed Event
+        emit Assoc(key, contractAddr);
     }
-
-    //Set Association
-    function _setAssoc(string memory key, address contract_) internal {
-        _assoc[key] = contract_;
-    }
+    */
 
     //--- Factory 
 
@@ -145,9 +154,6 @@ contract Hub is IHub, Ownable {
                 address(this),   //Hub
                 name_,          //Name
                 uri_            //Contract URI
-                // "Anti-Scam Jurisdiction",
-                // "YJ_CASE",      //Symbol
-                // _msgSender()    //Birth Parent (Container)
             )
         );
         //Event
@@ -160,18 +166,16 @@ contract Hub is IHub, Ownable {
 
     /// Make a new Case
     function caseMake(
-        string calldata name_
-        , DataTypes.RuleRef[] memory addRules
-        , DataTypes.InputRole[] memory assignRoles
+        string calldata name_,
+        DataTypes.RuleRef[] memory addRules,
+        DataTypes.InputRole[] memory assignRoles
     ) external override returns (address) {
-        //TODO: Validate Caller Permissions (A Jurisdiction)
-
-        //Assign Case ID
-        // _caseIds.increment(); //Start with 1
-        // uint256 caseId = _caseIds.current();
+        //Validate Caller Permissions (A Jurisdiction)
+        require(_jurisdictions[msg.sender], "UNAUTHORIZED: Valid Jurisdiction Only");
 
         //Validate
         // require(beaconCase != address(0), "Case Beacon Missing");    //Redundant
+
         //Deploy
         BeaconProxy newCaseProxy = new BeaconProxy(
             beaconCase,
@@ -215,7 +219,15 @@ contract Hub is IHub, Ownable {
         address avatarContract = getAssoc("avatar");
         // require(avatarContract != address(0), "AVATAR_CONTRACT_UNKNOWN");
         // repAdd(avatarContract, tokenId, domain, rating, amount);
-        IAvatar(avatarContract).repAdd(tokenId, domain, rating, amount);
+        // IAvatar(avatarContract).repAdd(tokenId, domain, rating, amount);
+        try IAvatar(avatarContract).repAdd(tokenId, domain, rating, amount) {   //Failure should not be fatal
+            // return "";
+        // } catch Error(string memory /*reason*/) {
+        } catch Error(string memory reason) {
+            console.log("Avatar Rep Change Failed W/" , reason);
+            // return reason;
+        }
+
     }
 
     //-- Upgrades

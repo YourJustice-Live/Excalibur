@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./libraries/DataTypes.sol";
@@ -9,10 +9,12 @@ import "./interfaces/ICase.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/IAvatar.sol";
 import "./interfaces/IERC1155Roles.sol";
-// import "./interfaces/IJurisdiction.sol";
 import "./interfaces/IJurisdictionUp.sol";
+// import "./interfaces/IJurisdiction.sol";
+import "./interfaces/IAssoc.sol";
+// import "./abstract/ERC1155RolesUpgradable.sol";
 import "./abstract/CommonYJUpgradable.sol";
-import "./abstract/ERC1155RolesUpgradable.sol";
+import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/Posts.sol";
 
 /**
@@ -23,7 +25,8 @@ contract Case is
     ICase, 
     Posts, 
     CommonYJUpgradable, 
-    ERC1155RolesUpgradable {
+    ERC1155RolesTrackerUp {
+    // ERC1155RolesUpgradable {
 
     //--- Storage
 
@@ -65,11 +68,14 @@ contract Case is
         , DataTypes.InputRole[] memory assignRoles
         , address container
     ) public override initializer {
+
         //Set Parent Container
         _setParentCTX(container);
         //Initializers
-        __ERC1155RolesUpgradable_init("");
         __CommonYJ_init(hub);
+        // __setTargetContract(_HUB.getAssoc("avatar"));
+        __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
+
         //Identifiers
         name = name_;
         symbol = symbol_;
@@ -208,6 +214,7 @@ contract Case is
         DataTypes.Rule memory rule = ruleGet(ruleId);
         if(!roleExist(rule.affected)){
             _roleCreate(rule.affected);
+            console.log("** Role Created", rule.affected);
         }
 
         //Event: Rule Reference Added 
@@ -291,7 +298,9 @@ contract Case is
     /// Rule (Action) Confirmed (Currently Only Judging Avatars)
     function _ruleConfirmed(uint256 ruleId) internal {
         //Get Avatar Contract
-        IAvatar avatarContract = IAvatar(_HUB.getAssoc("avatar"));
+        // IAvatar avatarContract = IAvatar(_HUB.getAssoc("avatar"));
+        IAvatar avatarContract = IAvatar(IAssoc(address(_HUB)).getAssoc("avatar"));
+
         /* REMOVED for backward compatibility while in dev mode.
         //Validate Avatar Contract Interface
         require(IERC165(address(avatarContract)).supportsInterface(type(IAvatar).interfaceId), "Invalid Avatar Contract");

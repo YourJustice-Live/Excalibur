@@ -10,6 +10,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "./interfaces/IJurisdictionUp.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
+import "./interfaces/IAssoc.sol";
 // import "./libraries/DataTypes.sol";
 import "./abstract/ERC1155RolesUpgradable.sol";
 import "./abstract/CommonYJUpgradable.sol";
@@ -81,7 +82,8 @@ contract JurisdictionUpgradable is
         // address actionRepo = _HUB.getAssoc("history");
         // console.log("Init WJ W/History:", actionRepo);
         // _setActionsContract(actionRepo);
-        _setActionsContract(_HUB.getAssoc("history"));  //TODO: Hot History?
+        // _setActionsContract(_HUB.getAssoc("history"));  //TODO: Hot History?
+        _setActionsContract(IAssoc(address(_HUB)).getAssoc("history"));  //TODO: Hot History?
 
         //Set Contract URI
         _contract_uri = uri_;
@@ -288,16 +290,7 @@ contract JurisdictionUpgradable is
         _setRoleURI(role, _tokenURI);
     }
     
-    /// Set Contract URI
-    function setContractURI(string calldata contract_uri) external override {
-        //Validate Permissions
-        require( owner() == _msgSender()      //Owner
-            || roleHas(_msgSender(), "admin")    //Admin Role
-            , "INVALID_PERMISSIONS");
-        //Set
-        _contract_uri = contract_uri;
-    }
-    
+
     /**
      * @dev Contract URI
      *  https://docs.opensea.io/docs/contract-level-metadata
@@ -305,4 +298,23 @@ contract JurisdictionUpgradable is
     function contractURI() public view override returns (string memory) {
         return _contract_uri;
     }
+    
+    /// Set Contract URI
+    function setContractURI(string calldata contract_uri) external override {
+        //Validate Permissions
+        require( owner() == _msgSender()      //Owner
+            || roleHas(_msgSender(), "admin")    //Admin Role
+            , "INVALID_PERMISSIONS");
+        //Set
+        _setContractURI(contract_uri);
+    }
+    
+    /// Set Contract URI
+    function _setContractURI(string calldata contract_uri) internal {
+        //Set
+        _contract_uri = contract_uri;
+        //
+        emit ContractURI(contract_uri);
+    }
+
 }
