@@ -69,7 +69,9 @@ contract JurisdictionUpgradable is
 
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IJurisdiction).interfaceId || interfaceId == type(IRules).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IJurisdiction).interfaceId 
+            || interfaceId == type(IRules).interfaceId 
+            || super.supportsInterface(interfaceId);
     }
     
     /// Initializer

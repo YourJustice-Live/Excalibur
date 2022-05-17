@@ -58,7 +58,10 @@ contract Case is
     
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(ICase).interfaceId || interfaceId == type(IRules).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(ICase).interfaceId 
+            || interfaceId == type(IRules).interfaceId 
+            || interfaceId == type(IAssoc).interfaceId 
+            || super.supportsInterface(interfaceId);
     }
 
     /// Initializer
@@ -197,7 +200,9 @@ contract Case is
         //Validate Jurisdiciton implements IRules (ERC165)
         require(IERC165(jurisdiction_).supportsInterface(type(IRules).interfaceId), "Implmementation Does Not Support Rules Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
         //Validate Sender
-        require (_msgSender() == address(_HUB) || roleHas(_msgSender(), "admin") || owner() == _msgSender(), "EXPECTED HUB OR ADMIN");
+        require (_msgSender() == address(_HUB) 
+            || roleHas(_msgSender(), "admin") 
+            || owner() == _msgSender(), "EXPECTED HUB OR ADMIN");
         //Run
         _ruleAdd(jurisdiction_, ruleId_);
     }

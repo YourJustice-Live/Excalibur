@@ -6,10 +6,12 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+// import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol";
 // import "@openzeppelin/contracts/access/Ownable.sol";
 // import "@openzeppelin/contracts/utils/Counters.sol";
 import "./interfaces/IConfig.sol";
-// import "./interfaces/IAssoc.sol";
+import "./interfaces/IAssoc.sol";
 import "./interfaces/ICommonYJ.sol";
 import "./interfaces/IHub.sol";
 import "./interfaces/IJurisdictionUp.sol";
@@ -28,6 +30,7 @@ import "./abstract/Assoc.sol";
  */
 contract Hub is 
         IHub, 
+        ERC165,
         Assoc,
         Ownable {
     //---Storage
@@ -65,7 +68,13 @@ contract Hub is
     //TODO: Config changed
 
     //--- Functions
-
+ 
+    /// ERC165 - Supported Interfaces
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == type(IHub).interfaceId 
+            || interfaceId == type(IAssoc).interfaceId 
+            || super.supportsInterface(interfaceId);
+    }
     constructor(address config, address jurisdictionContract, address caseContract){
         //Set Protocol's Config Address
         _setConfig(config);
