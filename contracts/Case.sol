@@ -12,9 +12,9 @@ import "./interfaces/IERC1155Roles.sol";
 import "./interfaces/IJurisdictionUp.sol";
 // import "./interfaces/IJurisdiction.sol";
 import "./interfaces/IAssoc.sol";
-// import "./abstract/ERC1155RolesUpgradable.sol";
 import "./abstract/ContractBase.sol";
 import "./abstract/CommonYJUpgradable.sol";
+// import "./abstract/ERC1155RolesUpgradable.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/Posts.sol";
 
@@ -311,7 +311,7 @@ contract Case is
         //Validate Avatar Contract Interface
         require(IERC165(address(avatarContract)).supportsInterface(type(IAvatar).interfaceId), "Invalid Avatar Contract");
         */
-        
+
         //Fetch Case's Subject(s)
         address[] memory subjects = uniqueRoleMembers("subject");
         //Each Subject
@@ -335,10 +335,11 @@ contract Case is
         emit RuleConfirmed(ruleId);
     }
 
-    // function nextStage(string calldata uri) public {
-        // if (sha3(myEnum) == sha3("Bar")) return MyEnum.Bar;
-    // }
-
+    /// Get Token URI by Token ID
+    function uri(uint256 token_id) public view returns (string memory) {
+        return _tokenURIs[token_id];
+    }
+    
     /// Set Metadata URI For Role
     function setRoleURI(string memory role, string memory _tokenURI) external override {
         //Validate Permissions
@@ -347,22 +348,9 @@ contract Case is
             , "INVALID_PERMISSIONS");
         _setRoleURI(role, _tokenURI);
     }
-    
-    /** MOVED TO ContractBase
-     * @dev Contract URI
-     *  https://docs.opensea.io/docs/contract-level-metadata
-     * / 
-    function contractURI() public view override returns (string memory) {
-        return _contract_uri;
-    }
-
-    //--- Dev Playground [WIP]
-
-    /* Should Inherit From J's Rules / Actions
-    /// Set Role's Name Mapping
-    function _entityMap(string memory role_, string memory name_) internal {
-        roleName[role_] = name_;
-    }
-    */
    
+    // function nextStage(string calldata uri) public {
+        // if (sha3(myEnum) == sha3("Bar")) return MyEnum.Bar;
+    // }
+
 }
