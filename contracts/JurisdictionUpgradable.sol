@@ -275,7 +275,6 @@ contract JurisdictionUpgradable is
     }
     
     /// Update Rule
-    // function ruleUpdate(uint256 id, DataTypes.Rule memory rule) external override {
     function ruleUpdate(
         uint256 id, 
         DataTypes.Rule memory rule, 
@@ -286,6 +285,15 @@ contract JurisdictionUpgradable is
         //Update Rule
         _ruleUpdate(id, rule, effects);
     }
+
+    /// Update Rule's Confirmation Data
+    function ruleConfirmationUpdate(uint256 id, DataTypes.Confirmation memory confirmation) external override {
+        //Validate Caller's Permissions
+        require(roleHas(_msgSender(), "admin"), "Admin Only");
+        //Set Confirmations
+        _confirmationSet(id, confirmation);
+    }
+    
 
     /// Get Token URI by Token ID
     // function tokenURI(uint256 token_id) public view returns (string memory) {
