@@ -168,7 +168,7 @@ contract Hub is
         DataTypes.InputRole[] memory assignRoles
     ) external override returns (address) {
         //Validate Caller Permissions (A Jurisdiction)
-        require(_jurisdictions[msg.sender], "UNAUTHORIZED: Valid Jurisdiction Only");
+        require(_jurisdictions[_msgSender()], "UNAUTHORIZED: Valid Jurisdiction Only");
 
         //Validate
         // require(beaconCase != address(0), "Case Beacon Missing");    //Redundant
@@ -189,7 +189,7 @@ contract Hub is
         //Event
         emit ContractCreated("case", address(newCaseProxy));
         //Remember
-        _cases[address(newCaseProxy)] = msg.sender;
+        _cases[address(newCaseProxy)] = _msgSender();
         //Return
         return address(newCaseProxy);
     }
