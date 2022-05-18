@@ -5,6 +5,7 @@ pragma solidity 0.8.4;
 
 import "./interfaces/IActionRepo.sol";
 // import "./libraries/DataTypes.sol";
+import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "./abstract/CommonYJ.sol";
 import "./abstract/ERC1155GUID.sol";
 
@@ -18,10 +19,13 @@ import "./abstract/ERC1155GUID.sol";
 contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     //--- Storage
+    using AddressUpgradeable for address;
+
     // Contract name
-    string public name;
+    // string public name;
     //Arbitrary Contract Role 
     string public constant override symbol = "HISTORY";
+    string public constant name = "YourJustice: Semantic Action Repo";
 
     // Event Storage     (Unique Concepts)
     mapping(bytes32 => DataTypes.SVO) internal _actions; //Primary Data
@@ -31,7 +35,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     //--- Functions
 
     constructor(address hub) CommonYJ(hub) ERC1155(""){
-        name = "YourJustice: Semantic Action Repo";
+        // name = "YourJustice: Semantic Action Repo";
     }
 
     /// ERC165 - Supported Interfaces
@@ -48,6 +52,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     /// Register New Action
     function actionAdd(DataTypes.SVO memory svo, string memory uri) public override returns (bytes32) {
         //TODO: Validate
+        // require(!_msgSender().isContract(), "No-Bots");
 
         //Store Additional Details
         bytes32 guid = _actionAdd(svo);
