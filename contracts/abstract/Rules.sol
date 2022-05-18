@@ -21,7 +21,8 @@ abstract contract Rules is IRules {
     using Counters for Counters.Counter;
     Counters.Counter private _ruleIds;
     //Action Repository Contract (HISTORY)
-    IActionRepo internal _actionRepo;   
+    // IActionRepo internal _actionRepo;
+    address private _actionRepo;   
     //Rule Data
     mapping(uint256 => DataTypes.Rule) internal _rules;
     
@@ -33,7 +34,7 @@ abstract contract Rules is IRules {
 
     //--- Functions
 
-    /* DEPRECATED
+    /* DEPRECATED - for Upgradability
     constructor(address actionRepo_) {
         _setActionsContract(actionRepo_);
     }
@@ -46,18 +47,21 @@ abstract contract Rules is IRules {
 
     /// Set Actions Contract
     function _setActionsContract(address actionRepo_) internal {
-        require(address(_actionRepo) == address(0), "HISTORY Contract Already Set");
+        // require(address(_actionRepo) == address(0), "HISTORY Contract Already Set");
+        require(_actionRepo == address(0), "HISTORY Contract Already Set");
         //String Match - Validate Contract's Designation        //TODO: Maybe Look into Checking the Supported Interface
-        require(keccak256(abi.encodePacked(IActionRepo(actionRepo_).symbol())) == keccak256(abi.encodePacked("YJ_HISTORY")), "Expecting HISTORY Contract");
+        require(keccak256(abi.encodePacked(IActionRepo(actionRepo_).symbol())) == keccak256(abi.encodePacked("HISTORY")), "Expecting HISTORY Contract");
         //Set
-        _actionRepo = IActionRepo(actionRepo_);
+        // _actionRepo = IActionRepo(actionRepo_);
+        _actionRepo = actionRepo_;
         //Event
         emit ActionRepoSet(actionRepo_);
     }
 
     /// Expose Action Repo Address
     function actionRepo() external view override returns (address) {
-        return address(_actionRepo);
+        // return address(_actionRepo);
+        return _actionRepo;
     }
 
     /// Add Rule

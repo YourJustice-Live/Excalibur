@@ -21,7 +21,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     // Contract name
     string public name;
     //Arbitrary Contract Role 
-    string public constant override symbol = "YJ_HISTORY";
+    string public constant override symbol = "HISTORY";
 
     // Event Storage     (Unique Concepts)
     mapping(bytes32 => DataTypes.SVO) internal _actions; //Primary Data
