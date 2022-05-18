@@ -40,6 +40,12 @@ describe("Protocol", function () {
     //Deploy Hub
     hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.jurisdictionUpContract.address, this.caseContract.address));
 
+    /* Testing Rep Change Failure Recovery
+    //Deploy a Second Hub
+    let hubContract2 = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.jurisdictionUpContract.address, this.caseContract.address));
+    avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract2.address));
+    */
+
     //Deploy Avatar
     avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract.address));
     //Set Avatar Contract to Hub

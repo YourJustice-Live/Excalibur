@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
@@ -221,10 +221,9 @@ contract Hub is
             // return "";
         // } catch Error(string memory /*reason*/) {
         } catch Error(string memory reason) {
-            console.log("Avatar Rep Change Failed W/" , reason);
+            // console.log("Avatar Rep Change Failed W/" , reason);
             // return reason;
         }
-
     }
 
     //-- Upgrades
