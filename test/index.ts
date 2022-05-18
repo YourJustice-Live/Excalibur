@@ -281,6 +281,8 @@ describe("Protocol", function () {
     });
     
     it("[TODO] Role Should Track Avatar Owner", async function () {
+      
+
     });
 
     it("Users can leave", async function () {
@@ -486,6 +488,9 @@ describe("Protocol", function () {
           uri: test_uri,
         }
       ];
+      //Join Jurisdiction (as member)
+      await jurisdictionContract.connect(admin).join();
+
       //Simulate - Get New Case Address
       let caseAddr = await jurisdictionContract.connect(admin).callStatic.caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
       // console.log("New Case Address: ", caseAddr);

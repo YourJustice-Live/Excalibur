@@ -34,8 +34,8 @@ import "./abstract/Posts.sol";
  * - Rules
  * - Creates new Cases
  * - Contract URI
- * - [TODO] Token URIs for Roles
- * - [TODO] Validation: Make Sure Account has an Avatar NFT
+ * - Token URIs for Roles
+ * - Owner account must have an Avatar NFT
  * - [TODO] Unique Rule IDs (GUID)
  * V2:  
  * - [TODO] NFT Trackers - Assign Avatars instead of Accounts & Track the owner of the Avatar NFT
@@ -88,7 +88,7 @@ contract JurisdictionUpgradable is
         // address actionRepo = _HUB.getAssoc("history");
         // console.log("Init WJ W/History:", actionRepo);
         // _setActionsContract(actionRepo);
-        // _setActionsContract(_HUB.getAssoc("history"));  //TODO: Hot History?
+        // _setActionsContract(_HUB.getAssoc("history"));
         // _setActionsContract(IAssoc(address(_HUB)).getAssoc("history"));  //CANCELLED
 
         //Set Contract URI
@@ -123,7 +123,6 @@ contract JurisdictionUpgradable is
     // ) public returns (uint256, address) {
     ) public returns (address) {
         //Make Case
-        // (uint256 caseId, address caseContract) = caseMake(name_, addRules, assignRoles, posts);
         address caseContract = caseMake(name_, uri_, addRules, assignRoles, posts);
         //File Case
         ICase(caseContract).stageFile();
@@ -140,10 +139,8 @@ contract JurisdictionUpgradable is
         DataTypes.InputRole[] calldata assignRoles, 
         PostInput[] calldata posts
     ) public returns (address) {
-        //TODO: Validate Caller Permissions (Member of Jurisdiction)
-        // roleHas(_msgSender(), "admin")
-        // roleHas(_msgSender(), "member")
-
+        //Validate Caller Permissions (Member of Jurisdiction)
+        require(roleHas(_msgSender(), "member"), "Members Only");
         //Assign Case ID
         _caseIds.increment(); //Start with 1
         uint256 caseId = _caseIds.current();
@@ -312,12 +309,6 @@ contract JurisdictionUpgradable is
         return _tokenURIs[token_id];
     }
 
-    /* REDUNDANT -- Use roleURI()
-    function uri(string calldata role) public view roleExists(role) returns (string memory) {
-        return _tokenURIs[_roleToId(role)];
-    }
-    */
-
     /// Set Metadata URI For Role
     function setRoleURI(string memory role, string memory _tokenURI) external override {
         //Validate Permissions
@@ -327,7 +318,6 @@ contract JurisdictionUpgradable is
         _setRoleURI(role, _tokenURI);
     }
     
-
     /// Set Contract URI
     function setContractURI(string calldata contract_uri) external override {
         //Validate Permissions
@@ -338,5 +328,4 @@ contract JurisdictionUpgradable is
         _setContractURI(contract_uri);
     }
     
-
 }
