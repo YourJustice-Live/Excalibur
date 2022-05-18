@@ -30,7 +30,7 @@ abstract contract ContractBase is IContractBase {
     function _setContractURI(string calldata contract_uri) internal {
         //Set
         _contract_uri = contract_uri;
-        //
+        //Contract URI Changed Event
         emit ContractURI(contract_uri);
     }
 

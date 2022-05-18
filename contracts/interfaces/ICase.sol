@@ -17,6 +17,9 @@ interface ICase {
     /// Contract URI
     // function contractURI() external view returns (string memory);
 
+    /// Set Contract URI
+    function setContractURI(string calldata contract_uri) external;
+
     /// Assign Someone to a Role
     function roleAssign(address account, string calldata role) external;
 

@@ -264,7 +264,7 @@ contract Case is
 
     /// Case Stage: Place Verdict  --> Closed
     // function stageVerdict(string calldata uri) public override {
-    function stageVerdict(DataTypes.InputDecision[] calldata verdict, string calldata uri) public override {
+    function stageVerdict(DataTypes.InputDecision[] calldata verdict, string calldata uri_) public override {
         require(roleHas(_msgSender(), "judge") , "ROLE:JUDGE_ONLY");
         require(stage == DataTypes.CaseStage.Verdict, "STAGE:VERDICT_ONLY");
 
@@ -280,17 +280,17 @@ contract Case is
         //Case is now Closed
         _setStage(DataTypes.CaseStage.Closed);
         //Emit Verdict Event
-        emit Verdict(uri, _msgSender());
+        emit Verdict(uri_, _msgSender());
     }
 
     /// Case Stage: Reject Case --> Cancelled
-    function stageCancel(string calldata uri) public override {
+    function stageCancel(string calldata uri_) public override {
         require(roleHas(_msgSender(), "judge") , "ROLE:JUDGE_ONLY");
         require(stage == DataTypes.CaseStage.Verdict, "STAGE:VERDICT_ONLY");
         //Case is now Closed
         _setStage(DataTypes.CaseStage.Cancelled);
         //Cancellation Event
-        emit Cancelled(uri, _msgSender());
+        emit Cancelled(uri_, _msgSender());
     }
 
     /// Change Case Stage
@@ -349,6 +349,16 @@ contract Case is
         _setRoleURI(role, _tokenURI);
     }
    
+    /// Set Contract URI
+    function setContractURI(string calldata contract_uri) external override {
+        //Validate Permissions
+        require( owner() == _msgSender()      //Owner
+            || roleHas(_msgSender(), "admin")    //Admin Role
+            , "INVALID_PERMISSIONS");
+        //Set
+        _setContractURI(contract_uri);
+    }
+    
     // function nextStage(string calldata uri) public {
         // if (sha3(myEnum) == sha3("Bar")) return MyEnum.Bar;
     // }
