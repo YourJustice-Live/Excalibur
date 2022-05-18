@@ -37,11 +37,10 @@ abstract contract ERC1155TrackerUpgradable is
     // Mapping from account to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
-
-    //TODO: Balances
+    // Manage Balances by External Token ID
     mapping(uint256 => mapping(uint256 => uint256)) private _balances;
 
-    //Target Contract
+    // Target Contract (External Source)
     address _targetContract;
 
 

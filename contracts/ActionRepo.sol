@@ -22,12 +22,10 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     string public name;
     //Arbitrary Contract Role 
     string public constant override symbol = "YJ_HISTORY";
-    //Jurisdiction
-    address private _jurisdiction;
-    //Rule(s)
 
     // Event Storage     (Unique Concepts)
-    mapping(bytes32 => DataTypes.SVO) internal _actions;            //Primary Data
+    mapping(bytes32 => DataTypes.SVO) internal _actions; //Primary Data
+    // Additional Action Metadata
     mapping(uint256 => string) internal _tokenURI;
 
     //--- Functions
@@ -38,7 +36,8 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IActionRepo).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IActionRepo).interfaceId 
+            || super.supportsInterface(interfaceId);
     }
 
     /// Generate a Unique Hash for Event
@@ -47,7 +46,6 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     }
 
     /// Register New Action
-    // function actionAdd(DataTypes.SVO memory svo) external returns (bytes32) {
     function actionAdd(DataTypes.SVO memory svo, string memory uri) public override returns (bytes32) {
         //TODO: Validate
 
@@ -103,7 +101,6 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     /// Get Action by GUID
     function _actionGet(bytes32 guid) internal view GUIDExists(guid) returns (DataTypes.SVO memory){
-    // function _actionGet(bytes32 guid) internal view returns (DataTypes.SVO memory){
         return _actions[guid];
     }
 
