@@ -257,12 +257,9 @@ contract JurisdictionUpgradable is
         //Validate Caller's Permissions
         require(roleHas(_msgSender(), "admin"), "Admin Only");
 
-        //TODO: Validate rule.about -- actionGUID Exists
+        //Validate rule.about -- actionGUID Exists
         address actionRepo = IAssoc(address(_HUB)).getAssoc("history");
-        console.log("Action Repo Address: ", actionRepo);
-        // IActionRepo(actionRepo)
-
-        // console.log("J Adding Rule About:", rule.about);
+        IActionRepo(actionRepo).actionGet(rule.about);  //Revetrs if does not exist
 
         //Add Rule
         uint256 id = _ruleAdd(rule, effects);
@@ -270,7 +267,7 @@ contract JurisdictionUpgradable is
         _confirmationSet(id, confirmation);
         return id;
     }
-    
+
     /// Update Rule
     function ruleUpdate(
         uint256 id, 

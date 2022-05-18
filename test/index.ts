@@ -6,7 +6,7 @@ import { ethers } from "hardhat";
 const ZERO_ADDR = '0x0000000000000000000000000000000000000000';
 let test_uri = "ipfs://QmQxkoWcpFgMa7bCzxaANWtSt43J1iMgksjNnT4vM1Apd7"; //"TEST_URI";
 let test_uri2 = "ipfs://TEST2";
-
+let actionGUID = "";
 
 describe("Protocol", function () {
   //Contract Instances
@@ -203,14 +203,13 @@ describe("Protocol", function () {
       // };
       let uri = "TEST_URI";
 
-      // let actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2';//await actionContract.callStatic.actionAdd(action);
-      // let actionGUID = await actionContract.callStatic.actionAdd(action); //Simulate
-      // let tx = await actionContract.actionAdd(action, confirmation, uri);
+      // actionGUID = await actionContract.callStatic.actionAdd(action, uri); //Simulate
+      // actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2'; //Wrong GUID
+      actionGUID = await actionContract.actionHash(action); //Gets hash if exists or not
+      // console.log("actionGUID:", actionGUID);
+
       let tx = await actionContract.actionAdd(action, uri);
       await tx.wait();
-
-      let actionGUID = await actionContract.actionHash(action); //Gets hash if exists or not
-      // console.log("actionGUID:", actionGUID);
 
       //Expect Added Event
       await expect(tx).to.emit(actionContract, 'ActionAdded').withArgs(1, actionGUID, action.subject, action.verb, action.object, action.tool);
@@ -336,7 +335,7 @@ describe("Protocol", function () {
     });
     
     it("Should store Rules", async function () {
-      let actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2';//await actionContract.callStatic.actionAdd(action);
+      // let actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2';//await actionContract.callStatic.actionAdd(action);
       let confirmation = {
         ruling: "judge",  //Decision Maker
         evidence: true, //Require Evidence
@@ -346,26 +345,13 @@ describe("Protocol", function () {
         // uint256 about;    //About What (Token URI +? Contract Address)
         about: actionGUID, //"0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2",
         affected: "investor",  //Plaintiff / Beneficiary
-        // about: 1,
         // string uri;     //Text, Conditions & additional data
         uri: "ADDITIONAL_DATA_URI",
-        // Effect Object (Describes Changes to Rating By Type)
-        /*
-        effects:{
-          // int8 environmental;
-          environmental: 0,
-          // int8 professional;
-          professional: -5,
-          // int8 social;
-          social: 5,
-          // int8 personal;
-          personal: 0,
-        },
-        */
         // bool negation;  //false - Commision  true - Omission
         negation: false,
       };
-      let effects1 = [
+        // Effect Object (Describes Changes to Rating By Type)
+        let effects1 = [
         {name:'professional', value:5, direction:false},
         {name:'social', value:5, direction:true},
       ];
@@ -373,25 +359,12 @@ describe("Protocol", function () {
         // uint256 about;    //About What (Token URI +? Contract Address)
         about: actionGUID, //"0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2",
         affected: "god",  //Plaintiff / Beneficiary
-        // about: 1,
         // string uri;     //Text, Conditions & additional data
         uri: "ADDITIONAL_DATA_URI",
-        // Effect Object (Describes Changes to Rating By Type)
-        /* DEPRECATED
-        effects:{
-          // int8 environmental;
-          environmental: -10,
-          // int8 professional;
-          professional: 0,
-          // int8 social;
-          social: 0,
-          // int8 personal;
-          personal: 0,
-        },
-        */
         // bool negation;  //false - Commision  true - Omission
         negation: false,
       };
+      // Effect Object (Describes Changes to Rating By Type)
       let  effects2 = [
         {name:'environmental', value:10, direction:false},
         {name:'personal', value:4, direction:true},
