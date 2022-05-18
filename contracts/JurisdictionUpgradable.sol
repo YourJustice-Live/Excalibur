@@ -12,7 +12,8 @@ import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IAssoc.sol";
 // import "./libraries/DataTypes.sol";
-import "./abstract/ERC1155RolesUpgradable.sol";
+// import "./abstract/ERC1155RolesUpgradable.sol";
+import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/Rules.sol";
 import "./abstract/ContractBase.sol";
@@ -46,7 +47,8 @@ contract JurisdictionUpgradable is
         Opinions, 
         Recursion, 
         Posts,
-        ERC1155RolesUpgradable {
+        ERC1155RolesTrackerUp {
+        // ERC1155RolesUpgradable {
 
     //--- Storage
     string public constant override symbol = "YJ_Jurisdiction";
@@ -77,8 +79,9 @@ contract JurisdictionUpgradable is
     /// Initializer
     function initialize (address hub, string calldata name_, string calldata uri_) public override initializer {
         //Initializers
-        __ERC1155RolesUpgradable_init("");
+        // __ERC1155RolesUpgradable_init("");
         __CommonYJ_init(hub);
+        __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
 
         //Fetch & Set Current History Contract
         // address actionRepo = _HUB.getAssoc("history");
@@ -275,14 +278,18 @@ contract JurisdictionUpgradable is
 
     /// Get Token URI by Token ID
     // function tokenURI(uint256 token_id) public view returns (string memory) {
-    function uri(uint256 token_id) public view override returns (string memory) {
+    // function uri(uint256 token_id) public view override returns (string memory) {
+    function uri(uint256 token_id) public view returns (string memory) {
         // require(exists(token_id), "NONEXISTENT_TOKEN");
         return _tokenURIs[token_id];
     }
+    
+    /* REDUNDANT -- Use roleURI()
     function uri(string calldata role) public view roleExists(role) returns (string memory) {
         return _tokenURIs[_roleToId(role)];
     }
-    
+    */
+
     /// Set Metadata URI For Role
     function setRoleURI(string memory role, string memory _tokenURI) external override {
         //Validate Permissions

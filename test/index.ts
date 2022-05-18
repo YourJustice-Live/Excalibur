@@ -244,6 +244,7 @@ describe("Protocol", function () {
       await avatarContract.connect(owner).mint(test_uri);
       await avatarContract.connect(admin).mint(test_uri);
       await avatarContract.connect(tester3).mint(test_uri);
+      await avatarContract.connect(tester4).mint(test_uri);
 
       //Simulate to Get New Jurisdiction Address
       let JAddr = await hubContract.callStatic.jurisdictionMake("Test Jurisdiction", test_uri);
