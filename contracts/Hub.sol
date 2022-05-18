@@ -219,8 +219,8 @@ contract Hub is
         // IAvatar(avatarContract).repAdd(tokenId, domain, rating, amount);
         try IAvatar(avatarContract).repAdd(tokenId, domain, rating, amount) {   //Failure should not be fatal
             // return "";
-        // } catch Error(string memory /*reason*/) {
-        } catch Error(string memory reason) {
+        } catch Error(string memory /*reason*/) {
+        // } catch Error(string memory reason) {
             // console.log("Avatar Rep Change Failed W/" , reason);
             // return reason;
         }
