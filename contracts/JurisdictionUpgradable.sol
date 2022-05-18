@@ -115,6 +115,7 @@ contract JurisdictionUpgradable is
     /// Make a new Case & File it
     function caseMakeOpen(
         string calldata name_, 
+        string calldata uri_, 
         DataTypes.RuleRef[] calldata addRules, 
         DataTypes.InputRole[] calldata assignRoles, 
         PostInput[] calldata posts
@@ -122,7 +123,7 @@ contract JurisdictionUpgradable is
     ) public returns (address) {
         //Make Case
         // (uint256 caseId, address caseContract) = caseMake(name_, addRules, assignRoles, posts);
-        address caseContract = caseMake(name_, addRules, assignRoles, posts);
+        address caseContract = caseMake(name_, uri_, addRules, assignRoles, posts);
         //File Case
         ICase(caseContract).stageFile();
         //Return
@@ -133,6 +134,7 @@ contract JurisdictionUpgradable is
     /// Make a new Case
     function caseMake(
         string calldata name_, 
+        string calldata uri_, 
         DataTypes.RuleRef[] calldata addRules, 
         DataTypes.InputRole[] calldata assignRoles, 
         PostInput[] calldata posts
@@ -145,7 +147,7 @@ contract JurisdictionUpgradable is
         _caseIds.increment(); //Start with 1
         uint256 caseId = _caseIds.current();
         //Create new Case
-        address caseContract = _HUB.caseMake(name_, addRules, assignRoles);
+        address caseContract = _HUB.caseMake(name_, uri_, addRules, assignRoles);
         //Remember Address
         // _cases[caseId] = caseContract;
         _active[caseContract] = true;
@@ -283,7 +285,7 @@ contract JurisdictionUpgradable is
         // require(exists(token_id), "NONEXISTENT_TOKEN");
         return _tokenURIs[token_id];
     }
-    
+
     /* REDUNDANT -- Use roleURI()
     function uri(string calldata role) public view roleExists(role) returns (string memory) {
         return _tokenURIs[_roleToId(role)];

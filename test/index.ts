@@ -487,11 +487,11 @@ describe("Protocol", function () {
         }
       ];
       //Simulate - Get New Case Address
-      let caseAddr = await jurisdictionContract.connect(admin).callStatic.caseMake(caseName, ruleRefArr, roleRefArr, posts);
+      let caseAddr = await jurisdictionContract.connect(admin).callStatic.caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
       // console.log("New Case Address: ", caseAddr);
 
       //Create New Case
-      let tx = await jurisdictionContract.connect(admin).caseMake(caseName, ruleRefArr, roleRefArr, posts);
+      let tx = await jurisdictionContract.connect(admin).caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
       //Expect Valid Address
       expect(caseAddr).to.be.properAddress;
       //Init Case Contract
@@ -529,9 +529,9 @@ describe("Protocol", function () {
         }
       ];
       //Simulate - Get New Case Address
-      let caseAddr = await jurisdictionContract.connect(admin).callStatic.caseMake(caseName, ruleRefArr, roleRefArr, posts);
+      let caseAddr = await jurisdictionContract.connect(admin).callStatic.caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
       //Create New Case
-      let tx = await jurisdictionContract.connect(admin).caseMakeOpen(caseName, ruleRefArr, roleRefArr, posts);
+      let tx = await jurisdictionContract.connect(admin).caseMakeOpen(caseName, test_uri, ruleRefArr, roleRefArr, posts);
       //Expect Valid Address
       expect(caseAddr).to.be.properAddress;
       //Init Case Contract
@@ -545,11 +545,11 @@ describe("Protocol", function () {
 
     it("Should Update Contract URI", async function () {
       //Before
-      expect(await this.caseContract.contractURI()).to.equal('');
-      //Change
-      await this.caseContract.setContractURI(test_uri);
-      //After
       expect(await this.caseContract.contractURI()).to.equal(test_uri);
+      //Change
+      await this.caseContract.setContractURI(test_uri2);
+      //After
+      expect(await this.caseContract.contractURI()).to.equal(test_uri2);
     });
 
     it("Should Auto-Appoint creator as Admin", async function () {
@@ -677,8 +677,6 @@ describe("Protocol", function () {
       //TODO: Tests for Collect Rating
       // let repCall = { tokenId:?, domain:?, rating:?};
       // let result = this.jurisdictionContract.getRepForDomain(avatarContract.address,repCall. tokenId, repCall.domain, repCall.rating);
-
-      
 
       // //Expect Event
       // await expect(tx).to.emit(avatarContract, 'ReputationChange').withArgs(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount);

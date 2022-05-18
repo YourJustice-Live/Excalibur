@@ -163,7 +163,8 @@ contract Hub is
 
     /// Make a new Case
     function caseMake(
-        string calldata name_,
+        string calldata name_, 
+        string calldata uri_,
         DataTypes.RuleRef[] memory addRules,
         DataTypes.InputRole[] memory assignRoles
     ) external override returns (address) {
@@ -178,9 +179,9 @@ contract Hub is
             beaconCase,
             abi.encodeWithSelector(
                 ICase( payable(address(0)) ).initialize.selector,
-                name_,          //Name
-                "YJ_CASE",      //Symbol
                 address(this),   //Hub
+                name_,          //Name
+                uri_,
                 addRules,
                 assignRoles,
                 _msgSender()    //Birth Parent (Container)

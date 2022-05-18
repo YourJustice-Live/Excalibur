@@ -31,14 +31,15 @@ contract Case is
     // ERC1155RolesUpgradable {
 
     //--- Storage
-
     using Counters for Counters.Counter;
     Counters.Counter internal _ruleIds;  //Track Last Rule ID
 
     // Contract name
     string public name;
     // Contract symbol
-    string public symbol;
+    // string public symbol;
+    string public constant symbol = "YJ_Case";
+
     //Jurisdiction
     address private _jurisdiction;
     //Contract URI
@@ -66,9 +67,9 @@ contract Case is
 
     /// Initializer
     function initialize (
-        string memory name_, 
-        string memory symbol_, 
         address hub 
+        , string memory name_
+        , string calldata uri_
         , DataTypes.RuleRef[] memory addRules
         , DataTypes.InputRole[] memory assignRoles
         , address container
@@ -81,9 +82,13 @@ contract Case is
         // __setTargetContract(_HUB.getAssoc("avatar"));
         __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
 
+        //Set Contract URI
+        _setContractURI(uri_);
+
         //Identifiers
         name = name_;
-        symbol = symbol_;
+        // symbol = symbol_;
+        
 
         //Init Default Case Roles
         _roleCreate("admin");
@@ -358,7 +363,7 @@ contract Case is
         //Set
         _setContractURI(contract_uri);
     }
-    
+
     // function nextStage(string calldata uri) public {
         // if (sha3(myEnum) == sha3("Bar")) return MyEnum.Bar;
     // }

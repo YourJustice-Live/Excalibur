@@ -17,8 +17,13 @@ interface IHub {
     function jurisdictionMake(string calldata name_, string calldata uri_) external returns (address);
 
     /// Make a new Case
-    // function caseMake(string calldata name_) external returns (address);
-    function caseMake(string calldata name_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external returns (address);
+    // function caseMake(string calldata name_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external returns (address);
+    function caseMake(
+        string calldata name_, 
+        string calldata uri_, 
+        DataTypes.RuleRef[] memory addRules, 
+        DataTypes.InputRole[] memory assignRoles
+    ) external returns (address);
 
     /// Update Hub
     function hubChange(address newHubAddr) external;

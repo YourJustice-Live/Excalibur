@@ -44,10 +44,18 @@ interface IJurisdiction {
     /// Make a new Case
     // function caseMake(
     //     string calldata name_, 
+    //     string calldata uri_, 
     //     DataTypes.RuleRef[] calldata addRules, 
     //     DataTypes.InputRole[] calldata assignRoles, 
     //     PostInput[] calldata posts
-    // ) external returns (uint256, address);
+    // ) external returns (address);
+    // function caseMakeOpen(
+    //     string calldata name_, 
+    //     string calldata uri_, 
+    //     DataTypes.RuleRef[] calldata addRules, 
+    //     DataTypes.InputRole[] calldata assignRoles, 
+    //     PostInput[] calldata posts
+    // ) external returns (address);
     
     /// Add Reputation (Positive or Negative)
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external;
