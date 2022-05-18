@@ -5,6 +5,7 @@ import { ethers } from "hardhat";
 //Test Data
 const ZERO_ADDR = '0x0000000000000000000000000000000000000000';
 let test_uri = "ipfs://QmQxkoWcpFgMa7bCzxaANWtSt43J1iMgksjNnT4vM1Apd7"; //"TEST_URI";
+let test_uri2 = "ipfs://TEST2";
 
 
 describe("Protocol", function () {
@@ -261,6 +262,15 @@ describe("Protocol", function () {
       this.jurisdictionContract = jurisdictionContract;
     });
 
+    it("Should Update Contract URI", async function () {
+      //Before
+      expect(await this.jurisdictionContract.contractURI()).to.equal(test_uri);
+      //Change
+      await this.jurisdictionContract.setContractURI(test_uri2);
+      //After
+      expect(await this.jurisdictionContract.contractURI()).to.equal(test_uri2);
+    });
+
     it("Users can join as a member", async function () {
       //Check Before
       expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(false);
@@ -270,6 +280,9 @@ describe("Protocol", function () {
       expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(true);
     });
     
+    it("[TODO] Role Should Track Avatar Owner", async function () {
+    });
+
     it("Users can leave", async function () {
       //Check Before
       expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(true);
@@ -305,7 +318,7 @@ describe("Protocol", function () {
       //Check After
       expect(await this.jurisdictionContract.roleHas(testerAddr, "judge")).to.equal(true);
     });
-
+    
     it("Can change Roles (Promote / Demote)", async function () {
       //Check Before
       expect(await this.jurisdictionContract.roleHas(this.tester4Addr, "admin")).to.equal(false);
@@ -439,7 +452,6 @@ describe("Protocol", function () {
       await expect(
         jurisdictionContract.connect(tester3).setRoleURI("admin", test_uri)
       ).to.be.revertedWith("INVALID_PERMISSIONS");
-
       //Set Admin Token URI
       await jurisdictionContract.connect(admin).setRoleURI("admin", test_uri);
       //Validate
@@ -452,7 +464,7 @@ describe("Protocol", function () {
    * Case Contract
    */
   describe("Case", function () {
-
+    
     it("Should be Created (by Jurisdiction)", async function () {
       let caseName = "Test Case #1";
       let ruleRefArr = [
@@ -529,6 +541,15 @@ describe("Protocol", function () {
       //Expect Post Event
       // await expect(tx).to.emit(caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].postRole, posts[0].uri);
       await expect(tx).to.emit(caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].uri);
+    });
+
+    it("Should Update Contract URI", async function () {
+      //Before
+      expect(await this.caseContract.contractURI()).to.equal('');
+      //Change
+      await this.caseContract.setContractURI(test_uri);
+      //After
+      expect(await this.caseContract.contractURI()).to.equal(test_uri);
     });
 
     it("Should Auto-Appoint creator as Admin", async function () {
