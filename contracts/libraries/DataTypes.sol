@@ -58,37 +58,11 @@ library DataTypes {
 
     // Semantic Action Entity
     struct Action {
-        // id: 1,
-        // uint256 id;  //Outside
-
-        // name: "Breach of contract",  //Title
-        string name;
-     
-        // text: "The founder of the project must comply with the terms of the contract with investors",  //Text Description
-        string text;
-
-        // entities:{
-        //     //Describe an event
-        //     affected: "investor",  //Plaintiff Role (Filing the case)
-        //     subject: "founder",     //Accused Role
-        //     action: "breach",
-        //     object: "contract",
-        // },
-        SVO entities;
-        
-        // confirmation:{ //Confirmation Methods [WIP]
-        //     //judge: true,
-        //     ruling: "judge"|"jury"|"democracy",  //Decision Maker
-        //     evidence: true, //Require Evidence
-        //     witness: 1,  //Minimal number of witnesses
-        // },
-        Confirmation confirmation;
-
-        // requirements:{
-        //     witness: "Blockchain Expert"
-        // }
-        // string requirements;
+        string name;    // Title: "Breach of contract",  
+        string text;    // text: "The founder of the project must comply with the terms of the contract with investors",  //Text Description
         string uri; //Additional Info
+        SVO entities;
+        Confirmation confirmation;
     }
 
     struct SVO {    //Action's Core (System Role Mapping) (Immutable)
@@ -108,51 +82,17 @@ library DataTypes {
     
     // Rule Object
     struct Rule {
-        // uint256 about;   //About What (Token URI +? Contract Address)
         bytes32 about;      //About What (Action's GUID)      //TODO: Maybe Call This 'action'? 
         string affected;    // affected: "investors",  //Plaintiff Role (Filing the case)
         bool negation;      //0 - Commision  1 - Omission
-
-        //text: "The founder of the project violated the contract, but this did not lead to the loss or freezing of funds for investors.", //Description For Humans
-        // string text;
-        // condition: "Investor funds were not frozen nor lost.",
-        string uri;     //Test & Conditions
-
-        // string condition;  
-
-        // Effect[3] effects;   //Bad, Would have to push all of them every time...
-        // Effects effects;     //Bad, difficult to work with can can't be sequenced.
-        // effect: { //Reputation Change
-        //     profiessional:-2,
-        //     social: -4
-        // }
-        // mapping(int256 => int8) effects;     //effects[3] => -5      //Generic, Simple & Iterable
-        // mapping(string => int8) effects;     //effects[professional] => -5      //Generic, Simple & Backward Compatible
-        // Effect[] effects;                       //effects[] => {direction:true, value:5, name:'personal'}  // Generic, Iterable & Extendable/Flexible   //Externalized -- Mapping Shouldn't be in a Struct
-        // consequence:[{ func:'repAdd', param:5 }],    //TBD? - Generic Consequences 
+        string uri;         //Test & Conditions
     }
-    
-    /* DEPRECATED
-    // Effect Object (Changes to Reputation By Type)
-    struct Effects {
-        int8 environmental;
-        int8 personal;
-        int8 social;
-        int8 professional;
-        // Effect environment;
-        // Effect personal;
-        // Effect social;
-        // Effect professional;
-    }
-    */
     
     // Effect Structure
     struct Effect {
         string name;
-        // value: 5
-        uint8 value;
-        // Direction: -
-        bool direction;
+        uint8 value;    // value: 5
+        bool direction; // Direction: -
         // Confidence/Strictness: [?]
     }
     
@@ -172,8 +112,6 @@ library DataTypes {
     struct RuleRef {
         address jurisdiction;
         uint256 ruleId;
-        // string affected;        //Affected Role. E.g. "investor"     //In Rule
-        // Entity affected;
     }
     
     //-- Inputs
