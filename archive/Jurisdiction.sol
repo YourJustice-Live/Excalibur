@@ -81,7 +81,7 @@ contract Jurisdiction is
     constructor(address hub, address actionRepo) CommonYJ(hub) ERC1155(""){
         //Fetch & Set Current History Contract
         // _setActionsContract(_HUB.historyContract());
-        _setActionsContract(actionRepo);
+        // _setActionsContract(actionRepo); //CANCELLED
         name = "Anti-Scam Jurisdiction";
         // symbol = "YJ_J1";
         //Init Default Jurisdiction Roles

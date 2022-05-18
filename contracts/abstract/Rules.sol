@@ -40,11 +40,7 @@ abstract contract Rules is IRules {
     }
     */
     
-    /// Get Rule
-    function ruleGet(uint256 id) public view override returns (DataTypes.Rule memory) {
-        return _rules[id];
-    }
-
+    /* CANCELLED
     /// Set Actions Contract
     function _setActionsContract(address actionRepo_) internal {
         // require(address(_actionRepo) == address(0), "HISTORY Contract Already Set");
@@ -62,6 +58,12 @@ abstract contract Rules is IRules {
     function actionRepo() external view override returns (address) {
         // return address(_actionRepo);
         return _actionRepo;
+    }
+    */
+
+    /// Get Rule
+    function ruleGet(uint256 id) public view override returns (DataTypes.Rule memory) {
+        return _rules[id];
     }
 
     /// Add Rule

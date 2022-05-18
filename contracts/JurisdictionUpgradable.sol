@@ -11,6 +11,7 @@ import "./interfaces/IJurisdictionUp.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IAssoc.sol";
+import "./interfaces/IActionRepo.sol";
 // import "./libraries/DataTypes.sol";
 // import "./abstract/ERC1155RolesUpgradable.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
@@ -88,7 +89,7 @@ contract JurisdictionUpgradable is
         // console.log("Init WJ W/History:", actionRepo);
         // _setActionsContract(actionRepo);
         // _setActionsContract(_HUB.getAssoc("history"));  //TODO: Hot History?
-        _setActionsContract(IAssoc(address(_HUB)).getAssoc("history"));  //TODO: Hot History?
+        // _setActionsContract(IAssoc(address(_HUB)).getAssoc("history"));  //CANCELLED
 
         //Set Contract URI
         _setContractURI(uri_);
@@ -258,6 +259,14 @@ contract JurisdictionUpgradable is
     ) public override returns (uint256) {
         //Validate Caller's Permissions
         require(roleHas(_msgSender(), "admin"), "Admin Only");
+
+        //TODO: Validate rule.about -- actionGUID Exists
+        address actionRepo = IAssoc(address(_HUB)).getAssoc("history");
+        console.log("Action Repo Address: ", actionRepo);
+        // IActionRepo(actionRepo)
+
+        // console.log("J Adding Rule About:", rule.about);
+
         //Add Rule
         uint256 id = _ruleAdd(rule, effects);
         //Set Confirmations

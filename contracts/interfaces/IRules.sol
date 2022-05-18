@@ -6,7 +6,7 @@ import "../libraries/DataTypes.sol";
 interface IRules {
     
     /// Expose Action Repo Address
-    function actionRepo() external view returns (address);
+    // function actionRepo() external view returns (address);
 
     ///Get Rule
     function ruleGet(uint256 id) external view returns (DataTypes.Rule memory);
@@ -23,7 +23,7 @@ interface IRules {
     //--- Events
 
     /// Action Repository (HISTORY) Set
-    event ActionRepoSet(address actionRepo);
+    // event ActionRepoSet(address actionRepo);
 
     /// Rule Added or Changed
     event Rule(uint256 indexed id, bytes32 about, string affected, string uri, bool negation);

@@ -80,6 +80,11 @@ abstract contract ERC1155GUIDTrackerUp is
     }
 
     /// Check if GUID Exists
+    // function GUIDExists(bytes32 guid) internal view returns (bool) {
+    //     return (_GUID[guid] != 0);
+    // }
+
+    /// Check if GUID Exists
     function _GUIDExists(bytes32 guid) internal view returns (bool) {
         return (_GUID[guid] != 0);
     }
