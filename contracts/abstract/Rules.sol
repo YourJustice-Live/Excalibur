@@ -85,13 +85,18 @@ abstract contract Rules is IRules {
         emit RuleRemoved(id);
     }
 
+
+    //TODO: Separate Rule Effects Update from Rule Update
+
+
     /// Set Rule
     // function _ruleSet(uint256 id, DataTypes.Rule memory rule) internal {
     function _ruleSet(uint256 id, DataTypes.Rule memory rule, DataTypes.Effect[] memory effects) internal {
         //Set
         _rules[id] = rule;
-        //Event
+        //Rule Updated Event
         emit Rule(id, rule.about, rule.affected, rule.uri, rule.negation);
+
         // emit RuleEffects(id, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
         for (uint256 i = 0; i < effects.length; ++i) {
             _effects[id].push(effects[i]);

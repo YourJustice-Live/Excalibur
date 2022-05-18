@@ -293,7 +293,16 @@ contract JurisdictionUpgradable is
         //Set Confirmations
         _confirmationSet(id, confirmation);
     }
-    
+
+    /*
+    /// TODO: Update Rule's Confirmation Data
+    function ruleEffectsUpdate(uint256 id, DataTypes.Effect[] memory effects) external override {
+        //Validate Caller's Permissions
+        require(roleHas(_msgSender(), "admin"), "Admin Only");
+        //Set Effects
+        
+    }
+    */
 
     /// Get Token URI by Token ID
     // function tokenURI(uint256 token_id) public view returns (string memory) {
