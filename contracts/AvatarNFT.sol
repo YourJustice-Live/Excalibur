@@ -7,6 +7,7 @@ pragma solidity 0.8.4;
 // import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";  //Individual Metadata URI Storage Functions
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 // import "./interfaces/IConfig.sol";
 // import "./libraries/DataTypes.sol";
 import "./interfaces/IAvatar.sol";
@@ -34,6 +35,8 @@ contract AvatarNFT is
     
     //--- Storage
     
+    using AddressUpgradeable for address;
+
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -159,6 +162,9 @@ contract AvatarNFT is
     /// Token Transfer Rules
     function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721) {
         super._beforeTokenTransfer(from, to, tokenId);
+        //Can't be owned by a Contract
+        require(to == address(this) || !to.isContract(), "Destination is a Contract");
+        //Non-Transferable (by client)
         require(
             _msgSender() == owner()
             || from == address(0)   //Minting
