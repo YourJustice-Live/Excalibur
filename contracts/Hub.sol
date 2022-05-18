@@ -44,9 +44,6 @@ contract Hub is
     //Action Repo
     // address public override historyContract;
 
-    //Contract Associations (avatar, history)
-    // mapping(string => address) internal _assoc;
-    
     // using Counters for Counters.Counter;
     // Counters.Counter internal _tokenIds; //Track Last Token ID
     // Counters.Counter internal _caseIds;  //Track Last Case ID
