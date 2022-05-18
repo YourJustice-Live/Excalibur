@@ -3,8 +3,8 @@ pragma solidity 0.8.4;
 
 // import "hardhat/console.sol";
 
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
+// import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+// import "@openzeppelin/contracts/utils/Context.sol";
 import "../interfaces/IERC1155Roles.sol";
 import "./ERC1155GUIDUpgradable.sol";
 

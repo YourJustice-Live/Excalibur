@@ -11,6 +11,6 @@ interface IAssoc {
     //--- Events
 
     /// Association Set
-    event Assoc(string name, address contractAddr);
+    event Assoc(string key, address contractAddr);
 
 }

@@ -21,9 +21,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
     //--- Storage
     using AddressUpgradeable for address;
 
-    // Contract name
-    // string public name;
-    //Arbitrary Contract Role 
+    //Arbitrary Contract Name & Symbol 
     string public constant override symbol = "HISTORY";
     string public constant name = "YourJustice: Semantic Action Repo";
 
