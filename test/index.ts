@@ -196,25 +196,16 @@ describe("Protocol", function () {
         object: "contract",
         tool: "",
       };
-      // let confirmation = {
-      //   ruling: "judge",  //Decision Maker
-      //   evidence: true, //Require Evidence
-      //   witness: 1,  //Minimal number of witnesses
-      // };
-      let uri = "TEST_URI";
 
-      // actionGUID = await actionContract.callStatic.actionAdd(action, uri); //Simulate
+      // actionGUID = await actionContract.callStatic.actionAdd(action, test_uri); //Simulate
       // actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2'; //Wrong GUID
       actionGUID = await actionContract.actionHash(action); //Gets hash if exists or not
       // console.log("actionGUID:", actionGUID);
-
-      let tx = await actionContract.actionAdd(action, uri);
+      let tx = await actionContract.actionAdd(action, test_uri);
       await tx.wait();
-
       //Expect Added Event
       await expect(tx).to.emit(actionContract, 'ActionAdded').withArgs(1, actionGUID, action.subject, action.verb, action.object, action.tool);
-      // await expect(tx).to.emit(actionContract, 'URI').withArgs(actionGUID, uri);
-      // await expect(tx).to.emit(actionContract, 'Confirmation');//.withArgs(actionGUID, confirmation);
+      // await expect(tx).to.emit(actionContract, 'URI').withArgs(actionGUID, test_uri);
 
       //Fetch Action's Struct
       let actionRet = await actionContract.actionGet(actionGUID);
@@ -227,7 +218,7 @@ describe("Protocol", function () {
       // expect(actionRet).to.own.include(action); //Fails
 
       //Additional Rule Data
-      expect(await actionContract.actionGetURI(actionGUID)).to.equal(uri);
+      expect(await actionContract.actionGetURI(actionGUID)).to.equal(test_uri);
       // expect(await actionContract.actionGetConfirmation(actionGUID)).to.include.members(["judge", true]);    //TODO: Find a better way to check this
       
     });

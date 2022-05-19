@@ -47,7 +47,6 @@ async function main() {
     //Log
     console.log("Deployed Case Contract to " + contractAddr.case);
     console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.case);
-
   }
 
   //--- Hub
