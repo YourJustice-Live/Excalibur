@@ -80,19 +80,23 @@ abstract contract ERC1155GUID is IERC1155GUID, ERC1155 {
     }
     
     /// Assign Token
-    function _GUIDAssign(address account, bytes32 guid) internal GUIDExists(guid) {
+    function _GUIDAssign(address account, bytes32 guid) internal GUIDExists(guid) returns (uint256) {
         uint256 tokenId = _GUIDToId(guid);  //_GUID[guid];
-        //Mint GUID Token       //TODO: Support Various Amounts
+        //Mint Token
         _mint(account, tokenId, 1, "");
+        //Retrun New Token ID
+        return tokenId;
     }
     
     /// Unassign Token
-    function _GUIDRemove(address account, bytes32 guid) internal GUIDExists(guid) {
+    function _GUIDRemove(address account, bytes32 guid) internal GUIDExists(guid) returns (uint256) {
         uint256 tokenId = _GUID[guid];
         //Validate
         require(balanceOf(account, tokenId) > 0, "NOT_ASSIGNED");
-        //Burn GUID Token
+        //Burn Token
         _burn(account, tokenId, 1);
+        //Retrun New Token ID
+        return tokenId;
     }
 
     /// Translate GUID to Token ID

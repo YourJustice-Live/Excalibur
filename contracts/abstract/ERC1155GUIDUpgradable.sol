@@ -89,19 +89,23 @@ abstract contract ERC1155GUIDUpgradable is IERC1155GUID, ERC1155Upgradeable {
     }
 
     /// Assign Token
-    function _GUIDAssign(address account, bytes32 guid) internal GUIDExists(guid) {
+    function _GUIDAssign(address account, bytes32 guid) internal GUIDExists(guid) returns (uint256) {
         uint256 tokenId = _GUIDToId(guid);  //_GUID[guid];
         //Mint Token
         _mint(account, tokenId, 1, "");
+        //Retrun New Token ID
+        return tokenId;
     }
     
     /// Unassign Token
-    function _GUIDRemove(address account, bytes32 guid) internal GUIDExists(guid) {
+    function _GUIDRemove(address account, bytes32 guid) internal GUIDExists(guid) returns (uint256) {
         uint256 tokenId = _GUID[guid];
         //Validate
         require(balanceOf(account, tokenId) > 0, "NOT_ASSIGNED");
         //Burn Token
         _burn(account, tokenId, 1);
+        //Retrun New Token ID
+        return tokenId;
     }
 
     /// Translate GUID to Token ID

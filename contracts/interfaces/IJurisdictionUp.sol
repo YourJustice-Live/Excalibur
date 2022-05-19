@@ -24,10 +24,10 @@ interface IJurisdiction {
     function caseHas(address caseContract) external view returns (bool);
 
     /// Join jurisdiction as member
-    function join() external;
+    function join() external returns (uint256);
 
     /// Leave member role in current jurisdiction
-    function leave() external;
+    function leave() external returns (uint256);
 
     /// Assign Someone to a Role
     function roleAssign(address account, string calldata role) external;

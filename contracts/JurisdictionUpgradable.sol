@@ -186,14 +186,14 @@ contract JurisdictionUpgradable is
 
     //** Role Management
 
-    /// Join a role in current jurisdiction
-    function join() external override {
-        _GUIDAssign(_msgSender(), _stringToBytes32("member"));
+     /// Join a role in current jurisdiction
+    function join() external override returns (uint256) {
+        return _GUIDAssign(_msgSender(), _stringToBytes32("member"));
     }
 
     /// Leave Role in current jurisdiction
-    function leave() external override {
-        _GUIDRemove(_msgSender(), _stringToBytes32("member"));
+    function leave() external override returns (uint256) {
+        return _GUIDRemove(_msgSender(), _stringToBytes32("member"));
     }
 
     /// Assign Someone Else to a Role
