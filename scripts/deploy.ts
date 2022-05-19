@@ -7,6 +7,8 @@ import { ethers } from "hardhat";
 
 //Track Addresses (Fill in present addresses to prevent new deplopyment)
 import contractAddr from "./_contractAddr";
+import publicAddr from "./_publicAddrs";
+
 
 async function main() {
 
