@@ -5,7 +5,7 @@ pragma solidity 0.8.4;
 
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "./interfaces/IAssocRepo.sol";
+import "../interfaces/IAssocRepo.sol";
 
 /**
  * @title Open Association Retention
