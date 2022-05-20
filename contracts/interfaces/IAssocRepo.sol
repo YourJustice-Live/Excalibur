@@ -6,13 +6,13 @@ interface IAssocRepo {
     //--- Functions
 
     /// Set  Association
-    function setAssoc(string memory key, address destinationContract) external;
+    function set(string memory key, address destinationContract) external;
 
     /// Get Association
-    function getAssoc(string memory key) external view returns(address);
+    function get(string memory key) external view returns(address);
 
     /// Get Contract Association
-    function getAssocOf(address originContract, string memory key) external view returns(address);
+    function getOf(address originContract, string memory key) external view returns(address);
 
     //--- Events
 

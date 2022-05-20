@@ -37,7 +37,7 @@ contract AssocRepo is IAssocRepo, Context, ERC165 {
      * Set Association
      * @dev Set association to another contract
      */
-    function setAssoc(string memory key, address destinationContract) external override {
+    function set(string memory key, address destinationContract) external override {
         _assoc[_msgSender()][key] = destinationContract;
         //Association Changed Event
         emit Assoc(_msgSender(), key, destinationContract);
@@ -47,7 +47,7 @@ contract AssocRepo is IAssocRepo, Context, ERC165 {
      * Get Association
      * @dev Get association to another contract
      */
-    function getAssoc(string memory key) external view override returns(address) {
+    function get(string memory key) external view override returns(address) {
         address originContract = _msgSender();
         //Validate
         // require(_assoc[originContract][key] != address(0) , string(abi.encodePacked("Assoc:Faild to Get Assoc: ", key)));
@@ -58,7 +58,7 @@ contract AssocRepo is IAssocRepo, Context, ERC165 {
      * Set Contract Association 
      * @dev Set association of a specified contract to another contract
      */
-    function getAssocOf(address originContract, string memory key) external view override returns(address) {
+    function getOf(address originContract, string memory key) external view override returns(address) {
         //Validate
         require(_assoc[originContract][key] != address(0) , string(abi.encodePacked("Faild to Find Assoc: ", key)));
         return _assoc[originContract][key];
