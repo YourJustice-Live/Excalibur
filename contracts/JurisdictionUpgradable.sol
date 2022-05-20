@@ -83,17 +83,8 @@ contract JurisdictionUpgradable is
         // __ERC1155RolesUpgradable_init("");
         __CommonYJ_init(hub);
         __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
-
-        //Fetch & Set Current History Contract
-        // address actionRepo = _HUB.getAssoc("history");
-        // console.log("Init WJ W/History:", actionRepo);
-        // _setActionsContract(actionRepo);
-        // _setActionsContract(_HUB.getAssoc("history"));
-        // _setActionsContract(IAssoc(address(_HUB)).getAssoc("history"));  //CANCELLED
-
         //Set Contract URI
         _setContractURI(uri_);
-
         //Identifiers
         name = name_; //"Anti-Scam Jurisdiction";
         // symbol = "YJ_J1";
@@ -113,25 +104,8 @@ contract JurisdictionUpgradable is
 
     //** Case Functions
 
-    /// Make a new Case & File it
-    function caseMakeOpen(
-        string calldata name_, 
-        string calldata uri_, 
-        DataTypes.RuleRef[] calldata addRules, 
-        DataTypes.InputRole[] calldata assignRoles, 
-        PostInput[] calldata posts
-    // ) public returns (uint256, address) {
-    ) public returns (address) {
-        //Make Case
-        address caseContract = caseMake(name_, uri_, addRules, assignRoles, posts);
-        //File Case
-        ICase(caseContract).stageFile();
-        //Return
-        // return (caseId, caseContract);
-        return caseContract;
-    }
-
     /// Make a new Case
+    /// @dev a wrapper function for creation, adding rules, assigning roles & posting
     function caseMake(
         string calldata name_, 
         string calldata uri_, 
@@ -159,6 +133,25 @@ contract JurisdictionUpgradable is
         return caseContract;
     }
     
+    /// Make a new Case & File it
+    /// @dev a wrapper function for creation, adding rules, assigning roles, posting & filing a case
+    function caseMakeOpen(
+        string calldata name_, 
+        string calldata uri_, 
+        DataTypes.RuleRef[] calldata addRules, 
+        DataTypes.InputRole[] calldata assignRoles, 
+        PostInput[] calldata posts
+    // ) public returns (uint256, address) {
+    ) public returns (address) {
+        //Make Case
+        address caseContract = caseMake(name_, uri_, addRules, assignRoles, posts);
+        //File Case
+        ICase(caseContract).stageFile();
+        //Return
+        // return (caseId, caseContract);
+        return caseContract;
+    }
+
     /// Disable Case
     function caseDisable(address caseContract) public override onlyOwner {
         //Validate
