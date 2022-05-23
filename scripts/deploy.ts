@@ -80,7 +80,7 @@ async function main() {
     contractAddr.avatar = avatarContract.address;
     //Log
     console.log("Deployed Avatar Contract to " + contractAddr.avatar);
-
+    console.log("Run: npx hardhat verify --network rinkeby "+contractAddr.avatar+" "+contractAddr.hub);
     if(!!hubContract){  //If Deployed Together
       try{
         //Set to HUB
@@ -112,23 +112,6 @@ async function main() {
       }
     }
   }
-
-  /* DEPRECATED - Replaced by the Upgradable Jurisdiction
-  //--- Jurisdiction
-  if(!contractAddr.jurisdiction){
-    //Deploy Jurisdiction
-    let jurisdictionContract = await ethers.getContractFactory("Jurisdiction").then(res => res.deploy(contractAddr.hub, contractAddr.history));
-    await jurisdictionContract.deployed();
-    
-    //Assign Admin
-    jurisdictionContract.roleAssign("0x4306D7a79265D2cb85Db0c5a55ea5F4f6F73C4B1", "admin");
-
-    //Set Address
-    contractAddr.jurisdiction = jurisdictionContract.address;
-    //Log
-    console.log("Deployed Jurisdiction Contract to " + contractAddr.jurisdiction+ " Hub: "+ contractAddr.hub+ " History: "+ contractAddr.history);
-  }
-  */
 
   /*
   try{
