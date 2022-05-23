@@ -26,6 +26,9 @@ interface IAvatar {
     /// Map Account to Existing Token
     function tokenOwnerAdd(address owner, uint256 tokenId) external;
 
+    /// Remove Account from Existing Token
+    function tokenOwnerRemove(address owner, uint256 tokenId) external;
+
     //--- Events
     
 	/// URI Change Event

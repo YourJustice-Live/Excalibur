@@ -67,6 +67,11 @@ contract AvatarNFT is
         _tokenOwnerAdd(owner, tokenId);
     }
 
+    /// Remove Account from Existing Token
+    function tokenOwnerRemove(address owner, uint256 tokenId) external override onlyOwner {
+        _tokenOwnerRemove(owner, tokenId);
+    }
+
     /// Get Token ID by Address
     function tokenByAddress(address owner) external view override returns (uint256){
         return _owners[owner];
@@ -77,17 +82,30 @@ contract AvatarNFT is
      */
     function balanceOf(address owner) public view override returns (uint256) {
         require(owner != address(0), "ERC721: balance query for the zero address");
-        if(_owners[owner] != 0) return 1;
-        return super.balanceOf(owner);
+        return (_owners[owner] != 0) ? 1 : 0;
+        // if(_owners[owner] != 0) return 1;
+        // return super.balanceOf(owner);
     }
 
-    /// Map Account to Existing Token
+    /// Map Account to Existing Token (Alias / Secondary Account)
     function _tokenOwnerAdd(address owner, uint256 tokenId) internal {
         require(_exists(tokenId), "nonexistent token");
-        require(_owners[owner] == 0, "Account Already Mapped to Token");
+        require(_owners[owner] == 0, "Account already mapped to token");
         _owners[owner] = tokenId;
-        //Faux Transfer Event
+        //Faux Transfer Event (Mint)
         emit Transfer(address(0), owner, tokenId);
+    }
+
+    /// Map Account to Existing Token (Alias / Secondary Account)
+    function _tokenOwnerRemove(address owner, uint256 tokenId) internal {
+        require(_exists(tokenId), "nonexistent token");
+        require(_owners[owner] == tokenId, "Account is not mapped to this token");
+        //Not Main Account
+        require(owner != ownerOf(tokenId), "Account is main token's owner. Use burn()");
+        //Remove Association
+        _owners[owner] = 0;
+        //Faux Transfer Event (Burn)
+        emit Transfer(owner, address(0), tokenId);
     }
 
     //** Reputation **/
@@ -96,9 +114,6 @@ contract AvatarNFT is
     function repAdd(uint256 tokenId, string calldata domain, bool rating, uint8 amount) external override {
         //Validate - Only By Hub
         require(_msgSender() == address(_HUB), "UNAUTHORIZED_ACCESS");
-
-        // console.log("Avatar: Add Reputation to Token:", tokenId, domain, amount);
-
         //Set
         _repAdd(address(this), tokenId, domain, rating, amount);
     }
@@ -109,11 +124,10 @@ contract AvatarNFT is
     function mint(string memory tokenURI) public override returns (uint256) {
         //One Per Account
         require(balanceOf(_msgSender()) == 0, "Requesting account already has an avatar");
-        
         //Mint
         uint256 tokenId = _createAvatar(_msgSender(), tokenURI);
         //Index Owner
-        _tokenOwnerAdd(_msgSender(), tokenId);
+        // _tokenOwnerAdd(_msgSender(), tokenId);   //MOVED TO TokenTransfer Logic
         //Return
         return tokenId;
     }
@@ -172,21 +186,31 @@ contract AvatarNFT is
             ,
             "Sorry, Assets are non-transferable"
         );
+        
+        //Update Address Index        
+        if(from != address(0)) _owners[from] = 0;
+        if(to != address(0) && to != address(this)){
+            require(_owners[to] == 0, "Receiving address already owns a token");
+            _owners[to] = tokenId;
+        }
+    }
+    // function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721) {
+        // _owners[owner] = tokenId;
+    // }
+
+    /// Transfer Privileges are manged in the _beforeTokenTransfer function
+    /// @dev Override the main Transfer privileges function
+    function _isApprovedOrOwner(address, uint256) internal pure override returns (bool) {
+        return true;
     }
 
     /// Receiver Function For Holding NFTs on Contract
-    /*
-    function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4) {
-    // function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data) external pure override returns (bytes4) {
-        return IERC721Receiver.onERC721Received.selector;
-    }
-    */
-
-    /// Receiver Function For Holding NFTs on Contract
+    /// @dev needed in order to keep tokens in the contract
     function onERC721Received(address, address, uint256, bytes memory) public pure returns (bytes4) {
         return this.onERC721Received.selector;
     }
 
+    /* Try without it, since we don't want any regular ERC1155 to be received
     /// Receiver Function For Holding NFTs on Contract (Allow for internal NFTs to assume Roles)
     function onERC1155Received(address, address, uint256, uint256, bytes memory) public pure returns (bytes4) {
         return this.onERC1155Received.selector;
@@ -196,5 +220,6 @@ contract AvatarNFT is
     function onERC1155BatchReceived(address, address, uint256[] memory, uint256[] memory, bytes memory) public pure returns (bytes4) {
         return this.onERC1155BatchReceived.selector;
     }
+    */
 
 }
