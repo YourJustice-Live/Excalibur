@@ -25,6 +25,7 @@ describe("Protocol", function () {
   let tester2: Signer;
   let tester3: Signer;
   let tester4: Signer;
+  let tester5: Signer;
   let addrs: Signer[];
 
 
@@ -58,13 +59,14 @@ describe("Protocol", function () {
     hubContract.setAssoc("history", actionContract.address);
 
     //Populate Accounts
-    [owner, admin, tester, tester2, tester3, tester4, ...addrs] = await ethers.getSigners();
+    [owner, admin, tester, tester2, tester3, tester4, tester5, ...addrs] = await ethers.getSigners();
     //Addresses
     this.adminAddr = await admin.getAddress();
     this.testerAddr = await tester.getAddress();
     this.tester2Addr = await tester2.getAddress();
     this.tester3Addr = await tester3.getAddress();
     this.tester4Addr = await tester4.getAddress();
+    this.tester5Addr = await tester5.getAddress();
   });
 
   describe("Config", function () {
@@ -127,7 +129,6 @@ describe("Protocol", function () {
     // });
 
     it("Can add other people", async function () {
-      // let test_uri = "TEST_URI_2";
       await avatarContract.connect(tester).add(test_uri);
       await avatarContract.connect(tester).add(test_uri);
       let tx = await avatarContract.connect(tester).add(test_uri);
@@ -158,21 +159,6 @@ describe("Protocol", function () {
       expect(await avatarContract.connect(tester).tokenURI(1)).to.equal(test_uri);
     });
 
-    /* BLOCKED FOR SECURITY REASONS
-    it("Can collect rating", async function () {
-      //Rep Call Data      
-      let repCall = { tokenId:1, domain:1, rating:1, amount:2};
-      let tx = await avatarContract.repAdd(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount);
-      //Expect Event
-      await expect(tx).to.emit(avatarContract, 'ReputationChange').withArgs(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount);
-      //Validate State
-      let rep = await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain, repCall.rating);
-      expect(rep).to.equal(repCall.amount);
-      //Other Domain Rep - Should be 0
-      expect(await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain + 1, repCall.rating)).to.equal(0);
-    });
-    */
-
     it("Should protect from unauthorized reputation changes", async function () {
       //Rep Call Data      
       let repCall = { tokenId:1, domain:"personal", rating:1, amount:2};
@@ -197,7 +183,6 @@ describe("Protocol", function () {
         tool: "",
       };
 
-      // actionGUID = await actionContract.callStatic.actionAdd(action, test_uri); //Simulate
       // actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2'; //Wrong GUID
       actionGUID = await actionContract.actionHash(action); //Gets hash if exists or not
       // console.log("actionGUID:", actionGUID);
@@ -220,7 +205,6 @@ describe("Protocol", function () {
       //Additional Rule Data
       expect(await actionContract.actionGetURI(actionGUID)).to.equal(test_uri);
       // expect(await actionContract.actionGetConfirmation(actionGUID)).to.include.members(["judge", true]);    //TODO: Find a better way to check this
-      
     });
 
   }); //Action Repository
@@ -234,8 +218,9 @@ describe("Protocol", function () {
       //Mint Avatars for Participants
       await avatarContract.connect(owner).mint(test_uri);
       await avatarContract.connect(admin).mint(test_uri);
-      await avatarContract.connect(tester3).mint(test_uri);
+      // await avatarContract.connect(tester3).mint(test_uri);
       await avatarContract.connect(tester4).mint(test_uri);
+      await avatarContract.connect(tester5).mint(test_uri);
 
       //Simulate to Get New Jurisdiction Address
       let JAddr = await hubContract.callStatic.jurisdictionMake("Test Jurisdiction", test_uri);
@@ -269,10 +254,31 @@ describe("Protocol", function () {
       //Check After
       expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(true);
     });
-    
-    it("[TODO] Role Should Track Avatar Owner", async function () {
-      
 
+    it("Role Should Track Avatar Owner", async function () {
+      //Check Before
+      expect(await this.jurisdictionContract.roleHas(this.tester5Addr, "member")).to.equal(false);
+      // expect(await this.jurisdictionContract.roleHas(this.tester5Addr, "member")).to.equal(false);
+      //Join Jurisdiction
+      await this.jurisdictionContract.connect(tester5).join();
+      //Check
+      expect(await this.jurisdictionContract.roleHas(this.tester5Addr, "member")).to.equal(true);
+      //Get Tester5's Avatar TokenID
+      let tokenId = await avatarContract.tokenByAddress(this.tester5Addr);
+      // console.log("Tester5 Avatar Token ID: ", tokenId);
+      //Move Avatar Token to Tester3
+      let tx = await avatarContract.transferFrom(this.tester5Addr, this.tester3Addr, tokenId);
+      await tx.wait();
+      await expect(tx).to.emit(avatarContract, 'Transfer').withArgs(this.tester5Addr, this.tester3Addr, tokenId);
+      //Expect Change of Ownership
+      expect(await avatarContract.ownerOf(tokenId)).to.equal(this.tester3Addr);
+      //Check Membership
+      expect(await this.jurisdictionContract.roleHas(this.tester3Addr, "member")).to.equal(true);
+      // expect(await this.jurisdictionContract.roleHas(this.tester5Addr, "member")).to.equal(false);
+      //Should Fail - No Avatar For Contract
+      await expect(
+        this.jurisdictionContract.roleHas(this.tester5Addr, "member")
+      ).to.be.revertedWith("ERC1155Tracker: requested account not found on source contract");
     });
 
     it("Users can leave", async function () {
@@ -642,7 +648,7 @@ describe("Protocol", function () {
 
     
     it("[TODO] Can Change Rating", async function () {
-      
+
       //TODO: Tests for Collect Rating
       // let repCall = { tokenId:?, domain:?, rating:?};
       // let result = this.jurisdictionContract.getRepForDomain(avatarContract.address,repCall. tokenId, repCall.domain, repCall.rating);
