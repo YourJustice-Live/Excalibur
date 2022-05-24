@@ -411,6 +411,16 @@ abstract contract ERC1155TrackerUpgradable is
         // _doSafeBatchTransferAcceptanceCheck(operator, address(0), to, ids, amounts, data);
     }
 
+    /// Burn Token for Account
+    function _burn(address from, uint256 id, uint256 amount) internal virtual {
+        _burnActual(from, getExtTokenId(from), id, amount);
+    }
+
+    /// Burn Token by External Token Owner
+    function _burnForToken(uint256 fromToken, uint256 id, uint256 amount) internal virtual {
+        _burnActual(_getAccount(fromToken), fromToken, id, amount);
+    }
+
     /**
      * @dev Destroys `amount` tokens of token type `id` from `from`
      *
@@ -419,8 +429,9 @@ abstract contract ERC1155TrackerUpgradable is
      * - `from` cannot be the zero address.
      * - `from` must have at least `amount` tokens of token type `id`.
      */
-    function _burn(
+    function _burnActual(
         address from,
+        uint256 fromToken,
         uint256 id,
         uint256 amount
     ) internal virtual {
@@ -433,11 +444,11 @@ abstract contract ERC1155TrackerUpgradable is
         _beforeTokenTransfer(operator, from, address(0), ids, amounts, "");
 
         // uint256 fromBalance = _balances[id][from];
-        uint256 fromBalance = _balances[id][getExtTokenId(from)];
+        uint256 fromBalance = _balances[id][fromToken];
         require(fromBalance >= amount, "ERC1155: burn amount exceeds balance");
         unchecked {
             // _balances[id][from] = fromBalance - amount;
-            _balances[id][getExtTokenId(from)] = fromBalance - amount;
+            _balances[id][fromToken] = fromBalance - amount;
         }
 
         emit TransferSingle(operator, from, address(0), id, amount);

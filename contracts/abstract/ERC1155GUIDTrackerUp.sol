@@ -90,21 +90,41 @@ abstract contract ERC1155GUIDTrackerUp is
     }
 
     /// Assign Token
-    function _GUIDAssign(address account, bytes32 guid) internal GUIDExists(guid) returns (uint256) {
+    function _GUIDAssign(address account, bytes32 guid, uint256 amount) internal GUIDExists(guid) returns (uint256) {
         uint256 tokenId = _GUIDToId(guid);  //_GUID[guid];
         //Mint Token
-        _mint(account, tokenId, 1, "");
+        _mint(account, tokenId, amount, "");
         //Retrun New Token ID
         return tokenId;
     }
     
+    /// Assign Token
+    function _GUIDAssignToToken(uint256 ownerToken, bytes32 guid, uint256 amount) internal GUIDExists(guid) returns (uint256) {
+        uint256 tokenId = _GUIDToId(guid);  //_GUID[guid];
+        //Mint Token
+        _mintForToken(ownerToken, tokenId, amount, "");
+        //Retrun New Token ID
+        return tokenId;
+    }
+
     /// Unassign Token
-    function _GUIDRemove(address account, bytes32 guid) internal GUIDExists(guid) returns (uint256) {
+    function _GUIDRemove(address account, bytes32 guid, uint256 amount) internal GUIDExists(guid) returns (uint256) {
         uint256 tokenId = _GUID[guid];
         //Validate
         require(balanceOf(account, tokenId) > 0, "NOT_ASSIGNED");
         //Burn Token
-        _burn(account, tokenId, 1);
+        _burn(account, tokenId, amount);
+        //Retrun New Token ID
+        return tokenId;
+    }
+
+    /// Unassign Token
+    function _GUIDRemoveFromToken(uint256 ownerToken, bytes32 guid, uint256 amount) internal GUIDExists(guid) returns (uint256) {
+        uint256 tokenId = _GUID[guid];
+        //Validate
+        // require(balanceOf(account, tokenId) > 0, "NOT_ASSIGNED");
+        //Burn Token
+        _burnForToken(ownerToken, tokenId, amount);
         //Retrun New Token ID
         return tokenId;
     }
