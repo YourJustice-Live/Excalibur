@@ -26,6 +26,7 @@ describe("Protocol", function () {
   let tester3: Signer;
   let tester4: Signer;
   let tester5: Signer;
+  let judge: Signer;
   let addrs: Signer[];
 
 
@@ -59,7 +60,7 @@ describe("Protocol", function () {
     hubContract.setAssoc("history", actionContract.address);
 
     //Populate Accounts
-    [owner, admin, tester, tester2, tester3, tester4, tester5, ...addrs] = await ethers.getSigners();
+    [owner, admin, tester, tester2, tester3, tester4, tester5, judge, ...addrs] = await ethers.getSigners();
     //Addresses
     this.adminAddr = await admin.getAddress();
     this.testerAddr = await tester.getAddress();
@@ -67,6 +68,7 @@ describe("Protocol", function () {
     this.tester3Addr = await tester3.getAddress();
     this.tester4Addr = await tester4.getAddress();
     this.tester5Addr = await tester5.getAddress();
+    this.judgeAddr = await judge.getAddress();
   });
 
   describe("Config", function () {
@@ -221,6 +223,7 @@ describe("Protocol", function () {
       // await avatarContract.connect(tester3).mint(test_uri);
       await avatarContract.connect(tester4).mint(test_uri);
       await avatarContract.connect(tester5).mint(test_uri);
+      await avatarContract.connect(judge).mint(test_uri);
 
       //Simulate to Get New Jurisdiction Address
       let JAddr = await hubContract.callStatic.jurisdictionMake("Test Jurisdiction", test_uri);
@@ -304,17 +307,17 @@ describe("Protocol", function () {
     });
 
     it("Admin can appoint judge", async function () {
-      let testerAddr = await tester.getAddress();
+      // let testerAddr = await tester.getAddress();
       //Check Before
-      expect(await this.jurisdictionContract.roleHas(testerAddr, "judge")).to.equal(false);
+      expect(await this.jurisdictionContract.roleHas(this.judgeAddr, "judge")).to.equal(false);
       //Should Fail - Require Permissions
       await expect(
-        this.jurisdictionContract.connect(tester2).roleAssign(testerAddr, "judge")
+        this.jurisdictionContract.connect(tester2).roleAssign(this.judgeAddr, "judge")
       ).to.be.revertedWith("INVALID_PERMISSIONS");
       //Assign Judge
-      await this.jurisdictionContract.connect(admin).roleAssign(testerAddr, "judge");
+      await this.jurisdictionContract.connect(admin).roleAssign(this.judgeAddr, "judge");
       //Check After
-      expect(await this.jurisdictionContract.roleHas(testerAddr, "judge")).to.equal(true);
+      expect(await this.jurisdictionContract.roleHas(this.judgeAddr, "judge")).to.equal(true);
     });
     
     it("Can change Roles (Promote / Demote)", async function () {
@@ -598,7 +601,7 @@ describe("Protocol", function () {
 
     it("Should Wait for Verdict Stage", async function () {
       //File Case
-      let tx = await this.caseContract.connect(tester2).stageWaitForVerdict();
+      let tx = await this.caseContract.connect(judge).stageWaitForVerdict();
       //Expect State Event
       await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(2);
     });
@@ -622,17 +625,17 @@ describe("Protocol", function () {
       //Check Before
       // expect(await this.jurisdictionContract.roleHas(this.testerAddr, "judge")).to.equal(true);
       //Assign Judge
-      await this.caseContract.connect(admin).roleAssign(this.testerAddr, "judge");
+      await this.caseContract.connect(admin).roleAssign(this.judgeAddr, "judge");
       //Check After
-      expect(await this.caseContract.roleHas(this.testerAddr, "judge")).to.equal(true);
+      expect(await this.caseContract.roleHas(this.judgeAddr, "judge")).to.equal(true);
     });
     
     it("Should Accept Verdict URI & Close Case", async function () {
       let verdict = [{ruleId:1, decision:true}];
       //Submit Verdict & Close Case
-      let tx = await this.caseContract.connect(tester).stageVerdict(verdict, test_uri);
+      let tx = await this.caseContract.connect(judge).stageVerdict(verdict, test_uri);
       //Expect Verdict Event
-      await expect(tx).to.emit(this.caseContract, 'Verdict').withArgs(test_uri, this.testerAddr);
+      await expect(tx).to.emit(this.caseContract, 'Verdict').withArgs(test_uri, this.judgeAddr);
       //Expect State Event
       await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(6);
 
