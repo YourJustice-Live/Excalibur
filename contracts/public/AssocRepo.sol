@@ -11,6 +11,8 @@ import "../interfaces/IAssocRepo.sol";
  * @title Open Association Retention
  * @dev Association Repository -- Retains Association Data for Other Contracts
  * Version 1.0
+ * - Save & Return Associations
+ * - Owned by Requesting Address
  */
 contract AssocRepo is IAssocRepo, Context, ERC165 {
 
