@@ -24,6 +24,12 @@ interface ICase {
     /// Assign Someone to a Role
     function roleAssign(address account, string calldata role) external;
 
+    /// Assign Tethered Token to a Role
+    function roleAssignToToken(uint256 ownerToken, string memory role) external;
+        
+    /// Remove Tethered Token from a Role
+    function roleRemoveFromToken(uint256 ownerToken, string memory role) external;
+
     // RoleRequest()
 
     // RoleOffered()

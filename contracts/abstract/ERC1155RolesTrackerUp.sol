@@ -85,7 +85,7 @@ abstract contract ERC1155RolesTrackerUp is
     }
 
     /// [TEST] Has Any of These Roles
-    function rolesHas(address account, string[] calldata roles) public view returns (bool) {
+    function rolesHas(address account, string[] memory roles) public view returns (bool) {
         for (uint256 i = 0; i < roles.length; ++i) {
             if(roleHas(account, roles[i])){
                 return true;

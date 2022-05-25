@@ -99,7 +99,7 @@ contract JurisdictionUpgradable is
         _setRoleURI("judge", "https://ipfs.io/ipfs/QmRVXii7PRTtaYRt5mD1yrAqy623itttjQX3hsnikYpi1x");
 
         //Assign Creator as First Admin
-        _roleAssign(tx.origin, "admin");
+        _roleAssign(tx.origin, "admin", 1);
     }
 
     //** Case Functions
@@ -181,12 +181,12 @@ contract JurisdictionUpgradable is
 
      /// Join a role in current jurisdiction
     function join() external override returns (uint256) {
-        return _GUIDAssign(_msgSender(), _stringToBytes32("member"));
+        return _GUIDAssign(_msgSender(), _stringToBytes32("member"), 1);
     }
 
     /// Leave Role in current jurisdiction
     function leave() external override returns (uint256) {
-        return _GUIDRemove(_msgSender(), _stringToBytes32("member"));
+        return _GUIDRemove(_msgSender(), _stringToBytes32("member"), 1);
     }
 
     /// Assign Someone Else to a Role
@@ -196,7 +196,17 @@ contract JurisdictionUpgradable is
             || roleHas(_msgSender(), "admin")    //Admin Role
             , "INVALID_PERMISSIONS");
         //Add
-        _roleAssign(account, role);
+        _roleAssign(account, role, 1);
+    }
+
+    /// Assign Tethered Token to a Role
+    function roleAssignToToken(uint256 ownerToken, string memory role) public override roleExists(role) {
+        //Validate Permissions
+        require(owner() == _msgSender()      //Owner
+            || roleHas(_msgSender(), "admin")    //Admin Role
+            , "INVALID_PERMISSIONS");
+        //Add
+        _roleAssignToToken(ownerToken, role, 1);
     }
 
     /// Remove Someone Else from a Role
@@ -206,7 +216,17 @@ contract JurisdictionUpgradable is
             || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Role
             , "INVALID_PERMISSIONS");
         //Remove
-        _roleRemove(account, role);
+        _roleRemove(account, role, 1);
+    }
+
+    /// Remove Tethered Token from a Role
+    function roleRemoveFromToken(uint256 ownerToken, string memory role) public override roleExists(role) {
+        //Validate Permissions
+        require(owner() == _msgSender()      //Owner
+            || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Role
+            , "INVALID_PERMISSIONS");
+        //Remove
+        _roleRemoveFromToken(ownerToken, role, 1);
     }
 
     /// Change Role Wrapper (Add & Remove)

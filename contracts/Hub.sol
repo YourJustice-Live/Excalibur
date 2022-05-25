@@ -12,6 +12,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 // import "@openzeppelin/contracts/utils/Counters.sol";
 import "./interfaces/IConfig.sol";
 import "./interfaces/IAssoc.sol";
+import "./interfaces/IAssocRepo.sol";
 import "./interfaces/ICommonYJ.sol";
 import "./interfaces/IHub.sol";
 import "./interfaces/IJurisdictionUp.sol";
@@ -33,6 +34,10 @@ contract Hub is
         ERC165,
         Assoc,
         Ownable {
+
+
+    
+
     //---Storage
     address public beaconCase;
     address public beaconJurisdiction;  //TBD

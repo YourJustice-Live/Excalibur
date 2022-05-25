@@ -67,29 +67,23 @@ contract Case is
 
     /// Initializer
     function initialize (
-        address hub 
-        , string memory name_
-        , string calldata uri_
-        , DataTypes.RuleRef[] memory addRules
-        , DataTypes.InputRole[] memory assignRoles
-        , address container
+        address hub, 
+        string memory name_, 
+        string calldata uri_, 
+        DataTypes.RuleRef[] memory addRules, 
+        DataTypes.InputRole[] memory assignRoles, 
+        address container
     ) public override initializer {
-
         //Set Parent Container
         _setParentCTX(container);
         //Initializers
         __CommonYJ_init(hub);
         // __setTargetContract(_HUB.getAssoc("avatar"));
         __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
-
         //Set Contract URI
         _setContractURI(uri_);
-
         //Identifiers
         name = name_;
-        // symbol = symbol_;
-        
-
         //Init Default Case Roles
         _roleCreate("admin");
         _roleCreate("subject");     //Filing against
@@ -97,14 +91,12 @@ contract Case is
         _roleCreate("judge");       //Deciding authority
         _roleCreate("witness");     //Witnesses
         _roleCreate("affected");    //Affected Party [?]
-
         //Auto-Set Creator Wallet as Admin
-        _roleAssign(tx.origin, "admin");
-        _roleAssign(tx.origin, "plaintiff");
-
+        _roleAssign(tx.origin, "admin", 1);
+        _roleAssign(tx.origin, "plaintiff", 1);
         //Assign Roles
         for (uint256 i = 0; i < assignRoles.length; ++i) {
-            _roleAssign(assignRoles[i].account, assignRoles[i].role);
+            _roleAssign(assignRoles[i].account, assignRoles[i].role, 1);
         }
         //Add Rules
         for (uint256 i = 0; i < addRules.length; ++i) {
@@ -120,9 +112,9 @@ contract Case is
         //Set        
         _jurisdiction = container;
     }
-    
+
     /// Assign to a Role
-    function roleAssign(address account, string memory role) external override roleExists(role) {
+    function roleAssign(address account, string memory role) public override roleExists(role) {
         //Validate Permissions
         require(
             owner() == _msgSender()      //Owner
@@ -136,9 +128,27 @@ contract Case is
             //Validate: Must Hold same role in Containing Jurisdiction
             require(IERC1155Roles(_jurisdiction).roleHas(account, role), "User Required to hold same role in Jurisdiction");
         }
-
         //Add
-        _roleAssign(account, role);
+        _roleAssign(account, role, 1);
+    }
+    
+    /// Assign Tethered Token to a Role
+    function roleAssignToToken(uint256 ownerToken, string memory role) public override roleExists(role) {
+        //Validate Permissions
+        require(owner() == _msgSender()      //Owner
+            || roleHas(_msgSender(), "admin")    //Admin Role
+            , "INVALID_PERMISSIONS");
+        _roleAssign(_getAccount(ownerToken), role, 1);
+    }
+    
+    /// Remove Tethered Token from a Role
+    function roleRemoveFromToken(uint256 ownerToken, string memory role) public override roleExists(role) {
+        //Validate Permissions
+        require(owner() == _msgSender()      //Owner
+            || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Role
+            , "INVALID_PERMISSIONS");
+        //Remove
+        _roleRemoveFromToken(ownerToken, role, 1);
     }
 
     // roleRequest() => Event [Communication]
@@ -146,7 +156,6 @@ contract Case is
     // roleOffer() (Upon Reception)
 
     // roleAccept()
-
 
     /// Check if Reference ID exists
     function ruleRefExist(uint256 ruleRefId) internal view returns (bool){
@@ -196,7 +205,6 @@ contract Case is
         // emit Post(tx.origin, entRole, uri_);
         _post(tx.origin, entRole, uri_);
     }
-
 
     //--- Rule Reference 
 
@@ -259,10 +267,10 @@ contract Case is
 
     /// Case Wait For Verdict  --> Pending
     function stageWaitForVerdict() public override {
-        
-        //TODO: Validate Caller
-        
+        //Validate Stage
         require(stage == DataTypes.CaseStage.Open, "STAGE:OPEN_ONLY");
+        //TODO: Validate Caller
+        // require(roleHas(tx.origin, "judge") || roleHas(_msgSender(), "admin") , "ROLE:JUDGE_OR_ADMIN");
         //Case is now Waiting for Verdict
         _setStage(DataTypes.CaseStage.Verdict);
     }   
