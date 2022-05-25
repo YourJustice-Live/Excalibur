@@ -25,16 +25,16 @@ async function main() {
     console.log("Deployed Config Contract to " + contractAddr.config);
   }
 
-  //--- JurisdictionUp Implementation
-  if(!contractAddr.jurisdictionUp){
-    //Deploy JurisdictionUp
+  //--- Jurisdiction Implementation
+  if(!contractAddr.jurisdiction){
+    //Deploy Jurisdiction
     let contract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
     await contract.deployed();
     //Set Address
-    contractAddr.jurisdictionUp = contract.address;
+    contractAddr.jurisdiction = contract.address;
     //Log
-    console.log("Deployed JurisdictionUp Contract to " + contractAddr.jurisdictionUp);
-    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.jurisdictionUp);
+    console.log("Deployed Jurisdiction Contract to " + contractAddr.jurisdiction);
+    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.jurisdiction);
   }
 
   //--- Case Implementation
@@ -54,7 +54,7 @@ async function main() {
     //Deploy Hub
     hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(
         contractAddr.config, 
-        contractAddr.jurisdictionUp,
+        contractAddr.jurisdiction,
         contractAddr.case,
       ));
     await hubContract.deployed();
@@ -67,8 +67,8 @@ async function main() {
     //Set Address
     contractAddr.hub = hubContract.address;
     //Log
-    console.log("Deployed Hub Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " jurisdiction: "+ contractAddr.jurisdictionUp+ " Case: "+ contractAddr.case);
-    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.hub+ " "+ contractAddr.config+ " "+ contractAddr.jurisdictionUp+ " "+ contractAddr.case);
+    console.log("Deployed Hub Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " jurisdiction: "+ contractAddr.jurisdiction+ " Case: "+ contractAddr.case);
+    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.hub+ " "+ contractAddr.config+ " "+ contractAddr.jurisdiction+ " "+ contractAddr.case);
   }
 
   //--- Avatar
