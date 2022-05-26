@@ -3,7 +3,8 @@ pragma solidity 0.8.4;
 
 // import "hardhat/console.sol";
 
-import "@openzeppelin/contracts/utils/Counters.sol";
+// import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "./libraries/DataTypes.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IRules.sol";
@@ -25,14 +26,14 @@ import "./abstract/Posts.sol";
 contract Case is 
     ICase, 
     Posts, 
-    CommonYJUpgradable, 
     ContractBase,
+    CommonYJUpgradable, 
     ERC1155RolesTrackerUp {
     // ERC1155RolesUpgradable {
 
     //--- Storage
-    using Counters for Counters.Counter;
-    Counters.Counter internal _ruleIds;  //Track Last Rule ID
+    using CountersUpgradeable for CountersUpgradeable.Counter;
+    CountersUpgradeable.Counter internal _ruleIds;  //Track Last Rule ID
 
     // Contract name
     string public name;
@@ -115,18 +116,19 @@ contract Case is
 
     /// Assign to a Role
     function roleAssign(address account, string memory role) public override roleExists(role) {
-        //Validate Permissions
-        require(
-            owner() == _msgSender()      //Owner
-            || roleHas(_msgSender(), "admin")    //Admin Role
-            // || msg.sender == address(_HUB)   //Through the Hub
-            , "INVALID_PERMISSIONS");
-
-        //Special Validations
+        //Special Validations for 'judge' role
         if (keccak256(abi.encodePacked(role)) == keccak256(abi.encodePacked("judge"))){
             require(_jurisdiction != address(0), "Unknown Parent Container");
             //Validate: Must Hold same role in Containing Jurisdiction
             require(IERC1155Roles(_jurisdiction).roleHas(account, role), "User Required to hold same role in Jurisdiction");
+        }
+        else{
+            //Validate Permissions
+            require(
+                owner() == _msgSender()      //Owner
+                || roleHas(_msgSender(), "admin")    //Admin Role
+                // || msg.sender == address(_HUB)   //Through the Hub
+                , "INVALID_PERMISSIONS");
         }
         //Add
         _roleAssign(account, role, 1);
