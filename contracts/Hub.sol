@@ -19,7 +19,7 @@ import "./interfaces/IJurisdictionUp.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IAvatar.sol";
 import "./libraries/DataTypes.sol";
-import "./abstract/CommonYJ.sol";
+// import "./abstract/CommonYJ.sol";
 import "./abstract/Assoc.sol";
 
 

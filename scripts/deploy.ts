@@ -67,8 +67,8 @@ async function main() {
     //Set Address
     contractAddr.hub = hubContract.address;
     //Log
-    console.log("Deployed Hub Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " jurisdiction: "+ contractAddr.jurisdiction+ " Case: "+ contractAddr.case);
-    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.hub+ " "+ contractAddr.config+ " "+ contractAddr.jurisdiction+ " "+ contractAddr.case);
+    console.log("Deployed Hub Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " jurisdiction: "+contractAddr.jurisdiction+ " Case: "+ contractAddr.case);
+    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.hub+ " "+ contractAddr.config+ " "+contractAddr.jurisdiction+ " "+contractAddr.case);
   }
 
   //--- Avatar
