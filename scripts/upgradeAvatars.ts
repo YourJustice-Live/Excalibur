@@ -7,15 +7,15 @@
 // import { ethers } from "hardhat";
 const { ethers, upgrades } = require("hardhat");
 import contractAddr from "./_contractAddr";
-const factoryAddress = contractAddr.hub;
+const proxyAddress = contractAddr.hub;
 
 
 async function main() {
     //Validate
-    if(!factoryAddress) throw "Missing Factory Address";
+    if(!proxyAddress) throw "Missing Factory Address";
 
     //Accounts
-    const [deployer, admin] = await ethers.getSigners();
+    // const [deployer, admin] = await ethers.getSigners();
 
     //Log
     // console.log("Deployer account:", deployer.address);
@@ -23,10 +23,10 @@ async function main() {
     console.log("Update Factory Proxy:");
 
     //Fetch New Implementation Contract
-    let NewImplementation = await ethers.getContractFactory("AvatarNFT");
+    let NewImplementation = await ethers.getContractFactory("AvatarUpgradable");
     
     //Validate Upgrade
-    // await upgrades.prepareUpgrade(factoryAddress, NewImplementation);
+    await upgrades.prepareUpgrade(proxyAddress, NewImplementation);
 
     //Upgrade    
     // await upgrades.upgradeProxy(factoryContract, NewImplementation);
@@ -36,8 +36,7 @@ async function main() {
     //Set Config
 
     //Log
-    console.log("AvatarNFT Contract Updated");
-
+    console.log("AvatarUpgradable Contract Updated");
 }
 
 // We recommend this pattern to be able to use async/await everywhere
