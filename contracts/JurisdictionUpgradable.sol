@@ -52,7 +52,7 @@ contract JurisdictionUpgradable is
         // ERC1155RolesUpgradable {
 
     //--- Storage
-    string public constant override symbol = "YJ_Jurisdiction";
+    string public constant override symbol = "YJ_JURISDICTION";
     using Strings for uint256;
 
     using Counters for Counters.Counter;
@@ -86,8 +86,7 @@ contract JurisdictionUpgradable is
         //Set Contract URI
         _setContractURI(uri_);
         //Identifiers
-        name = name_; //"Anti-Scam Jurisdiction";
-        // symbol = "YJ_J1";
+        name = name_;
         //Init Default Jurisdiction Roles
         _roleCreate("admin"); 
         _roleCreate("member");
