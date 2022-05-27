@@ -43,6 +43,9 @@ describe("Protocol", function () {
     //Deploy Hub
     hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.jurisdictionUpContract.address, this.caseContract.address));
 
+    //Deploy Upgradable Hub (UUDP)
+    hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.jurisdictionUpContract.address, this.caseContract.address));
+
     /* Testing Rep Change Failure Recovery
     //Deploy a Second Hub
     let hubContract2 = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.jurisdictionUpContract.address, this.caseContract.address));
@@ -539,7 +542,6 @@ describe("Protocol", function () {
     });
 
     it("Should Update", async function () {
-
       let testCaseContract = await ethers.getContractFactory("Case").then(res => res.deploy());
       await testCaseContract.deployed();
       //Update Case Beacon (to the same implementation)
@@ -556,7 +558,7 @@ describe("Protocol", function () {
       await this.caseContract.connect(admin).ruleAdd(ruleRef.jurisdiction,  ruleRef.id);
     });
     
-    it("Should Post", async function () {
+    it("Should Write a Post", async function () {
       let post = {
         entRole:"subject",
         uri:test_uri,
@@ -574,7 +576,6 @@ describe("Protocol", function () {
       await expect(
         this.caseContract.connect(tester3).setRoleURI("admin", test_uri)
       ).to.be.revertedWith("INVALID_PERMISSIONS");
-
       //Set Admin Token URI
       await this.caseContract.connect(admin).setRoleURI("admin", test_uri);
       //Validate
@@ -586,6 +587,15 @@ describe("Protocol", function () {
           await this.caseContract.connect(admin).roleAssign(this.tester3Addr, "witness");
           //Validate
           expect(await this.caseContract.roleHas(this.tester3Addr, "witness")).to.equal(true);
+    });
+
+    it("Jurisdiction Judges Can Assign Themselves", async function () {
+      //Assign as Jurisdiction Judge
+      jurisdictionContract.connect(admin).roleAssign(this.tester4Addr, "judge")
+      //Assign Case Judge
+      await this.caseContract.connect(tester4).roleAssign(this.tester4Addr, "judge");
+      //Validate
+      expect(await this.caseContract.roleHas(this.tester4Addr, "judge")).to.equal(true);
     });
 
     it("Plaintiff Can Open Case", async function () {
