@@ -40,7 +40,7 @@ async function main() {
   //--- Case Implementation
   if(!contractAddr.case){
     //Deploy Case
-    let contract = await ethers.getContractFactory("Case").then(res => res.deploy());
+    let contract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
     await contract.deployed();
     //Set Address
     contractAddr.case = contract.address;

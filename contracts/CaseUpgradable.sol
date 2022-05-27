@@ -20,10 +20,10 @@ import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/Posts.sol";
 
 /**
- * @title Case Contract
- * @dev Version 0.2.0
+ * @title Upgradable Case Contract
+ * @dev Version 1.0.1
  */
-contract Case is 
+contract CaseUpgradable is 
     ICase, 
     Posts, 
     ContractBase,

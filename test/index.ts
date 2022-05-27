@@ -36,7 +36,7 @@ describe("Protocol", function () {
     configContract = await ConfigContract.deploy();
 
     //Deploy Case Implementation
-    this.caseContract = await ethers.getContractFactory("Case").then(res => res.deploy());
+    this.caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
     //Jurisdiction Upgradable Implementation
     this.jurisdictionUpContract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
 
@@ -478,7 +478,7 @@ describe("Protocol", function () {
       //Expect Valid Address
       expect(caseAddr).to.be.properAddress;
       //Init Case Contract
-      this.caseContract = await ethers.getContractFactory("Case").then(res => res.attach(caseAddr));
+      this.caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.attach(caseAddr));
       //Expect Case Created Event
       await expect(tx).to.emit(jurisdictionContract, 'CaseCreated').withArgs(1, caseAddr);
       //Expect Post Event
@@ -522,7 +522,7 @@ describe("Protocol", function () {
       //Expect Valid Address
       expect(caseAddr).to.be.properAddress;
       //Init Case Contract
-      let caseContract = await ethers.getContractFactory("Case").then(res => res.attach(caseAddr));
+      let caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.attach(caseAddr));
       //Expect Case Created Event
       await expect(tx).to.emit(jurisdictionContract, 'CaseCreated').withArgs(2, caseAddr);
       //Expect Post Event
@@ -548,7 +548,7 @@ describe("Protocol", function () {
     });
 
     it("Should Update", async function () {
-      let testCaseContract = await ethers.getContractFactory("Case").then(res => res.deploy());
+      let testCaseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
       await testCaseContract.deployed();
       //Update Case Beacon (to the same implementation)
       hubContract.upgradeCaseImplementation(testCaseContract.address);

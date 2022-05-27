@@ -34,7 +34,7 @@ describe("Hub", function () {
         configContract2 = await ConfigContract.connect(account2).deploy();
 
         //Deploy Case Implementation
-        this.caseContract = await ethers.getContractFactory("Case").then(res => res.deploy());
+        this.caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
         //Jurisdiction Upgradable Implementation
         this.jurisdictionUpContract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
 
