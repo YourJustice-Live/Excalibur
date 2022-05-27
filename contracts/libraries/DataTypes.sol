@@ -86,6 +86,7 @@ library DataTypes {
         string affected;    // affected: "investors",  //Plaintiff Role (Filing the case)
         bool negation;      //0 - Commision  1 - Omission
         string uri;         //Test & Conditions
+        bool disabled;      //1 - Rule Disabled
     }
     
     // Effect Structure

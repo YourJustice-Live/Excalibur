@@ -28,6 +28,9 @@ interface IRules {
     /// Rule Added or Changed
     event Rule(uint256 indexed id, bytes32 about, string affected, string uri, bool negation);
 
+    /// Rule Disabled Status Changed
+    event RuleDisabled(uint256 id, bool disabled);
+
     /// Rule Removed
     event RuleRemoved(uint256 indexed id);
 

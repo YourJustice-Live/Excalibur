@@ -23,23 +23,17 @@ abstract contract Rules is IRules {
     Counters.Counter private _ruleIds;
     //Action Repository Contract (HISTORY)
     // IActionRepo internal _actionRepo;
-    address private _actionRepo;   
+    // address private _actionRepo;
+
     //Rule Data
     mapping(uint256 => DataTypes.Rule) internal _rules;
     
     //Additional Rule Data
     mapping(uint256 => DataTypes.Confirmation) internal _ruleConfirmation;
-
     mapping(uint256 => DataTypes.Effect[]) internal _effects;     //effects[id][] => {direction:true, value:5, name:'personal'}  // Generic, Iterable & Extendable/Flexible
     // mapping(uint256 => string) internal _uri;
 
     //--- Functions
-
-    /* DEPRECATED - for Upgradability
-    constructor(address actionRepo_) {
-        _setActionsContract(actionRepo_);
-    }
-    */
     
     /* CANCELLED
     /// Set Actions Contract
@@ -54,7 +48,7 @@ abstract contract Rules is IRules {
         //Event
         emit ActionRepoSet(actionRepo_);
     }
-
+    
     /// Expose Action Repo Address
     function actionRepo() external view override returns (address) {
         // return address(_actionRepo);
@@ -79,13 +73,19 @@ abstract contract Rules is IRules {
         return id;
     }
 
+    /// Disable Rule
+    function _ruleDisable(uint256 id, bool disabled) internal {
+        _rules[id].disabled = disabled;
+        //Event
+        emit RuleDisabled(id, disabled);
+    }
+    
     /// Remove Rule
     function _ruleRemove(uint256 id) internal {
         delete _rules[id];
         //Event
         emit RuleRemoved(id);
     }
-
 
     //TODO: Separate Rule Effects Update from Rule Update
 
@@ -118,6 +118,7 @@ abstract contract Rules is IRules {
     function confirmationGet(uint256 id) public view override returns (DataTypes.Confirmation memory){
         return _ruleConfirmation[id];
     }
+
     /* REMOVED - This should probably be in the implementing Contract
     /// Update Confirmation Method for Action
     function confirmationSet(uint256 id, DataTypes.Confirmation memory confirmation) external override {

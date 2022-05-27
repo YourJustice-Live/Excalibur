@@ -39,7 +39,7 @@ contract Case is
     string public name;
     // Contract symbol
     // string public symbol;
-    string public constant symbol = "YJ_Case";
+    string public constant symbol = "YJ_CASE";
 
     //Jurisdiction
     address private _jurisdiction;
@@ -193,8 +193,6 @@ contract Case is
 
     /// Add Post 
     /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
-    // function post(uint256 token_id, string calldata uri) external override {     //Post by Token ID (May later use Entity GUID as Caller)
-    // function post(string calldata entRole, string calldata postRole, string calldata uri) external override {        //Explicit postRole
     function post(string calldata entRole, string calldata uri_) external override {     //postRole in the URI
         //Validate: Sender Holds The Entity-Role 
         // require(roleHas(_msgSender(), entRole), "ROLE:INVALID_PERMISSION");
@@ -227,17 +225,17 @@ contract Case is
         //Assign Rule Reference ID
         _ruleIds.increment(); //Start with 1
         uint256 ruleId = _ruleIds.current();
-
         //New Rule
         _rules[ruleId].jurisdiction = jurisdiction_;
         _rules[ruleId].ruleId = ruleId_;
-
         //Get Rule, Get Affected & Add as new Role if Doesn't Exist
         DataTypes.Rule memory rule = ruleGet(ruleId);
+        //Validate Rule Active
+        require(rule.disabled == false, "Selected rule is disabled");
         if(!roleExist(rule.affected)){
+            //Create Affected Role if Missing
             _roleCreate(rule.affected);
         }
-
         //Event: Rule Reference Added 
         emit RuleAdded(jurisdiction_, ruleId_);
     }
