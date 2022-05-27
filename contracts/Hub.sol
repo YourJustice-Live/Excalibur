@@ -168,7 +168,7 @@ contract Hub is
         string calldata name_, 
         string calldata uri_,
         DataTypes.RuleRef[] memory addRules,
-        DataTypes.InputRole[] memory assignRoles
+        DataTypes.InputRoleToken[] memory assignRoles
     ) external override returns (address) {
         //Validate Caller Permissions (A Jurisdiction)
         require(_jurisdictions[_msgSender()], "UNAUTHORIZED: Valid Jurisdiction Only");

@@ -451,10 +451,12 @@ describe("Protocol", function () {
           ruleId: 1,
         }
       ];
+      let tester2Token = await avatarContract.tokenByAddress(this.tester2Addr);
       let roleRefArr = [
         {
           role: "subject",
-          account: this.tester2Addr, 
+          // account: this.tester2Addr,
+          tokenId: tester2Token,
         }
       ];
       let posts = [
@@ -492,14 +494,18 @@ describe("Protocol", function () {
           ruleId: 1,
         }
       ];
+      let tester2Token = await avatarContract.tokenByAddress(this.tester2Addr);
+      let tester3Token = await avatarContract.tokenByAddress(this.tester3Addr);
       let roleRefArr = [
         {
           role: "subject",
-          account: this.tester2Addr, 
+          // account: this.tester2Addr,
+          tokenId: tester2Token,
         },
         {
           role: "witness",
-          account: this.tester3Addr, 
+          // account: this.tester3Addr, 
+          tokenId: tester3Token,
         }
       ];
       let posts = [

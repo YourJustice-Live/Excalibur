@@ -110,7 +110,7 @@ contract JurisdictionUpgradable is
         string calldata name_, 
         string calldata uri_, 
         DataTypes.RuleRef[] calldata addRules, 
-        DataTypes.InputRole[] calldata assignRoles, 
+        DataTypes.InputRoleToken[] calldata assignRoles, 
         PostInput[] calldata posts
     ) public returns (address) {
         //Validate Caller Permissions (Member of Jurisdiction)
@@ -139,7 +139,7 @@ contract JurisdictionUpgradable is
         string calldata name_, 
         string calldata uri_, 
         DataTypes.RuleRef[] calldata addRules, 
-        DataTypes.InputRole[] calldata assignRoles, 
+        DataTypes.InputRoleToken[] calldata assignRoles, 
         PostInput[] calldata posts
     // ) public returns (uint256, address) {
     ) public returns (address) {
@@ -291,6 +291,14 @@ contract JurisdictionUpgradable is
         require(roleHas(_msgSender(), "admin"), "Admin Only");
         //Update Rule
         _ruleUpdate(id, rule, effects);
+    }
+
+    /// Set Disable Status for Rule
+    function ruleDisable(uint256 id, bool disabled) external {
+         //Validate Caller's Permissions
+        require(roleHas(_msgSender(), "admin"), "Admin Only");
+        //Disable Rule
+        _ruleDisable(id, disabled);
     }
 
     /// Update Rule's Confirmation Data

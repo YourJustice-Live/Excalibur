@@ -129,6 +129,13 @@ library DataTypes {
         address account;
         string role;
     }
+
+    //Role Input Struct (for Token)
+    struct InputRoleToken {
+        uint256 tokenId;
+        string role;
+    }
+
     //Decision (Verdict) Input
     struct InputDecision {
         uint256 ruleId;

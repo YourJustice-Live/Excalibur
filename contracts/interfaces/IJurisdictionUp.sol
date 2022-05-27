@@ -52,14 +52,14 @@ interface IJurisdiction {
     //     string calldata name_, 
     //     string calldata uri_, 
     //     DataTypes.RuleRef[] calldata addRules, 
-    //     DataTypes.InputRole[] calldata assignRoles, 
+    //     DataTypes.InputRoleToken[] calldata assignRoles, 
     //     PostInput[] calldata posts
     // ) external returns (address);
     // function caseMakeOpen(
     //     string calldata name_, 
     //     string calldata uri_, 
     //     DataTypes.RuleRef[] calldata addRules, 
-    //     DataTypes.InputRole[] calldata assignRoles, 
+    //     DataTypes.InputRoleToken[] calldata assignRoles, 
     //     PostInput[] calldata posts
     // ) external returns (address);
     

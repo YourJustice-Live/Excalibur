@@ -9,14 +9,7 @@ interface ICase {
     //-- Functions
 
     /// Initialize
-    // function initialize(string memory name_, string memory symbol_, address hub) external ;
-    // function initialize(string memory name_, string memory symbol_, address hub, DataTypes.RuleRef[] memory addRules) external ;
-    // function initialize(string memory name_, string memory symbol_, address hub, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external ;
-    // function initialize(string memory name_, string memory symbol_, address hub, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles, address container) external ;
-    function initialize(address hub, string memory name_, string calldata uri_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles, address container) external ;
-
-    /// Contract URI
-    // function contractURI() external view returns (string memory);
+    function initialize(address hub, string memory name_, string calldata uri_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRoleToken[] memory assignRoles, address container) external ;
 
     /// Set Contract URI
     function setContractURI(string calldata contract_uri) external;

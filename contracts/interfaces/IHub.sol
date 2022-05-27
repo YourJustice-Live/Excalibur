@@ -22,7 +22,7 @@ interface IHub {
         string calldata name_, 
         string calldata uri_, 
         DataTypes.RuleRef[] memory addRules, 
-        DataTypes.InputRole[] memory assignRoles
+        DataTypes.InputRoleToken[] memory assignRoles
     ) external returns (address);
 
     /// Update Hub
