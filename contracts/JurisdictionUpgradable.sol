@@ -26,7 +26,7 @@ import "./abstract/Posts.sol";
 /**
  * @title Jurisdiction Contract
  * @dev Retains Group Members in Roles
- * @dev Version 0.6.0
+ * @dev Version 2.1
  * V1: Role NFTs
  * - Mints Member NFTs
  * - One for each

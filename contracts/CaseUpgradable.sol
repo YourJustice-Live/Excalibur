@@ -21,7 +21,7 @@ import "./abstract/Posts.sol";
 
 /**
  * @title Upgradable Case Contract
- * @dev Version 1.0.1
+ * @dev Version 1.1
  */
 contract CaseUpgradable is 
     ICase, 
