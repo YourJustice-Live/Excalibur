@@ -23,7 +23,7 @@ async function main() {
     console.log("Update Factory Proxy:");
 
     //Fetch New Implementation Contract
-    let NewImplementation = await ethers.getContractFactory("AvatarUpgradable");
+    let NewImplementation = await ethers.getContractFactory("SoulUpgradable");
     
     //Validate Upgrade
     await upgrades.prepareUpgrade(proxyAddress, NewImplementation);
@@ -36,7 +36,7 @@ async function main() {
     //Set Config
 
     //Log
-    console.log("AvatarUpgradable Contract Updated");
+    console.log("SoulUpgradable Contract Updated");
 }
 
 // We recommend this pattern to be able to use async/await everywhere
