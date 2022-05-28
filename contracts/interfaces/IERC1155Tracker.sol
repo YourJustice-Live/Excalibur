@@ -18,6 +18,17 @@ interface IERC1155Tracker is IERC165Upgradeable {
     /// Get Target Contract
     function getTargetContract() external view returns (address);
 
+    /// Single Token Transfer
+    event TransferByToken(address indexed operator, uint256 indexed fromOwnerToken, uint256 indexed toOwnerToken, uint256 id, uint256 value);
+
+    /// Batch Token Transfer
+    event TransferBatchByToken(
+        address indexed operator,
+        uint256 indexed fromOwnerToken, 
+        uint256 indexed toOwnerToken,
+        uint256[] ids,
+        uint256[] values
+    );
 
     //-- Tranditional Functions
 

@@ -251,6 +251,7 @@ abstract contract ERC1155TrackerUpgradable is
         _balances[id][ownerTo] += amount;
 
         emit TransferSingle(operator, from, to, id, amount);
+        emit TransferByToken(operator, ownerFrom, ownerTo, id, amount);
 
         _afterTokenTransfer(operator, from, to, ids, amounts, data);
 
@@ -300,6 +301,7 @@ abstract contract ERC1155TrackerUpgradable is
         }
 
         emit TransferBatch(operator, from, to, ids, amounts);
+        emit TransferBatchByToken(operator, ownerFrom, ownerTo, ids, amounts);
 
         _afterTokenTransfer(operator, from, to, ids, amounts, data);
 
@@ -371,6 +373,7 @@ abstract contract ERC1155TrackerUpgradable is
         _balances[id][toToken] += amount;
 
         emit TransferSingle(operator, address(0), to, id, amount);
+        emit TransferByToken(operator, 0, toToken, id, amount);
 
         _afterTokenTransfer(operator, address(0), to, ids, amounts, data);
 
@@ -399,12 +402,15 @@ abstract contract ERC1155TrackerUpgradable is
 
         _beforeTokenTransfer(operator, address(0), to, ids, amounts, data);
 
+        uint256 ownerTo = getExtTokenId(to);
+
         for (uint256 i = 0; i < ids.length; i++) {
             // _balances[ids[i]][to] += amounts[i];
-            _balances[ids[i]][getExtTokenId(to)] += amounts[i];
+            _balances[ids[i]][ownerTo] += amounts[i];
         }
 
         emit TransferBatch(operator, address(0), to, ids, amounts);
+        emit TransferBatchByToken(operator, 0, ownerTo, ids, amounts);
 
         _afterTokenTransfer(operator, address(0), to, ids, amounts, data);
 
@@ -452,6 +458,7 @@ abstract contract ERC1155TrackerUpgradable is
         }
 
         emit TransferSingle(operator, from, address(0), id, amount);
+        emit TransferByToken(operator, fromToken, 0, id, amount);
 
         _afterTokenTransfer(operator, from, address(0), ids, amounts, "");
     }
@@ -472,23 +479,24 @@ abstract contract ERC1155TrackerUpgradable is
         require(ids.length == amounts.length, "ERC1155: ids and amounts length mismatch");
 
         address operator = _msgSender();
+        uint256 ownerFrom = getExtTokenId(from);
 
         _beforeTokenTransfer(operator, from, address(0), ids, amounts, "");
 
         for (uint256 i = 0; i < ids.length; i++) {
             uint256 id = ids[i];
             uint256 amount = amounts[i];
-
             // uint256 fromBalance = _balances[id][from];
-            uint256 fromBalance = _balances[id][getExtTokenId(from)];
+            uint256 fromBalance = _balances[id][ownerFrom];
             require(fromBalance >= amount, "ERC1155: burn amount exceeds balance");
             unchecked {
                 // _balances[id][from] = fromBalance - amount;
-                _balances[id][getExtTokenId(from)] = fromBalance - amount;
+                _balances[id][ownerFrom] = fromBalance - amount;
             }
         }
 
         emit TransferBatch(operator, from, address(0), ids, amounts);
+        emit TransferBatchByToken(operator, ownerFrom, 0, ids, amounts);
 
         _afterTokenTransfer(operator, from, address(0), ids, amounts, "");
     }
