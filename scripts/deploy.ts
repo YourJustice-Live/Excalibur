@@ -4,6 +4,7 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { ethers } from "hardhat";
+const {  upgrades } = require("hardhat");
 
 //Track Addresses (Fill in present addresses to prevent new deplopyment)
 import contractAddr from "./_contractAddr";
@@ -71,6 +72,7 @@ async function main() {
     console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.hub+ " "+ contractAddr.config+ " "+contractAddr.jurisdiction+ " "+contractAddr.case);
   }
 
+  /*
   //--- Avatar
   if(!contractAddr.avatar){
     //Deploy Avatar
@@ -91,6 +93,38 @@ async function main() {
       }
     }
   }
+  */
+
+
+  //--- Avatar Upgradable
+  if(!contractAddr.avatar){
+    //Deploy Avatar Upgradable
+    const SoulUpgradable = await ethers.getContractFactory("SoulUpgradable");
+    // deploying new proxy
+    const proxyAvatar = await upgrades.deployProxy(SoulUpgradable,
+        [contractAddr.hub],{
+        // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
+        kind: "uups",
+        timeout: 120000
+    });
+    await proxyAvatar.deployed();
+    contractAddr.avatar = proxyAvatar.address;
+    
+    //Log
+    console.log("Deployed Avatar Contract to " + contractAddr.avatar);
+    console.log("Run: npx hardhat verify --network rinkeby "+contractAddr.avatar+" "+contractAddr.hub);
+    if(!!hubContract){  //If Deployed Together
+      try{
+        //Set to HUB
+        hubContract.setAssoc("avatar", contractAddr.avatar);
+      }
+      catch(error){
+        console.error("Failed to Set Avatar Contract to Hub", error);
+      }
+    }
+  }
+
+
 
   //--- Action Repo
   if(!contractAddr.history){
