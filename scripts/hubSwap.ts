@@ -22,7 +22,7 @@ async function main() {
     //Old Hub
     let oldHubContract = await ethers.getContractFactory("Hub").then(res => res.attach(oldHubAddr));
     //Move Asset Contracts to new Hub
-    oldHubContract.hubChange(contractAddr.hub);
+    oldHubContract.hubChange(contractAddr.hub);     //TX FAILS
 
 
     /* Upgradable Hub

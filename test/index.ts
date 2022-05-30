@@ -511,7 +511,6 @@ describe("Protocol", function () {
       let posts = [
         {
           entRole: "admin",
-          // postRole: "evidence",
           uri: test_uri,
         }
       ];
