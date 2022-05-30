@@ -24,7 +24,7 @@ import "./interfaces/ICase.sol";
 import "./interfaces/IAvatar.sol";
 import "./libraries/DataTypes.sol";
 import "./abstract/ContractBase.sol";
-import "./abstract/Assoc.sol";
+// import "./abstract/Assoc.sol";
 import "./abstract/AssocExt.sol";
 
 
@@ -41,7 +41,6 @@ contract HubUpgradable is
         , ContractBase
         , OwnableUpgradeable 
         , UUPSUpgradeable
-        // , Assoc
         , AssocExt
         , ERC165Upgradeable
     {
@@ -63,7 +62,7 @@ contract HubUpgradable is
 
     // Arbitrary contract designation signature
     string public constant override role = "YJHub";
-    string public constant symbol = "YJHub";
+    string public constant override symbol = "YJHub";
 
     //--- Storage
     // address internal _CONFIG;    //Configuration Contract

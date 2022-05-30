@@ -7,12 +7,15 @@ interface IHub {
     
     //--- Functions
 
+    /// Arbitrary contract symbol
+    function symbol() external view returns (string memory);
+    
     /// Arbitrary contract designation signature
     function role() external view returns (string memory);
     
     /// Get Owner
     function owner() external view returns (address);
-    
+
     /// Make a new Jurisdiction
     function jurisdictionMake(string calldata name_, string calldata uri_) external returns (address);
 

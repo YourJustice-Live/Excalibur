@@ -55,7 +55,7 @@ contract Hub is
 
     // Arbitrary contract designation signature
     string public constant override role = "YJHub";
-    string public constant symbol = "YJHub";
+    string public constant override symbol = "YJHUB";
 
     //--- Storage
     // address internal _CONFIG;    //Configuration Contract

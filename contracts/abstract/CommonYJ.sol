@@ -31,12 +31,14 @@ abstract contract CommonYJ is ICommonYJ, Ownable {
         return _HUB.owner();
     }
 
-    /// Set Hub Contract
-    function _setHub(address hubAddr) internal {
-        //Validate Contract's Designation
-        require(keccak256(abi.encodePacked(IHub(hubAddr).role())) == keccak256(abi.encodePacked("YJHub")), "Invalid Hub Contract");
-        //Set
-        _HUB = IHub(hubAddr);
+    /// Get Current Hub Contract Address
+    function getHub() external view override returns(address) {
+        return _getHub();
+    }
+
+    /// Get Hub Contract
+    function _getHub() internal view returns(address) {
+        return address(_HUB);
     }
 
     /// Change Hub (Move To a New Hub)
@@ -46,8 +48,12 @@ abstract contract CommonYJ is ICommonYJ, Ownable {
     }
 
     /// Set Hub Contract
-    function _getHub() internal view returns(address) {
-        return address(_HUB);
+    function _setHub(address hubAddr) internal {
+        //Validate Contract's Designation
+        require(keccak256(abi.encodePacked(IHub(hubAddr).role())) == keccak256(abi.encodePacked("YJHub")), "Invalid Hub Contract");
+        // require(keccak256(abi.encodePacked(IHub(hubAddr).symbol())) == keccak256(abi.encodePacked("YJHUB")), "Invalid Hub Contract");
+        //Set
+        _HUB = IHub(hubAddr);
     }
     
 }

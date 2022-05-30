@@ -97,7 +97,6 @@ contract CaseUpgradable is
         _roleAssign(tx.origin, "plaintiff", 1);
         //Assign Roles
         for (uint256 i = 0; i < assignRoles.length; ++i) {
-            // _roleAssign(assignRoles[i].account, assignRoles[i].role, 1);
             _roleAssign(_getAccount(assignRoles[i].tokenId), assignRoles[i].role, 1);
         }
         //Add Rules

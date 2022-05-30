@@ -24,7 +24,6 @@ abstract contract CommonYJUpgradable is ICommonYJ, OwnableUpgradeable {
 
     /// Initializer
     function __CommonYJ_init(address hub) internal onlyInitializing {
-        // __Ownable_init();    //No Need
         //Set Protocol's Config Address
         _setHub(hub);
     }
@@ -32,6 +31,22 @@ abstract contract CommonYJUpgradable is ICommonYJ, OwnableUpgradeable {
     /// Inherit owner from Protocol's config
     function owner() public view override(ICommonYJ, OwnableUpgradeable) returns (address) {
         return _HUB.owner();
+    }
+
+    /// Get Current Hub Contract Address
+    function getHub() external view override returns(address) {
+        return _getHub();
+    }
+
+    /// Set Hub Contract
+    function _getHub() internal view returns(address) {
+        return address(_HUB);
+    }
+    
+    /// Change Hub (Move To a New Hub)
+    function setHub(address hubAddr) external override {
+        require(_msgSender() == address(_HUB), "HUB:UNAUTHORIZED_CALLER");
+        _setHub(hubAddr);
     }
 
     /// Set Hub Contract
@@ -42,15 +57,4 @@ abstract contract CommonYJUpgradable is ICommonYJ, OwnableUpgradeable {
         _HUB = IHub(hubAddr);
     }
 
-    /// Change Hub (Move To a New Hub)
-    function setHub(address hubAddr) external override {
-        require(_msgSender() == address(_HUB), "HUB:UNAUTHORIZED_CALLER");
-        _setHub(hubAddr);
-    }
-
-    /// Set Hub Contract
-    function _getHub() internal view returns(address) {
-        return address(_HUB);
-    }
-    
 }
