@@ -8,7 +8,6 @@ const {  upgrades } = require("hardhat");
 // const ZERO_ADDR = '0x0000000000000000000000000000000000000000';
 // let test_uri = "ipfs://QmQxkoWcpFgMa7bCzxaANWtSt43J1iMgksjNnT4vM1Apd7"; //"TEST_URI";
 
-
 describe("Deployment", function () {
     let jurisdictionContract: Contract;
     let caseContract: Contract;
@@ -29,7 +28,7 @@ describe("Deployment", function () {
         //Populate Accounts
         [account1, account2] = await ethers.getSigners();
 
-        //--- ActionRepo
+        //--- AssocRepo
         assocRepoContract = await ethers.getContractFactory("AssocRepo").then(res => res.deploy());
         await assocRepoContract.deployed();
        
@@ -65,24 +64,17 @@ describe("Deployment", function () {
         hubContract.setAssoc("avatar", avatarContract.address);
         */
 
-        /*
-        //--- ActionRepo
-        actionRepoContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
-        //Set Avatar Contract to Hub
-        hubContract.setAssoc("history", actionRepoContract.address);
-        */
 
     });
 
     it("Should Deploy Upgradable Hub Contract", async function () {
         //Deploy Avatar Upgradable
         const HubUpgradable = await ethers.getContractFactory("HubUpgradable");
-        
         // deploying new proxy
         const proxyHub = await upgrades.deployProxy(HubUpgradable,
             [
-                configContract.address, 
                 assocRepoContract.address, 
+                configContract.address, 
                 jurisdictionContract.address,
                 caseContract.address,
             ],{
@@ -124,6 +116,13 @@ describe("Deployment", function () {
         await this.avatarContract.add("");
     });
 
+    it("Should Deploy History (ActionRepo)", async function () {
+         //--- ActionRepo
+        actionRepoContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
+        //Set Action Repo Contract to Hub
+        hubContract.setAssoc("history", actionRepoContract.address);
+    });
+
     /* COPIED
     it("Should Be Secure", async function () {
         await expect(
@@ -152,5 +151,21 @@ describe("Deployment", function () {
         expect(await actionContract.owner()).to.equal(this.addr2);
     });
     */
-    
+        
+    describe("Mock", function () {
+        it("Should Deploy Mock Hub Contract", async function () {
+            //--- Mock Hub
+            let mockHub = await ethers.getContractFactory("HubMock").then(res => res.deploy(
+                assocRepoContract.address, 
+                configContract.address, 
+                jurisdictionContract.address,
+                caseContract.address
+            ));
+            await mockHub.deployed();
+            // console.log("MockHub Deployed to:", mockHub.address);
+        });
+    });
+
 });
+
+

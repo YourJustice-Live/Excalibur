@@ -83,8 +83,8 @@ contract HubUpgradable is
 
     /// Initializer
     function initialize (
-        address config, 
         IAssocRepo assocRepo, 
+        address config, 
         address jurisdictionContract, 
         address caseContract
     ) public initializer {
