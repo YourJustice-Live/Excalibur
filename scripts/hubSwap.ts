@@ -10,40 +10,16 @@ const {  upgrades } = require("hardhat");
 // import publicAddr from "./_publicAddrs";
 import contractAddr from "./_contractAddr";
 
-let oldHubAddr = "0x25b1c6923a42F00028F878ff4D01B2030Cb69D75";
+let oldHubAddr = "0x288B2040e78dC90D73d8Ed0957ed706260DC8EfE";
 
 /**
- * Deploy Independent Public Agents
+ * Migrate Contracts Between Hubs
  */
 async function main() {
-
-
-    /* Non-Upgradable Hub */
     //Old Hub
     let oldHubContract = await ethers.getContractFactory("Hub").then(res => res.attach(oldHubAddr));
     //Move Asset Contracts to new Hub
-    oldHubContract.hubChange(contractAddr.hub);     //TX FAILS
-
-
-    /* Upgradable Hub
-    let oldHubContract = await ethers.getContractFactory("HubUpgradable").then(res => res.attach(oldHubAddr));
-    let newHubContract = await ethers.getContractFactory("HubUpgradable").then(res => res.attach(contractAddr.hub));
-
-    
-    //Register Beacon
-    // await upgrades.forceImport(oldHubContract.address, OldImplementation);
-    //Validate Upgrade
-    await upgrades.prepareUpgrade(oldHubContract.address, newHubContract);
-
-    //Upgrade
-    // await upgrades.upgradeProxy(oldHubContract, newHubContract);
-
-    //Attach
-    // const newFactoryContract = await newHubContract.attach(oldHubContract.address);
-
-    //Log
-    console.log("Hub Updated Contract Updated");
-    */
+    oldHubContract.hubChange(contractAddr.hub);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
