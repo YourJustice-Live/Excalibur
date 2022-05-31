@@ -50,6 +50,7 @@ async function main() {
     console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.case);
   }
 
+  /*
   //--- Hub
   if(!contractAddr.hub){
     //Deploy Hub
@@ -71,6 +72,59 @@ async function main() {
     console.log("Deployed Hub Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " jurisdiction: "+contractAddr.jurisdiction+ " Case: "+ contractAddr.case);
     console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.hub+ " "+ contractAddr.config+ " "+contractAddr.jurisdiction+ " "+contractAddr.case);
   }
+  */
+
+  
+  //--- TEST: Upgradable Hub
+  if(!contractAddr.hub){
+
+
+    //Deploy Avatar Upgradable
+    const HubUpgradable = await ethers.getContractFactory("HubUpgradable");
+          
+    console.log("*** Start W/HubUpgradable",  [
+      publicAddr.assocRepo,
+      contractAddr.config, 
+      contractAddr.jurisdiction,
+      contractAddr.case,
+    ]);
+
+    // deploying new proxy
+    const proxyHub = await upgrades.deployProxy(HubUpgradable,
+        [
+          publicAddr.assocRepo,
+          contractAddr.config, 
+          contractAddr.jurisdiction,
+          contractAddr.case,
+        ],{
+        // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
+        kind: "uups",
+        timeout: 120000
+    });
+    await proxyHub.deployed();
+    hubContract = proxyHub;
+
+    console.log("HubUpgradable deployed to:", hubContract.address);
+
+    try{
+      //Set as Avatars
+      if(!!contractAddr.avatar) await hubContract.setAssoc("avatar", contractAddr.avatar);
+      //Set as History
+      if(!!contractAddr.history) await hubContract.setAssoc("history", contractAddr.history);
+    }
+    catch(error){
+      console.error("Failed to Set Contracts to Hub", error);
+    }
+
+    //Set Address
+    contractAddr.hub = hubContract.address;
+
+    //Log
+    console.log("Deployed Hub Upgradable Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " jurisdiction: "+contractAddr.jurisdiction+ " Case: "+ contractAddr.case);
+    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.hub+" "+publicAddr.assocRepo+" "+ contractAddr.config+" "+contractAddr.jurisdiction+ " "+contractAddr.case);
+  }
+
+
 
   /*
   //--- Avatar
@@ -111,8 +165,8 @@ async function main() {
     contractAddr.avatar = proxyAvatar.address;
     
     //Log
-    console.log("Deployed Avatar Contract to " + contractAddr.avatar);
-    console.log("Run: npx hardhat verify --network rinkeby "+contractAddr.avatar+" "+contractAddr.hub);
+    console.log("Deployed Avatar Proxy Contract to " + contractAddr.avatar);
+    // console.log("Run: npx hardhat verify --network rinkeby "+contractAddr.avatar);
     if(!!hubContract){  //If Deployed Together
       try{
         //Set to HUB
@@ -123,8 +177,6 @@ async function main() {
       }
     }
   }
-
-
 
   //--- Action Repo
   if(!contractAddr.history){
