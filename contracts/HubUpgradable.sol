@@ -81,29 +81,21 @@ contract HubUpgradable is
             || super.supportsInterface(interfaceId);
     }
 
-    // constructor(address config, address jurisdictionContract, address caseContract){
-    //     //Set Protocol's Config Address
-    //     _setConfig(config);
-    //     //Init Jurisdiction Contract Beacon
-    //     UpgradeableBeacon _beaconJ = new UpgradeableBeacon(jurisdictionContract);
-    //     beaconJurisdiction = address(_beaconJ);
-    //     //Init Case Contract Beacon
-    //     UpgradeableBeacon _beaconC = new UpgradeableBeacon(caseContract);
-    //     beaconCase = address(_beaconC);
-    // }
-
     /// Initializer
-    function initialize (address config, IAssocRepo assocRepo, address jurisdictionContract, address caseContract) public initializer {
-        //Initializers
-        __UUPSUpgradeable_init();
-        //Set Contract URI
-        // _setContractURI(uri_);
-        
-        //Set Protocol's Config Address
-        _setConfig(config);
+    function initialize (
+        address config, 
+        IAssocRepo assocRepo, 
+        address jurisdictionContract, 
+        address caseContract
+    ) public initializer {
         //Set Association Repo Address
         _setAssocRepo(assocRepo);
-
+        //Initializers
+        __UUPSUpgradeable_init();
+        //Set Protocol's Config Address
+        _setConfig(config);
+        //Set Contract URI
+        // _setContractURI(uri_);
         //Init Jurisdiction Contract Beacon
         UpgradeableBeacon _beaconJ = new UpgradeableBeacon(jurisdictionContract);
         beaconJurisdiction = address(_beaconJ);
@@ -117,14 +109,11 @@ contract HubUpgradable is
 
     /// @dev Returns the address of the current owner.
     function owner() public view override(IHub, OwnableUpgradeable) returns (address) {
-        // return _CONFIG.owner();
         return IConfig(getConfig()).owner();
     }
 
     /// Get Configurations Contract Address
     function getConfig() public view returns (address) {
-        // return _CONFIG;
-        // return address(_CONFIG);
         return assocRepo().get("config");
     }
 
@@ -138,7 +127,6 @@ contract HubUpgradable is
         //Validate Contract's Designation
         require(keccak256(abi.encodePacked(IConfig(config).symbol())) == keccak256(abi.encodePacked("YJConfig")), "Invalid Config Contract");
         //Set
-        // _CONFIG = IConfig(config);
         assocRepo().set("config", config);
     }
 
@@ -238,6 +226,7 @@ contract HubUpgradable is
 
         // console.log("Hub: Add Reputation to Contract:", contractAddr, tokenId, amount);
         // console.log("Hub: Add Reputation in Domain:", domain);
+
         address avatarContract = assocRepo().get("avatar");
         //Update Avatar's Reputation    //TODO: Just Check if Contract Implements IRating
         if(avatarContract != address(0) && avatarContract == contractAddr){
