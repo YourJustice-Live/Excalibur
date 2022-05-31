@@ -74,7 +74,6 @@ describe("Deployment", function () {
 
     });
 
-/* */
     it("Should Deploy Upgradable Hub Contract", async function () {
         //Deploy Avatar Upgradable
         const HubUpgradable = await ethers.getContractFactory("HubUpgradable");
