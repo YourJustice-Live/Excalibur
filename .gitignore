@@ -1,10 +1,19 @@
 node_modules
-typechain-types
 .env
 coverage
 coverage.json
 package-lock.json
 
+
 #Hardhat files
 cache
 artifacts
+
+typechain-types
+typechain-types/
+typechain-types/AvatarNFT.ts
+typechain-types/ERC1155GUID.ts
+typechain-types/IERC1155GUID.ts
+typechain-types/index.ts
+typechain-types/IJurisdiction.ts
+typechain-types/hardhat.d.ts
