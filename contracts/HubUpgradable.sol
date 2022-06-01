@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
@@ -135,12 +135,16 @@ contract HubUpgradable is
         //Avatar
         address avatarContract = assocRepo().get("avatar");
         if(avatarContract != address(0)){
-            ICommonYJ(avatarContract).setHub(newHubAddr);
+            try ICommonYJ(avatarContract).setHub(newHubAddr){}  //Failure should not be fatal
+            catch Error(string memory /*reason*/) {}
         }
         //History
         address actionRepo = assocRepo().get("history");
         if(actionRepo != address(0)){
-            ICommonYJ(actionRepo).setHub(newHubAddr);
+            try ICommonYJ(actionRepo).setHub(newHubAddr) {}   //Failure should not be fatal
+            catch Error(string memory reason) {
+                console.log("Failed to update Hub for ActionRepo Contract", reason);
+            }
         }
         //Emit Hub Change Event
         emit HubChanged(newHubAddr);
@@ -220,12 +224,8 @@ contract HubUpgradable is
 
     /// Add Reputation (Positive or Negative)       /// Opinion Updated
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) public override {
-
         //TODO: Validate - Known Jurisdiction
         // require(_jurisdictions[_msgSender()], "NOT A VALID JURISDICTION");
-
-        // console.log("Hub: Add Reputation to Contract:", contractAddr, tokenId, amount);
-        // console.log("Hub: Add Reputation in Domain:", domain);
 
         address avatarContract = assocRepo().get("avatar");
         //Update Avatar's Reputation    //TODO: Just Check if Contract Implements IRating
@@ -237,16 +237,8 @@ contract HubUpgradable is
     /// Add Repuation to Avatar
     function _repAddAvatar(uint256 tokenId, string calldata domain, bool rating, uint8 amount) internal {
         address avatarContract = assocRepo().get("avatar");
-        // require(avatarContract != address(0), "AVATAR_CONTRACT_UNKNOWN");
-        // repAdd(avatarContract, tokenId, domain, rating, amount);
-        // IAvatar(avatarContract).repAdd(tokenId, domain, rating, amount);
-        try IAvatar(avatarContract).repAdd(tokenId, domain, rating, amount) {   //Failure should not be fatal
-            // return "";
-        } catch Error(string memory /*reason*/) {
-        // } catch Error(string memory reason) {
-            // console.log("Avatar Rep Change Failed W/" , reason);
-            // return reason;
-        }
+        try IAvatar(avatarContract).repAdd(tokenId, domain, rating, amount) {}   //Failure should not be fatal
+        catch Error(string memory /*reason*/) {}
     }
 
     //-- Upgrades
@@ -254,19 +246,18 @@ contract HubUpgradable is
     /// Upgrade Case Implementation
     function upgradeCaseImplementation(address newImplementation) public onlyOwner {
         //Validate Interface
-        // require(IERC165(newImplementation).supportsInterface(type(ICase).interfaceId), "Implmementation Does Not Support Case Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
+        // require(IERC165(newImplementation).supportsInterface(type(ICase).interfaceId), "Implmementation Does Not Support Case Interface");  //Would Cause Problems on Interface Update. Keep disabled for now.
 
         //Upgrade Beacon
         UpgradeableBeacon(beaconCase).upgradeTo(newImplementation);
         //Upgrade Event
-        // emit UpdatedCaseImplementation(newImplementation);
         emit UpdatedImplementation("case", newImplementation);
     }
 
     /// Upgrade Jurisdiction Implementation [TBD]
     function upgradeJurisdictionImplementation(address newImplementation) public onlyOwner {
         //Validate Interface
-        // require(IERC165(newImplementation).supportsInterface(type(ICase).interfaceId), "Implmementation Does Not Support Case Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
+        // require(IERC165(newImplementation).supportsInterface(type(ICase).interfaceId), "Implmementation Does Not Support Case Interface");  //Would Cause Problems on Interface Update. Keep disabled for now.
 
         //Upgrade Beacon
         UpgradeableBeacon(beaconJurisdiction).upgradeTo(newImplementation);
