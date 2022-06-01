@@ -8,11 +8,15 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "../interfaces/ICommonYJ.sol";
 import "../interfaces/IHub.sol";
 import "../libraries/DataTypes.sol";
+import "../abstract/ContractBase.sol";
 
 /**
  * Common Protocol Functions
  */
-abstract contract CommonYJUpgradable is ICommonYJ, OwnableUpgradeable {
+abstract contract CommonYJUpgradable is 
+        ICommonYJ, 
+        ContractBase, 
+        OwnableUpgradeable {
     
     //--- Storage
 

@@ -13,7 +13,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "./interfaces/IAvatar.sol";
 import "./abstract/Opinions.sol";
-import "./abstract/ContractBase.sol";
+// import "./abstract/ContractBase.sol";
 import "./abstract/CommonYJUpgradable.sol";
 
 
@@ -32,7 +32,7 @@ import "./abstract/CommonYJUpgradable.sol";
 contract SoulUpgradable is 
         IAvatar, 
         Initializable,
-        ContractBase,
+        // ContractBase,
         CommonYJUpgradable, 
         UUPSUpgradeable,
         Opinions,
