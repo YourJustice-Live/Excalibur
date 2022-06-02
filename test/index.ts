@@ -17,6 +17,7 @@ describe("Protocol", function () {
   let jurisdictionContract: Contract;
   // let jurisdictionUpContract: Contract;
   // let caseContract: Contract;
+  let unOwnedTokenId: number;
 
   //Addresses
   let owner: Signer;
@@ -134,13 +135,14 @@ describe("Protocol", function () {
     // });
 
     it("Can add other people", async function () {
+      unOwnedTokenId = await avatarContract.connect(tester).callStatic.add(test_uri);
       await avatarContract.connect(tester).add(test_uri);
       await avatarContract.connect(tester).add(test_uri);
       let tx = await avatarContract.connect(tester).add(test_uri);
       tx.wait();
       // console.log("minting", tx);
       //Fetch Token
-      let result = await avatarContract.ownerOf(3);
+      let result = await avatarContract.ownerOf(unOwnedTokenId);
       //Check Owner
       expect(result).to.equal(await avatarContract.address);
       //Check URI
@@ -322,7 +324,20 @@ describe("Protocol", function () {
       //Check After
       expect(await this.jurisdictionContract.roleHas(this.judgeAddr, "judge")).to.equal(true);
     });
-    
+
+    it("Admin can Assign Roles to Lost-Souls", async function () {
+      // let testerAddr = await tester.getAddress();
+      //Check Before
+      // expect(await this.jurisdictionContract.roleHas(this.judgeAddr, "judge")).to.equal(false);
+      //Assign Judge
+      this.jurisdictionContract.connect(admin).roleAssignToToken(unOwnedTokenId, "judge")
+      //Check After
+      // expect(await this.jurisdictionContract.roleHas(this.judgeAddr, "judge")).to.equal(true);
+
+      //TODO: Role Check by Token ID
+      
+    });
+
     it("Can change Roles (Promote / Demote)", async function () {
       //Check Before
       expect(await this.jurisdictionContract.roleHas(this.tester4Addr, "admin")).to.equal(false);
