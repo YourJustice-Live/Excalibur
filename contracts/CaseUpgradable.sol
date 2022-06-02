@@ -97,7 +97,8 @@ contract CaseUpgradable is
         _roleAssign(tx.origin, "plaintiff", 1);
         //Assign Roles
         for (uint256 i = 0; i < assignRoles.length; ++i) {
-            _roleAssign(_getAccount(assignRoles[i].tokenId), assignRoles[i].role, 1);
+            _roleAssignToToken(assignRoles[i].tokenId, assignRoles[i].role, 1);
+
         }
         //Add Rules
         for (uint256 i = 0; i < addRules.length; ++i) {
@@ -140,7 +141,7 @@ contract CaseUpgradable is
         require(owner() == _msgSender()      //Owner
             || roleHas(_msgSender(), "admin")    //Admin Role
             , "INVALID_PERMISSIONS");
-        _roleAssign(_getAccount(ownerToken), role, 1);
+        _roleAssignToToken(ownerToken, role, 1);
     }
     
     /// Remove Tethered Token from a Role

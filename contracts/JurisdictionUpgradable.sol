@@ -204,7 +204,6 @@ contract JurisdictionUpgradable is
         require(owner() == _msgSender()      //Owner
             || roleHas(_msgSender(), "admin")    //Admin Role
             , "INVALID_PERMISSIONS");
-        //Add
         _roleAssignToToken(ownerToken, role, 1);
     }
 
