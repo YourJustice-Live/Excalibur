@@ -237,8 +237,8 @@ abstract contract ERC1155TrackerUpgradable is
 
         _beforeTokenTransfer(operator, from, to, ids, amounts, data);
 
-        uint256 ownerFrom = getExtTokenId(from);
-        uint256 ownerTo = getExtTokenId(to);
+        uint256 ownerFrom = _getExtTokenId(from);
+        uint256 ownerTo = _getExtTokenId(to);
 
         // uint256 fromBalance = _balances[id][from];
         uint256 fromBalance = _balances[id][ownerFrom];
@@ -282,8 +282,8 @@ abstract contract ERC1155TrackerUpgradable is
 
         _beforeTokenTransfer(operator, from, to, ids, amounts, data);
 
-        uint256 ownerFrom = getExtTokenId(from);
-        uint256 ownerTo = getExtTokenId(to);
+        uint256 ownerFrom = _getExtTokenId(from);
+        uint256 ownerTo = _getExtTokenId(to);
 
         for (uint256 i = 0; i < ids.length; ++i) {
             uint256 id = ids[i];
