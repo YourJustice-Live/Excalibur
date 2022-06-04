@@ -117,7 +117,7 @@ interface IERC1155Tracker is IERC165Upgradeable {
      * - `from` must have a balance of tokens of type `id` of at least `amount`.
      * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the
      * acceptance magic value.
-     */
+     * /
     function safeTransferFrom(
         address from,
         address to,
@@ -136,7 +136,7 @@ interface IERC1155Tracker is IERC165Upgradeable {
      * - `ids` and `amounts` must have the same length.
      * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and return the
      * acceptance magic value.
-     */
+     * /
     function safeBatchTransferFrom(
         address from,
         address to,
@@ -144,4 +144,5 @@ interface IERC1155Tracker is IERC165Upgradeable {
         uint256[] calldata amounts,
         bytes calldata data
     ) external;
+    */
 }

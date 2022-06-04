@@ -60,9 +60,11 @@ abstract contract ERC1155TrackerUpgradable is
 
     /// Get a Token ID Based on account address (Throws)
     function getExtTokenId(address account) public view returns(uint256) {
+        //Validate Input
+        require(account != _targetContract, "ERC1155Tracker: source contract address is not a valid account");
         //Get
         uint256 ownerToken = _getExtTokenId(account);
-        //Validate
+        //Validate Output
         require(ownerToken != 0, "ERC1155Tracker: requested account not found on source contract");
         //Return
         return ownerToken;
@@ -70,6 +72,9 @@ abstract contract ERC1155TrackerUpgradable is
 
     /// Get a Token ID Based on account address
     function _getExtTokenId(address account) internal view returns (uint256) {
+
+        // console.log("Getting Token For Account", account);
+
         // require(account != address(0), "ERC1155Tracker: address zero is not a valid account");       //Redundant 
         require(account != _targetContract, "ERC1155Tracker: source contract address is not a valid account");
         //Run function on destination contract
@@ -178,7 +183,7 @@ abstract contract ERC1155TrackerUpgradable is
 
     /**
      * @dev See {IERC1155-safeTransferFrom}.
-     */
+     * /
     function safeTransferFrom(
         address from,
         address to,
@@ -195,7 +200,7 @@ abstract contract ERC1155TrackerUpgradable is
 
     /**
      * @dev See {IERC1155-safeBatchTransferFrom}.
-     */
+     * /
     function safeBatchTransferFrom(
         address from,
         address to,
@@ -221,7 +226,7 @@ abstract contract ERC1155TrackerUpgradable is
      * - `from` must have a balance of tokens of type `id` of at least `amount`.
      * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the
      * acceptance magic value.
-     */
+     * /
     function _safeTransferFrom(
         address from,
         address to,
@@ -267,7 +272,7 @@ abstract contract ERC1155TrackerUpgradable is
      *
      * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and return the
      * acceptance magic value.
-     */
+     * /
     function _safeBatchTransferFrom(
         address from,
         address to,
