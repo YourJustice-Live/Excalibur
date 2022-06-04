@@ -407,15 +407,15 @@ abstract contract ERC1155TrackerUpgradable is
 
         _beforeTokenTransfer(operator, address(0), to, ids, amounts, data);
 
-        uint256 ownerTo = getExtTokenId(to);
+        uint256 ownerToken = getExtTokenId(to);
 
         for (uint256 i = 0; i < ids.length; i++) {
             // _balances[ids[i]][to] += amounts[i];
-            _balances[ids[i]][ownerTo] += amounts[i];
+            _balances[ids[i]][ownerToken] += amounts[i];
         }
 
         emit TransferBatch(operator, address(0), to, ids, amounts);
-        emit TransferBatchByToken(operator, 0, ownerTo, ids, amounts);
+        emit TransferBatchByToken(operator, 0, ownerToken, ids, amounts);
 
         _afterTokenTransfer(operator, address(0), to, ids, amounts, data);
 
