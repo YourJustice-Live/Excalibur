@@ -28,7 +28,7 @@ abstract contract ERC1155GUIDTrackerUp is
     using CountersUpgradeable for CountersUpgradeable.Counter;
     CountersUpgradeable.Counter internal _tokenIds; //Track Last Token ID
     using AddressArray for address[];
-    mapping(uint256 => address[]) internal _uniqueMembers; //Index Unique Members by Role
+    
     mapping(bytes32 => uint256) internal _GUID; //NFTs as GUID
 
     //Token Metadata URI
@@ -42,16 +42,6 @@ abstract contract ERC1155GUIDTrackerUp is
     }
 
     //--- Functions
-
-    /// Unique Members Count (w/Token)
-    function uniqueMembers(uint256 id) public view override returns (address[] memory) {
-        return _uniqueMembers[id];
-    }
-
-    /// Unique Members Count (w/Token)
-    function uniqueMembersCount(uint256 id) public view override returns (uint256) {
-        return uniqueMembers(id).length;
-    }
 
     /**
      * @dev See {IERC165-supportsInterface}.
@@ -145,34 +135,6 @@ abstract contract ERC1155GUIDTrackerUp is
     /// Get Metadata URI by GUID
     function GUIDURI(bytes32 guid) public view override returns(string memory) {
         return _tokenURIs[_GUIDToId(guid)];
-    }
-
-    /// Track Unique Tokens
-    function _beforeTokenTransfer(
-        address operator,
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
-    ) internal virtual override {
-        super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
-        if (from == address(0)) {   //Mint
-            for (uint256 i = 0; i < ids.length; ++i) {
-                uint256 id = ids[i];
-                if(balanceOf(to, id) == 0){
-                    _uniqueMembers[id].push(to);
-                }
-            }
-        }
-        if (to == address(0)) { //Burn
-            for (uint256 i = 0; i < ids.length; ++i) {
-                uint256 id = ids[i];
-                if(balanceOf(from, id) == amounts[i]){   //Burn All
-                    _uniqueMembers[id].removeItem(from);
-                }
-            }
-        }
     }
 
 }

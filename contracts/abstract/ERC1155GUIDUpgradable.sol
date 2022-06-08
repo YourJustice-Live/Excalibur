@@ -41,12 +41,12 @@ abstract contract ERC1155GUIDUpgradable is IERC1155GUID, ERC1155Upgradeable {
     //--- Functions
 
     /// Unique Members Count (w/Token)
-    function uniqueMembers(uint256 id) public view override returns (address[] memory) {
+    function uniqueMembers(uint256 id) public view returns (address[] memory) {
         return _uniqueMembers[id];
     }
 
     /// Unique Members Count (w/Token)
-    function uniqueMembersCount(uint256 id) public view override returns (uint256) {
+    function uniqueMembersCount(uint256 id) public view returns (uint256) {
         return uniqueMembers(id).length;
     }
 

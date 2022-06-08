@@ -18,6 +18,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 import "../interfaces/IERC1155Tracker.sol";
 import "../interfaces/IAvatar.sol";
+import "../libraries/AddressArray.sol";
 
 /**
  * @title ERC1155 Tracker Upgradable
@@ -30,6 +31,7 @@ abstract contract ERC1155TrackerUpgradable is
         IERC1155Tracker {
 
     using AddressUpgradeable for address;
+    using AddressArray for address[];
 
     // Mapping from token ID to account balances
     // mapping(uint256 => mapping(address => uint256)) private _balances;
@@ -39,6 +41,9 @@ abstract contract ERC1155TrackerUpgradable is
 
     // Manage Balances by External Token ID
     mapping(uint256 => mapping(uint256 => uint256)) private _balances;
+
+    //Index Unique Members for each TokenId
+    mapping(uint256 => address[]) internal _uniqueMembers;
 
     // Target Contract (External Source)
     address _targetContract;
@@ -72,9 +77,6 @@ abstract contract ERC1155TrackerUpgradable is
 
     /// Get a Token ID Based on account address
     function _getExtTokenId(address account) internal view returns (uint256) {
-
-        // console.log("Getting Token For Account", account);
-
         // require(account != address(0), "ERC1155Tracker: address zero is not a valid account");       //Redundant 
         require(account != _targetContract, "ERC1155Tracker: source contract address is not a valid account");
         //Run function on destination contract
@@ -90,6 +92,18 @@ abstract contract ERC1155TrackerUpgradable is
     // function _ExtTokenExists(uint256 extTokenId) internal view {
     //     return (_getAccount(extTokenId) != address(0));
     // }
+
+    /// Unique Members Count (w/Token)
+    function uniqueMembers(uint256 id) public view override returns (address[] memory) {
+        return _uniqueMembers[id];
+    }
+
+    /// Unique Members Count (w/Token)
+    function uniqueMembersCount(uint256 id) public view override returns (uint256) {
+        return uniqueMembers(id).length;
+    }
+
+    
 
     function _getAccount(uint256 extTokenId) internal view returns (address) {
         return IERC721(_targetContract).ownerOf(extTokenId);
@@ -540,7 +554,7 @@ abstract contract ERC1155TrackerUpgradable is
      * - `ids` and `amounts` have the same, non-zero length.
      *
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
-     */
+     * /
     function _beforeTokenTransfer(
         address operator,
         address from,
@@ -549,6 +563,34 @@ abstract contract ERC1155TrackerUpgradable is
         uint256[] memory amounts,
         bytes memory data
     ) internal virtual {}
+    */
+
+    /// Track Unique Tokens
+    function _beforeTokenTransfer(
+        address operator,
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) internal virtual {
+        if (from == address(0)) {   //Mint
+            for (uint256 i = 0; i < ids.length; ++i) {
+                uint256 id = ids[i];
+                if(balanceOf(to, id) == 0){
+                    _uniqueMembers[id].push(to);
+                }
+            }
+        }
+        if (to == address(0)) { //Burn
+            for (uint256 i = 0; i < ids.length; ++i) {
+                uint256 id = ids[i];
+                if(balanceOf(from, id) == amounts[i]){   //Burn All
+                    _uniqueMembers[id].removeItem(from);
+                }
+            }
+        }
+    }
 
     /**
      * @dev Hook that is called after any token transfer. This includes minting
