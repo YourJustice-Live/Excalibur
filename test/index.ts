@@ -475,14 +475,17 @@ describe("Protocol", function () {
       let roleRefArr = [
         {
           role: "subject",
-          // account: this.tester2Addr,
-          tokenId: tester2Token,
-        }
+          // tokenId: tester2Token,
+          tokenId: unOwnedTokenId,
+        },
+        {
+          role: "affected",
+          tokenId: unOwnedTokenId,
+        },
       ];
       let posts = [
         {
           entRole: "admin",
-          // postRole: "evidence",
           uri: test_uri,
         }
       ];
