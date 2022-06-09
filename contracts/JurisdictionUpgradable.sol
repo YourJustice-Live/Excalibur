@@ -233,10 +233,10 @@ contract JurisdictionUpgradable is
         roleRemove(account, roleOld);
     }
 
-    /** CANCELLED - Allow Uneven Role Distribution 
+    /** DEPRECATE - Allow Uneven Role Distribution 
     * @dev Hook that is called before any token transfer. This includes minting and burning, as well as batched variants.
     *  - Max of Single Token for each account
-    * /
+    */
     function _beforeTokenTransfer(
         address operator,
         address from,
@@ -257,7 +257,6 @@ contract JurisdictionUpgradable is
             }
         }
     }
-    */
 
     //** Rule Management
 
