@@ -574,7 +574,10 @@ abstract contract ERC1155TrackerUpgradable is
         uint256[] memory amounts,
         bytes memory data
     ) internal virtual {
-        if (from == address(0)) {   //Mint
+        //Index Unique Owners to Token IDs
+        // if ((from == address(0) || from == _targetContract) 
+            // && to != _targetContract) {   //Mint
+        if (!_isOwnerAddress(from) && _isOwnerAddress(to)) { //Mint
             for (uint256 i = 0; i < ids.length; ++i) {
                 uint256 id = ids[i];
                 if(balanceOf(to, id) == 0){
@@ -582,7 +585,9 @@ abstract contract ERC1155TrackerUpgradable is
                 }
             }
         }
-        if (to == address(0)) { //Burn
+        // if ((to == address(0) || to == _targetContract) 
+            // && from != _targetContract) { //Burn
+        if (_isOwnerAddress(from) && !_isOwnerAddress(to)) { //Burn
             for (uint256 i = 0; i < ids.length; ++i) {
                 uint256 id = ids[i];
                 if(balanceOf(from, id) == amounts[i]){   //Burn All
@@ -590,6 +595,10 @@ abstract contract ERC1155TrackerUpgradable is
                 }
             }
         }
+    }
+
+    function _isOwnerAddress(address addr) internal view returns(bool){
+        return (addr != address(0) && addr != _targetContract);
     }
 
     /**
