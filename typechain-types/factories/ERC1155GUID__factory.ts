@@ -43,31 +43,31 @@ const _abi = [
       },
       {
         indexed: false,
-        internalType: "address",
-        name: "contractAddress",
-        type: "address",
+        internalType: "bytes32",
+        name: "guid",
+        type: "bytes32",
       },
     ],
-    name: "CaseCreated",
+    name: "GUIDCreated",
     type: "event",
   },
   {
     anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: "uint256",
-        name: "id",
-        type: "uint256",
-      },
-      {
         indexed: false,
         internalType: "string",
-        name: "role",
+        name: "value",
         type: "string",
       },
+      {
+        indexed: true,
+        internalType: "bytes32",
+        name: "guid",
+        type: "bytes32",
+      },
     ],
-    name: "RoleCreated",
+    name: "GUIDURIChange",
     type: "event",
   },
   {
@@ -171,6 +171,49 @@ const _abi = [
         type: "address",
       },
       {
+        internalType: "bytes32",
+        name: "guid",
+        type: "bytes32",
+      },
+    ],
+    name: "GUIDHas",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "guid",
+        type: "bytes32",
+      },
+    ],
+    name: "GUIDURI",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
         internalType: "uint256",
         name: "id",
         type: "uint256",
@@ -233,66 +276,6 @@ const _abi = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "role",
-        type: "string",
-      },
-    ],
-    name: "roleAssign",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "role",
-        type: "string",
-      },
-    ],
-    name: "roleHas",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "role",
-        type: "string",
-      },
-    ],
-    name: "roleRemove",
-    outputs: [],
-    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -393,6 +376,44 @@ const _abi = [
         internalType: "bool",
         name: "",
         type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "id",
+        type: "uint256",
+      },
+    ],
+    name: "uniqueMembers",
+    outputs: [
+      {
+        internalType: "address[]",
+        name: "",
+        type: "address[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "id",
+        type: "uint256",
+      },
+    ],
+    name: "uniqueMembersCount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",

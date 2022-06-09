@@ -4,6 +4,7 @@
 import {
   BaseContract,
   BigNumber,
+  BigNumberish,
   BytesLike,
   CallOverrides,
   ContractTransaction,
@@ -12,28 +13,178 @@ import {
   Signer,
   utils,
 } from "ethers";
-import { FunctionFragment, Result } from "@ethersproject/abi";
+import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
+
+export declare namespace DataTypes {
+  export type RuleStruct = {
+    about: BytesLike;
+    affected: string;
+    negation: boolean;
+    uri: string;
+    disabled: boolean;
+  };
+
+  export type RuleStructOutput = [string, string, boolean, string, boolean] & {
+    about: string;
+    affected: string;
+    negation: boolean;
+    uri: string;
+    disabled: boolean;
+  };
+
+  export type ConfirmationStruct = {
+    ruling: string;
+    evidence: boolean;
+    witness: BigNumberish;
+  };
+
+  export type ConfirmationStructOutput = [string, boolean, BigNumber] & {
+    ruling: string;
+    evidence: boolean;
+    witness: BigNumber;
+  };
+
+  export type EffectStruct = {
+    name: string;
+    value: BigNumberish;
+    direction: boolean;
+  };
+
+  export type EffectStructOutput = [string, number, boolean] & {
+    name: string;
+    value: number;
+    direction: boolean;
+  };
+}
 
 export interface IJurisdictionInterface extends utils.Interface {
   contractName: "IJurisdiction";
   functions: {
+    "caseDisable(address)": FunctionFragment;
+    "caseHas(address)": FunctionFragment;
+    "initialize(address,string,string)": FunctionFragment;
     "join()": FunctionFragment;
     "leave()": FunctionFragment;
+    "repAdd(address,uint256,string,bool,uint8)": FunctionFragment;
+    "roleAssign(address,string)": FunctionFragment;
+    "roleAssignToToken(uint256,string)": FunctionFragment;
+    "roleChange(address,string,string)": FunctionFragment;
+    "roleRemove(address,string)": FunctionFragment;
+    "roleRemoveFromToken(uint256,string)": FunctionFragment;
+    "ruleAdd((bytes32,string,bool,string,bool),(string,bool,uint256),(string,uint8,bool)[])": FunctionFragment;
+    "ruleConfirmationUpdate(uint256,(string,bool,uint256))": FunctionFragment;
+    "ruleUpdate(uint256,(bytes32,string,bool,string,bool),(string,uint8,bool)[])": FunctionFragment;
+    "setContractURI(string)": FunctionFragment;
+    "setRoleURI(string,string)": FunctionFragment;
     "symbol()": FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: "caseDisable", values: [string]): string;
+  encodeFunctionData(functionFragment: "caseHas", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "initialize",
+    values: [string, string, string]
+  ): string;
   encodeFunctionData(functionFragment: "join", values?: undefined): string;
   encodeFunctionData(functionFragment: "leave", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "repAdd",
+    values: [string, BigNumberish, string, boolean, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "roleAssign",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "roleAssignToToken",
+    values: [BigNumberish, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "roleChange",
+    values: [string, string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "roleRemove",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "roleRemoveFromToken",
+    values: [BigNumberish, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "ruleAdd",
+    values: [
+      DataTypes.RuleStruct,
+      DataTypes.ConfirmationStruct,
+      DataTypes.EffectStruct[]
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "ruleConfirmationUpdate",
+    values: [BigNumberish, DataTypes.ConfirmationStruct]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "ruleUpdate",
+    values: [BigNumberish, DataTypes.RuleStruct, DataTypes.EffectStruct[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setContractURI",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setRoleURI",
+    values: [string, string]
+  ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
 
+  decodeFunctionResult(
+    functionFragment: "caseDisable",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "caseHas", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "join", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "leave", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "repAdd", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "roleAssign", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "roleAssignToToken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "roleChange", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "roleRemove", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "roleRemoveFromToken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "ruleAdd", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "ruleConfirmationUpdate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "ruleUpdate", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setContractURI",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "setRoleURI", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
 
-  events: {};
+  events: {
+    "CaseCreated(uint256,address)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "CaseCreated"): EventFragment;
 }
+
+export type CaseCreatedEvent = TypedEvent<
+  [BigNumber, string],
+  { id: BigNumber; contractAddress: string }
+>;
+
+export type CaseCreatedEventFilter = TypedEventFilter<CaseCreatedEvent>;
 
 export interface IJurisdiction extends BaseContract {
   contractName: "IJurisdiction";
@@ -63,6 +214,23 @@ export interface IJurisdiction extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    caseDisable(
+      caseContract: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    caseHas(
+      caseContract: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    initialize(
+      hub: string,
+      name_: string,
+      uri_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     join(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -71,8 +239,93 @@ export interface IJurisdiction extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    repAdd(
+      contractAddr: string,
+      tokenId: BigNumberish,
+      domain: string,
+      rating: boolean,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    roleAssign(
+      account: string,
+      role: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    roleAssignToToken(
+      toToken: BigNumberish,
+      role: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    roleChange(
+      account: string,
+      roleOld: string,
+      roleNew: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    roleRemove(
+      account: string,
+      role: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    roleRemoveFromToken(
+      ownerToken: BigNumberish,
+      role: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    ruleAdd(
+      rule: DataTypes.RuleStruct,
+      confirmation: DataTypes.ConfirmationStruct,
+      effects: DataTypes.EffectStruct[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    ruleConfirmationUpdate(
+      id: BigNumberish,
+      confirmation: DataTypes.ConfirmationStruct,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    ruleUpdate(
+      id: BigNumberish,
+      rule: DataTypes.RuleStruct,
+      effects: DataTypes.EffectStruct[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setContractURI(
+      contract_uri: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setRoleURI(
+      role: string,
+      _tokenURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     symbol(overrides?: CallOverrides): Promise<[string]>;
   };
+
+  caseDisable(
+    caseContract: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  caseHas(caseContract: string, overrides?: CallOverrides): Promise<boolean>;
+
+  initialize(
+    hub: string,
+    name_: string,
+    uri_: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   join(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -82,24 +335,274 @@ export interface IJurisdiction extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  repAdd(
+    contractAddr: string,
+    tokenId: BigNumberish,
+    domain: string,
+    rating: boolean,
+    amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  roleAssign(
+    account: string,
+    role: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  roleAssignToToken(
+    toToken: BigNumberish,
+    role: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  roleChange(
+    account: string,
+    roleOld: string,
+    roleNew: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  roleRemove(
+    account: string,
+    role: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  roleRemoveFromToken(
+    ownerToken: BigNumberish,
+    role: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  ruleAdd(
+    rule: DataTypes.RuleStruct,
+    confirmation: DataTypes.ConfirmationStruct,
+    effects: DataTypes.EffectStruct[],
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  ruleConfirmationUpdate(
+    id: BigNumberish,
+    confirmation: DataTypes.ConfirmationStruct,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  ruleUpdate(
+    id: BigNumberish,
+    rule: DataTypes.RuleStruct,
+    effects: DataTypes.EffectStruct[],
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setContractURI(
+    contract_uri: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setRoleURI(
+    role: string,
+    _tokenURI: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   symbol(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
-    join(overrides?: CallOverrides): Promise<void>;
+    caseDisable(caseContract: string, overrides?: CallOverrides): Promise<void>;
 
-    leave(overrides?: CallOverrides): Promise<void>;
+    caseHas(caseContract: string, overrides?: CallOverrides): Promise<boolean>;
+
+    initialize(
+      hub: string,
+      name_: string,
+      uri_: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    join(overrides?: CallOverrides): Promise<BigNumber>;
+
+    leave(overrides?: CallOverrides): Promise<BigNumber>;
+
+    repAdd(
+      contractAddr: string,
+      tokenId: BigNumberish,
+      domain: string,
+      rating: boolean,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    roleAssign(
+      account: string,
+      role: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    roleAssignToToken(
+      toToken: BigNumberish,
+      role: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    roleChange(
+      account: string,
+      roleOld: string,
+      roleNew: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    roleRemove(
+      account: string,
+      role: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    roleRemoveFromToken(
+      ownerToken: BigNumberish,
+      role: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    ruleAdd(
+      rule: DataTypes.RuleStruct,
+      confirmation: DataTypes.ConfirmationStruct,
+      effects: DataTypes.EffectStruct[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    ruleConfirmationUpdate(
+      id: BigNumberish,
+      confirmation: DataTypes.ConfirmationStruct,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    ruleUpdate(
+      id: BigNumberish,
+      rule: DataTypes.RuleStruct,
+      effects: DataTypes.EffectStruct[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setContractURI(
+      contract_uri: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setRoleURI(
+      role: string,
+      _tokenURI: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     symbol(overrides?: CallOverrides): Promise<string>;
   };
 
-  filters: {};
+  filters: {
+    "CaseCreated(uint256,address)"(
+      id?: BigNumberish | null,
+      contractAddress?: null
+    ): CaseCreatedEventFilter;
+    CaseCreated(
+      id?: BigNumberish | null,
+      contractAddress?: null
+    ): CaseCreatedEventFilter;
+  };
 
   estimateGas: {
+    caseDisable(
+      caseContract: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    caseHas(
+      caseContract: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    initialize(
+      hub: string,
+      name_: string,
+      uri_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     join(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     leave(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    repAdd(
+      contractAddr: string,
+      tokenId: BigNumberish,
+      domain: string,
+      rating: boolean,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    roleAssign(
+      account: string,
+      role: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    roleAssignToToken(
+      toToken: BigNumberish,
+      role: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    roleChange(
+      account: string,
+      roleOld: string,
+      roleNew: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    roleRemove(
+      account: string,
+      role: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    roleRemoveFromToken(
+      ownerToken: BigNumberish,
+      role: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    ruleAdd(
+      rule: DataTypes.RuleStruct,
+      confirmation: DataTypes.ConfirmationStruct,
+      effects: DataTypes.EffectStruct[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    ruleConfirmationUpdate(
+      id: BigNumberish,
+      confirmation: DataTypes.ConfirmationStruct,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    ruleUpdate(
+      id: BigNumberish,
+      rule: DataTypes.RuleStruct,
+      effects: DataTypes.EffectStruct[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setContractURI(
+      contract_uri: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setRoleURI(
+      role: string,
+      _tokenURI: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -107,11 +610,99 @@ export interface IJurisdiction extends BaseContract {
   };
 
   populateTransaction: {
+    caseDisable(
+      caseContract: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    caseHas(
+      caseContract: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    initialize(
+      hub: string,
+      name_: string,
+      uri_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     join(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     leave(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    repAdd(
+      contractAddr: string,
+      tokenId: BigNumberish,
+      domain: string,
+      rating: boolean,
+      amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    roleAssign(
+      account: string,
+      role: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    roleAssignToToken(
+      toToken: BigNumberish,
+      role: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    roleChange(
+      account: string,
+      roleOld: string,
+      roleNew: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    roleRemove(
+      account: string,
+      role: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    roleRemoveFromToken(
+      ownerToken: BigNumberish,
+      role: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    ruleAdd(
+      rule: DataTypes.RuleStruct,
+      confirmation: DataTypes.ConfirmationStruct,
+      effects: DataTypes.EffectStruct[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    ruleConfirmationUpdate(
+      id: BigNumberish,
+      confirmation: DataTypes.ConfirmationStruct,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    ruleUpdate(
+      id: BigNumberish,
+      rule: DataTypes.RuleStruct,
+      effects: DataTypes.EffectStruct[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setContractURI(
+      contract_uri: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setRoleURI(
+      role: string,
+      _tokenURI: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

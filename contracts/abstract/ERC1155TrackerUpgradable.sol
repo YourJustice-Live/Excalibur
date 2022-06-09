@@ -32,6 +32,10 @@ abstract contract ERC1155TrackerUpgradable is
 
     using AddressUpgradeable for address;
     using AddressArray for address[];
+    
+    
+    // using AddressArray for unit256[];
+
 
     // Mapping from token ID to account balances
     // mapping(uint256 => mapping(address => uint256)) private _balances;
@@ -44,6 +48,7 @@ abstract contract ERC1155TrackerUpgradable is
 
     //Index Unique Members for each TokenId
     mapping(uint256 => address[]) internal _uniqueMembers;
+    mapping(uint256 => uint256[]) internal _uniqueMemberTokens; //TODO: Implement This (So you'd have counts)
 
     // Target Contract (External Source)
     address _targetContract;
@@ -387,10 +392,15 @@ abstract contract ERC1155TrackerUpgradable is
         uint256[] memory amounts = _asSingletonArray(amount);
 
         _beforeTokenTransfer(operator, address(0), to, ids, amounts, data);
+        
+        if(_balances[id][toToken] == 0){
+            //Reverse Index
+            _uniqueMemberTokens[id].push(toToken);
+        }
 
         // _balances[id][to] += amount;
-        _balances[id][toToken] += amount;
-
+        _balances[id][toToken] += amount;       //Can I Just count Unique Members Here ??? Not Exactly...
+        
         emit TransferSingle(operator, address(0), to, id, amount);
         emit TransferByToken(operator, 0, toToken, id, amount);
 
@@ -426,6 +436,9 @@ abstract contract ERC1155TrackerUpgradable is
         for (uint256 i = 0; i < ids.length; i++) {
             // _balances[ids[i]][to] += amounts[i];
             _balances[ids[i]][ownerToken] += amounts[i];
+            //Reverse Index
+            _uniqueMemberTokens[ids[i]].push(ownerToken);
+
         }
 
         emit TransferBatch(operator, address(0), to, ids, amounts);
@@ -474,6 +487,9 @@ abstract contract ERC1155TrackerUpgradable is
         unchecked {
             // _balances[id][from] = fromBalance - amount;
             _balances[id][fromToken] = fromBalance - amount;
+            if(fromBalance == amount){ 
+                _uniqueMemberTokens[id].removeItem(fromToken);
+            }
         }
 
         emit TransferSingle(operator, from, address(0), id, amount);
@@ -574,9 +590,14 @@ abstract contract ERC1155TrackerUpgradable is
         uint256[] memory amounts,
         bytes memory data
     ) internal virtual {
+
+
+
+        
         //Index Unique Owners to Token IDs
         // if ((from == address(0)) {   //Mint
-        if (!_isOwnerAddress(from) && _isOwnerAddress(to)) { //Mint
+        // if (!_isOwnerAddress(from) && _isOwnerAddress(to)) { //Mint
+        if (_isOwnerAddress(to)) { //Additions
             for (uint256 i = 0; i < ids.length; ++i) {
                 uint256 id = ids[i];
                 if(balanceOf(to, id) == 0){
@@ -585,13 +606,16 @@ abstract contract ERC1155TrackerUpgradable is
             }
         }
         // if ((to == address(0)) { //Burn
-        if (_isOwnerAddress(from) && !_isOwnerAddress(to)) { //Burn
+        // if (_isOwnerAddress(from) && !_isOwnerAddress(to)) { //Burn
+        if (_isOwnerAddress(from)) {    //Removal
             for (uint256 i = 0; i < ids.length; ++i) {
                 uint256 id = ids[i];
                 if(balanceOf(from, id) == amounts[i]){   //Burn All
                     _uniqueMembers[id].removeItem(from);
                 }
             }
+        }else{
+
         }
     }
     //Onwer Address (Not Address 0 and not Target Contract)

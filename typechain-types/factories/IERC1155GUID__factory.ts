@@ -18,31 +18,31 @@ const _abi = [
       },
       {
         indexed: false,
-        internalType: "address",
-        name: "contractAddress",
-        type: "address",
+        internalType: "bytes32",
+        name: "guid",
+        type: "bytes32",
       },
     ],
-    name: "CaseCreated",
+    name: "GUIDCreated",
     type: "event",
   },
   {
     anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: "uint256",
-        name: "id",
-        type: "uint256",
-      },
-      {
         indexed: false,
         internalType: "string",
-        name: "role",
+        name: "value",
         type: "string",
       },
+      {
+        indexed: true,
+        internalType: "bytes32",
+        name: "guid",
+        type: "bytes32",
+      },
     ],
-    name: "RoleCreated",
+    name: "GUIDURIChange",
     type: "event",
   },
   {
@@ -53,30 +53,12 @@ const _abi = [
         type: "address",
       },
       {
-        internalType: "string",
-        name: "role",
-        type: "string",
+        internalType: "bytes32",
+        name: "guid",
+        type: "bytes32",
       },
     ],
-    name: "roleAssign",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "role",
-        type: "string",
-      },
-    ],
-    name: "roleHas",
+    name: "GUIDHas",
     outputs: [
       {
         internalType: "bool",
@@ -90,19 +72,20 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "account",
-        type: "address",
+        internalType: "bytes32",
+        name: "guid",
+        type: "bytes32",
       },
+    ],
+    name: "GUIDURI",
+    outputs: [
       {
         internalType: "string",
-        name: "role",
+        name: "",
         type: "string",
       },
     ],
-    name: "roleRemove",
-    outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
     type: "function",
   },
 ];

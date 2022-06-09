@@ -20,19 +20,25 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 export interface ERC1155GUIDInterface extends utils.Interface {
   contractName: "ERC1155GUID";
   functions: {
+    "GUIDHas(address,bytes32)": FunctionFragment;
+    "GUIDURI(bytes32)": FunctionFragment;
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
-    "roleAssign(address,string)": FunctionFragment;
-    "roleHas(address,string)": FunctionFragment;
-    "roleRemove(address,string)": FunctionFragment;
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
+    "uniqueMembers(uint256)": FunctionFragment;
+    "uniqueMembersCount(uint256)": FunctionFragment;
     "uri(uint256)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "GUIDHas",
+    values: [string, BytesLike]
+  ): string;
+  encodeFunctionData(functionFragment: "GUIDURI", values: [BytesLike]): string;
   encodeFunctionData(
     functionFragment: "balanceOf",
     values: [string, BigNumberish]
@@ -43,18 +49,6 @@ export interface ERC1155GUIDInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
-    values: [string, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "roleAssign",
-    values: [string, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "roleHas",
-    values: [string, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "roleRemove",
     values: [string, string]
   ): string;
   encodeFunctionData(
@@ -73,8 +67,18 @@ export interface ERC1155GUIDInterface extends utils.Interface {
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
+  encodeFunctionData(
+    functionFragment: "uniqueMembers",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "uniqueMembersCount",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "uri", values: [BigNumberish]): string;
 
+  decodeFunctionResult(functionFragment: "GUIDHas", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "GUIDURI", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "balanceOfBatch",
@@ -84,9 +88,6 @@ export interface ERC1155GUIDInterface extends utils.Interface {
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "roleAssign", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "roleHas", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "roleRemove", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "safeBatchTransferFrom",
     data: BytesLike
@@ -103,20 +104,28 @@ export interface ERC1155GUIDInterface extends utils.Interface {
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "uniqueMembers",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "uniqueMembersCount",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "uri", data: BytesLike): Result;
 
   events: {
     "ApprovalForAll(address,address,bool)": EventFragment;
-    "CaseCreated(uint256,address)": EventFragment;
-    "RoleCreated(uint256,string)": EventFragment;
+    "GUIDCreated(uint256,bytes32)": EventFragment;
+    "GUIDURIChange(string,bytes32)": EventFragment;
     "TransferBatch(address,address,address,uint256[],uint256[])": EventFragment;
     "TransferSingle(address,address,address,uint256,uint256)": EventFragment;
     "URI(string,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "CaseCreated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RoleCreated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "GUIDCreated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "GUIDURIChange"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferBatch"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferSingle"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "URI"): EventFragment;
@@ -129,19 +138,19 @@ export type ApprovalForAllEvent = TypedEvent<
 
 export type ApprovalForAllEventFilter = TypedEventFilter<ApprovalForAllEvent>;
 
-export type CaseCreatedEvent = TypedEvent<
+export type GUIDCreatedEvent = TypedEvent<
   [BigNumber, string],
-  { id: BigNumber; contractAddress: string }
+  { id: BigNumber; guid: string }
 >;
 
-export type CaseCreatedEventFilter = TypedEventFilter<CaseCreatedEvent>;
+export type GUIDCreatedEventFilter = TypedEventFilter<GUIDCreatedEvent>;
 
-export type RoleCreatedEvent = TypedEvent<
-  [BigNumber, string],
-  { id: BigNumber; role: string }
+export type GUIDURIChangeEvent = TypedEvent<
+  [string, string],
+  { value: string; guid: string }
 >;
 
-export type RoleCreatedEventFilter = TypedEventFilter<RoleCreatedEvent>;
+export type GUIDURIChangeEventFilter = TypedEventFilter<GUIDURIChangeEvent>;
 
 export type TransferBatchEvent = TypedEvent<
   [string, string, string, BigNumber[], BigNumber[]],
@@ -204,6 +213,14 @@ export interface ERC1155GUID extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    GUIDHas(
+      account: string,
+      guid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    GUIDURI(guid: BytesLike, overrides?: CallOverrides): Promise<[string]>;
+
     balanceOf(
       account: string,
       id: BigNumberish,
@@ -221,24 +238,6 @@ export interface ERC1155GUID extends BaseContract {
       operator: string,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
-
-    roleAssign(
-      account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    roleHas(
-      account: string,
-      role: string,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    roleRemove(
-      account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
 
     safeBatchTransferFrom(
       from: string,
@@ -269,8 +268,26 @@ export interface ERC1155GUID extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    uniqueMembers(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string[]]>;
+
+    uniqueMembersCount(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
   };
+
+  GUIDHas(
+    account: string,
+    guid: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  GUIDURI(guid: BytesLike, overrides?: CallOverrides): Promise<string>;
 
   balanceOf(
     account: string,
@@ -289,24 +306,6 @@ export interface ERC1155GUID extends BaseContract {
     operator: string,
     overrides?: CallOverrides
   ): Promise<boolean>;
-
-  roleAssign(
-    account: string,
-    role: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  roleHas(
-    account: string,
-    role: string,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  roleRemove(
-    account: string,
-    role: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
 
   safeBatchTransferFrom(
     from: string,
@@ -337,9 +336,24 @@ export interface ERC1155GUID extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  uniqueMembers(id: BigNumberish, overrides?: CallOverrides): Promise<string[]>;
+
+  uniqueMembersCount(
+    id: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
+    GUIDHas(
+      account: string,
+      guid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    GUIDURI(guid: BytesLike, overrides?: CallOverrides): Promise<string>;
+
     balanceOf(
       account: string,
       id: BigNumberish,
@@ -357,24 +371,6 @@ export interface ERC1155GUID extends BaseContract {
       operator: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
-
-    roleAssign(
-      account: string,
-      role: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    roleHas(
-      account: string,
-      role: string,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    roleRemove(
-      account: string,
-      role: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     safeBatchTransferFrom(
       from: string,
@@ -405,6 +401,16 @@ export interface ERC1155GUID extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    uniqueMembers(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string[]>;
+
+    uniqueMembersCount(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
   };
 
@@ -420,20 +426,20 @@ export interface ERC1155GUID extends BaseContract {
       approved?: null
     ): ApprovalForAllEventFilter;
 
-    "CaseCreated(uint256,address)"(
+    "GUIDCreated(uint256,bytes32)"(
       id?: BigNumberish | null,
-      contractAddress?: null
-    ): CaseCreatedEventFilter;
-    CaseCreated(
-      id?: BigNumberish | null,
-      contractAddress?: null
-    ): CaseCreatedEventFilter;
+      guid?: null
+    ): GUIDCreatedEventFilter;
+    GUIDCreated(id?: BigNumberish | null, guid?: null): GUIDCreatedEventFilter;
 
-    "RoleCreated(uint256,string)"(
-      id?: BigNumberish | null,
-      role?: null
-    ): RoleCreatedEventFilter;
-    RoleCreated(id?: BigNumberish | null, role?: null): RoleCreatedEventFilter;
+    "GUIDURIChange(string,bytes32)"(
+      value?: null,
+      guid?: BytesLike | null
+    ): GUIDURIChangeEventFilter;
+    GUIDURIChange(
+      value?: null,
+      guid?: BytesLike | null
+    ): GUIDURIChangeEventFilter;
 
     "TransferBatch(address,address,address,uint256[],uint256[])"(
       operator?: string | null,
@@ -473,6 +479,14 @@ export interface ERC1155GUID extends BaseContract {
   };
 
   estimateGas: {
+    GUIDHas(
+      account: string,
+      guid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    GUIDURI(guid: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+
     balanceOf(
       account: string,
       id: BigNumberish,
@@ -489,24 +503,6 @@ export interface ERC1155GUID extends BaseContract {
       account: string,
       operator: string,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    roleAssign(
-      account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    roleHas(
-      account: string,
-      role: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    roleRemove(
-      account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     safeBatchTransferFrom(
@@ -535,6 +531,16 @@ export interface ERC1155GUID extends BaseContract {
 
     supportsInterface(
       interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    uniqueMembers(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    uniqueMembersCount(
+      id: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -542,6 +548,17 @@ export interface ERC1155GUID extends BaseContract {
   };
 
   populateTransaction: {
+    GUIDHas(
+      account: string,
+      guid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    GUIDURI(
+      guid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     balanceOf(
       account: string,
       id: BigNumberish,
@@ -558,24 +575,6 @@ export interface ERC1155GUID extends BaseContract {
       account: string,
       operator: string,
       overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    roleAssign(
-      account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    roleHas(
-      account: string,
-      role: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    roleRemove(
-      account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     safeBatchTransferFrom(
@@ -604,6 +603,16 @@ export interface ERC1155GUID extends BaseContract {
 
     supportsInterface(
       interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    uniqueMembers(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    uniqueMembersCount(
+      id: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

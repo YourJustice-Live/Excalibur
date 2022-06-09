@@ -8,15 +8,452 @@ import type { IJurisdiction, IJurisdictionInterface } from "../IJurisdiction";
 
 const _abi = [
   {
-    inputs: [],
-    name: "join",
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "id",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "contractAddress",
+        type: "address",
+      },
+    ],
+    name: "CaseCreated",
+    type: "event",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "caseContract",
+        type: "address",
+      },
+    ],
+    name: "caseDisable",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "caseContract",
+        type: "address",
+      },
+    ],
+    name: "caseHas",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "hub",
+        type: "address",
+      },
+      {
+        internalType: "string",
+        name: "name_",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "uri_",
+        type: "string",
+      },
+    ],
+    name: "initialize",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
     inputs: [],
+    name: "join",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "leave",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "contractAddr",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "domain",
+        type: "string",
+      },
+      {
+        internalType: "bool",
+        name: "rating",
+        type: "bool",
+      },
+      {
+        internalType: "uint8",
+        name: "amount",
+        type: "uint8",
+      },
+    ],
+    name: "repAdd",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
+        internalType: "string",
+        name: "role",
+        type: "string",
+      },
+    ],
+    name: "roleAssign",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "toToken",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "role",
+        type: "string",
+      },
+    ],
+    name: "roleAssignToToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
+        internalType: "string",
+        name: "roleOld",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "roleNew",
+        type: "string",
+      },
+    ],
+    name: "roleChange",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
+        internalType: "string",
+        name: "role",
+        type: "string",
+      },
+    ],
+    name: "roleRemove",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "ownerToken",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "role",
+        type: "string",
+      },
+    ],
+    name: "roleRemoveFromToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "bytes32",
+            name: "about",
+            type: "bytes32",
+          },
+          {
+            internalType: "string",
+            name: "affected",
+            type: "string",
+          },
+          {
+            internalType: "bool",
+            name: "negation",
+            type: "bool",
+          },
+          {
+            internalType: "string",
+            name: "uri",
+            type: "string",
+          },
+          {
+            internalType: "bool",
+            name: "disabled",
+            type: "bool",
+          },
+        ],
+        internalType: "struct DataTypes.Rule",
+        name: "rule",
+        type: "tuple",
+      },
+      {
+        components: [
+          {
+            internalType: "string",
+            name: "ruling",
+            type: "string",
+          },
+          {
+            internalType: "bool",
+            name: "evidence",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "witness",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct DataTypes.Confirmation",
+        name: "confirmation",
+        type: "tuple",
+      },
+      {
+        components: [
+          {
+            internalType: "string",
+            name: "name",
+            type: "string",
+          },
+          {
+            internalType: "uint8",
+            name: "value",
+            type: "uint8",
+          },
+          {
+            internalType: "bool",
+            name: "direction",
+            type: "bool",
+          },
+        ],
+        internalType: "struct DataTypes.Effect[]",
+        name: "effects",
+        type: "tuple[]",
+      },
+    ],
+    name: "ruleAdd",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "id",
+        type: "uint256",
+      },
+      {
+        components: [
+          {
+            internalType: "string",
+            name: "ruling",
+            type: "string",
+          },
+          {
+            internalType: "bool",
+            name: "evidence",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "witness",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct DataTypes.Confirmation",
+        name: "confirmation",
+        type: "tuple",
+      },
+    ],
+    name: "ruleConfirmationUpdate",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "id",
+        type: "uint256",
+      },
+      {
+        components: [
+          {
+            internalType: "bytes32",
+            name: "about",
+            type: "bytes32",
+          },
+          {
+            internalType: "string",
+            name: "affected",
+            type: "string",
+          },
+          {
+            internalType: "bool",
+            name: "negation",
+            type: "bool",
+          },
+          {
+            internalType: "string",
+            name: "uri",
+            type: "string",
+          },
+          {
+            internalType: "bool",
+            name: "disabled",
+            type: "bool",
+          },
+        ],
+        internalType: "struct DataTypes.Rule",
+        name: "rule",
+        type: "tuple",
+      },
+      {
+        components: [
+          {
+            internalType: "string",
+            name: "name",
+            type: "string",
+          },
+          {
+            internalType: "uint8",
+            name: "value",
+            type: "uint8",
+          },
+          {
+            internalType: "bool",
+            name: "direction",
+            type: "bool",
+          },
+        ],
+        internalType: "struct DataTypes.Effect[]",
+        name: "effects",
+        type: "tuple[]",
+      },
+    ],
+    name: "ruleUpdate",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "contract_uri",
+        type: "string",
+      },
+    ],
+    name: "setContractURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "role",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "_tokenURI",
+        type: "string",
+      },
+    ],
+    name: "setRoleURI",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

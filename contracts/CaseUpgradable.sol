@@ -52,7 +52,6 @@ contract CaseUpgradable is
     //Rules Reference
     mapping(uint256 => DataTypes.RuleRef) internal _rules;      // Mapping for Case Rules
     mapping(uint256 => bool) public decision;                   // Mapping for Rule Decisions
-    // mapping(string => string) public roleName;      // Mapping Role Names //e.g. "subject"=>"seller"
     
     //--- Modifiers
 

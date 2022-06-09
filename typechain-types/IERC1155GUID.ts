@@ -7,8 +7,6 @@ import {
   BigNumberish,
   BytesLike,
   CallOverrides,
-  ContractTransaction,
-  Overrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -20,50 +18,41 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 export interface IERC1155GUIDInterface extends utils.Interface {
   contractName: "IERC1155GUID";
   functions: {
-    "roleAssign(address,string)": FunctionFragment;
-    "roleHas(address,string)": FunctionFragment;
-    "roleRemove(address,string)": FunctionFragment;
+    "GUIDHas(address,bytes32)": FunctionFragment;
+    "GUIDURI(bytes32)": FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: "roleAssign",
-    values: [string, string]
+    functionFragment: "GUIDHas",
+    values: [string, BytesLike]
   ): string;
-  encodeFunctionData(
-    functionFragment: "roleHas",
-    values: [string, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "roleRemove",
-    values: [string, string]
-  ): string;
+  encodeFunctionData(functionFragment: "GUIDURI", values: [BytesLike]): string;
 
-  decodeFunctionResult(functionFragment: "roleAssign", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "roleHas", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "roleRemove", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "GUIDHas", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "GUIDURI", data: BytesLike): Result;
 
   events: {
-    "CaseCreated(uint256,address)": EventFragment;
-    "RoleCreated(uint256,string)": EventFragment;
+    "GUIDCreated(uint256,bytes32)": EventFragment;
+    "GUIDURIChange(string,bytes32)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "CaseCreated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RoleCreated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "GUIDCreated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "GUIDURIChange"): EventFragment;
 }
 
-export type CaseCreatedEvent = TypedEvent<
+export type GUIDCreatedEvent = TypedEvent<
   [BigNumber, string],
-  { id: BigNumber; contractAddress: string }
+  { id: BigNumber; guid: string }
 >;
 
-export type CaseCreatedEventFilter = TypedEventFilter<CaseCreatedEvent>;
+export type GUIDCreatedEventFilter = TypedEventFilter<GUIDCreatedEvent>;
 
-export type RoleCreatedEvent = TypedEvent<
-  [BigNumber, string],
-  { id: BigNumber; role: string }
+export type GUIDURIChangeEvent = TypedEvent<
+  [string, string],
+  { value: string; guid: string }
 >;
 
-export type RoleCreatedEventFilter = TypedEventFilter<RoleCreatedEvent>;
+export type GUIDURIChangeEventFilter = TypedEventFilter<GUIDURIChangeEvent>;
 
 export interface IERC1155GUID extends BaseContract {
   contractName: "IERC1155GUID";
@@ -93,117 +82,70 @@ export interface IERC1155GUID extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    roleAssign(
+    GUIDHas(
       account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    roleHas(
-      account: string,
-      role: string,
+      guid: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    roleRemove(
-      account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    GUIDURI(guid: BytesLike, overrides?: CallOverrides): Promise<[string]>;
   };
 
-  roleAssign(
+  GUIDHas(
     account: string,
-    role: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  roleHas(
-    account: string,
-    role: string,
+    guid: BytesLike,
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  roleRemove(
-    account: string,
-    role: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  GUIDURI(guid: BytesLike, overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
-    roleAssign(
+    GUIDHas(
       account: string,
-      role: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    roleHas(
-      account: string,
-      role: string,
+      guid: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    roleRemove(
-      account: string,
-      role: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    GUIDURI(guid: BytesLike, overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
-    "CaseCreated(uint256,address)"(
+    "GUIDCreated(uint256,bytes32)"(
       id?: BigNumberish | null,
-      contractAddress?: null
-    ): CaseCreatedEventFilter;
-    CaseCreated(
-      id?: BigNumberish | null,
-      contractAddress?: null
-    ): CaseCreatedEventFilter;
+      guid?: null
+    ): GUIDCreatedEventFilter;
+    GUIDCreated(id?: BigNumberish | null, guid?: null): GUIDCreatedEventFilter;
 
-    "RoleCreated(uint256,string)"(
-      id?: BigNumberish | null,
-      role?: null
-    ): RoleCreatedEventFilter;
-    RoleCreated(id?: BigNumberish | null, role?: null): RoleCreatedEventFilter;
+    "GUIDURIChange(string,bytes32)"(
+      value?: null,
+      guid?: BytesLike | null
+    ): GUIDURIChangeEventFilter;
+    GUIDURIChange(
+      value?: null,
+      guid?: BytesLike | null
+    ): GUIDURIChangeEventFilter;
   };
 
   estimateGas: {
-    roleAssign(
+    GUIDHas(
       account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    roleHas(
-      account: string,
-      role: string,
+      guid: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    roleRemove(
-      account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    GUIDURI(guid: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    roleAssign(
+    GUIDHas(
       account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    roleHas(
-      account: string,
-      role: string,
+      guid: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    roleRemove(
-      account: string,
-      role: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
+    GUIDURI(
+      guid: BytesLike,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
 }
