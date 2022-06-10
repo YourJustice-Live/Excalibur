@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { Contract, ContractReceipt, Signer } from "ethers";
 import { ethers } from "hardhat";
+const {  upgrades } = require("hardhat");
 
 //Test Data
 const ZERO_ADDR = '0x0000000000000000000000000000000000000000';
@@ -49,7 +50,16 @@ describe("Hub", function () {
         hubContract.setAssoc("avatar", avatarContract.address);
 
         //Deploy History
-        actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
+        // actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
+        actionContract = await ethers.getContractFactory("ActionRepoTrackerUp").then(Contract => 
+            upgrades.deployProxy(Contract,
+              [hubContract.address],{
+              // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
+              kind: "uups",
+              timeout: 120000
+            })
+          );
+
         //Set Avatar Contract to Hub
         hubContract.setAssoc("history", actionContract.address);
     });
