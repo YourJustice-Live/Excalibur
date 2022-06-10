@@ -117,11 +117,30 @@ describe("Deployment", function () {
     });
 
     it("Should Deploy History (ActionRepo)", async function () {
-         //--- ActionRepo
+        /*
+        //--- ActionRepo
         actionRepoContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
         //Set Action Repo Contract to Hub
         hubContract.setAssoc("history", actionRepoContract.address);
+        */
+
+        //Deploy Avatar Upgradable
+        const ActionRepo = await ethers.getContractFactory("ActionRepoUpgradable");
+        // deploying new proxy
+        const proxyActionRepo = await upgrades.deployProxy(ActionRepo,
+            [hubContract.address],{
+            // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
+            kind: "uups",
+            timeout: 120000
+        });
+        await proxyActionRepo.deployed();
+        //Set Avatar Contract to Hub
+        hubContract.setAssoc("history", proxyActionRepo.address);
+        // this.historyContract = proxyActionRepo;
+        // console.log("ActionRepoUpgradable deployed to:", proxyActionRepo.address);
     });
+
+
 
     /* COPIED
     it("Should Be Secure", async function () {
