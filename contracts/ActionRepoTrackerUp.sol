@@ -30,7 +30,7 @@ contract ActionRepoTrackerUp is
 
     //Arbitrary Contract Name & Symbol 
     string public constant override symbol = "HISTORY";
-    string public constant name = "YourJustice: Semantic Action Repo";
+    string public constant name = "Semantic Action Repository";
 
     // Event Storage     (Unique Concepts)
     mapping(bytes32 => DataTypes.SVO) internal _actions; //Primary Data
@@ -42,8 +42,6 @@ contract ActionRepoTrackerUp is
     /// Initializer
     function initialize (address hub) public initializer {
         //Initializers
-        // __ERC721_init("Soulbound Tokens (YJ.life)", "SOUL");
-        // __ERC721URIStorage_init();
         __UUPSUpgradeable_init();
         __CommonYJ_init(hub);
         __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
@@ -72,7 +70,7 @@ contract ActionRepoTrackerUp is
 
     /// Register New Action
     function actionAdd(DataTypes.SVO memory svo, string memory uri) public override returns (bytes32) {
-        //TODO: Validate
+        //Validate (Maybe...)
         // require(!_msgSender().isContract(), "No-Bots");
 
         //Store Additional Details
