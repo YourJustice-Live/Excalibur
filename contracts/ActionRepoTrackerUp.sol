@@ -18,7 +18,7 @@ import "./abstract/ERC1155GUIDTrackerUp.sol";
  * 2D - Compound GUID + Additional Data & URI
  * [TBD] 3D - Individual Instances of Action (Incidents) as NFTs + Event Details (Time, Case no.,  etc')
  */
-contract ActionRepoUpgradable is 
+contract ActionRepoTrackerUp is 
         IActionRepo, 
         Initializable,
         CommonYJUpgradable, 
@@ -38,10 +38,6 @@ contract ActionRepoUpgradable is
     mapping(uint256 => string) internal _tokenURI;
 
     //--- Functions
-
-    // constructor(address hub) CommonYJ(hub) ERC1155(""){
-        // name = "YourJustice: Semantic Action Repo";
-    // }
 
     /// Initializer
     function initialize (address hub) public initializer {

@@ -125,7 +125,7 @@ describe("Deployment", function () {
         */
 
         //Deploy Avatar Upgradable
-        const ActionRepo = await ethers.getContractFactory("ActionRepoUpgradable");
+        const ActionRepo = await ethers.getContractFactory("ActionRepoTrackerUp");
         // deploying new proxy
         const proxyActionRepo = await upgrades.deployProxy(ActionRepo,
             [hubContract.address],{
@@ -137,7 +137,7 @@ describe("Deployment", function () {
         //Set Avatar Contract to Hub
         hubContract.setAssoc("history", proxyActionRepo.address);
         // this.historyContract = proxyActionRepo;
-        // console.log("ActionRepoUpgradable deployed to:", proxyActionRepo.address);
+        // console.log("ActionRepoTrackerUp deployed to:", proxyActionRepo.address);
     });
 
 
