@@ -65,13 +65,14 @@ abstract contract ERC1155RolesTrackerUp is
     //** Role Functions
 
     /// Unique Members Count (w/Token)
-    function uniqueRoleMembers(string memory role) public override view returns (address[] memory) {
+    function uniqueRoleMembers(string memory role) public override view returns (uint256[] memory) {
         return uniqueMembers(_roleToId(role));
     }
 
     /// Unique Members Count (w/Token)
     function uniqueRoleMembersCount(string memory role) public override view returns (uint256) {
-        return uniqueMembers(_roleToId(role)).length;
+        // return uniqueMembers(_roleToId(role)).length;
+        return uniqueMembersCount(_roleToId(role));
     }
 
     /// Check if Role Exists

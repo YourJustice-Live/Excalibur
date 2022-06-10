@@ -19,7 +19,7 @@ interface IERC1155Tracker is IERC165Upgradeable {
     function getTargetContract() external view returns (address);
 
     /// Unique Members Addresses
-    function uniqueMembers(uint256 id) external view returns (address[] memory);
+    function uniqueMembers(uint256 id) external view returns (uint256[] memory);
     
     /// Unique Members Count (w/Token)
     function uniqueMembersCount(uint256 id) external view returns (uint256);

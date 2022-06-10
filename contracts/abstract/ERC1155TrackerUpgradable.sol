@@ -19,6 +19,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../interfaces/IERC1155Tracker.sol";
 import "../interfaces/IAvatar.sol";
 import "../libraries/AddressArray.sol";
+import "../libraries/UintArray.sol";
 
 /**
  * @title ERC1155 Tracker Upgradable
@@ -32,11 +33,9 @@ abstract contract ERC1155TrackerUpgradable is
 
     using AddressUpgradeable for address;
     using AddressArray for address[];
-    
+    using UintArray for uint256[];
     
     // using AddressArray for unit256[];
-
-
     // Mapping from token ID to account balances
     // mapping(uint256 => mapping(address => uint256)) private _balances;
 
@@ -47,8 +46,8 @@ abstract contract ERC1155TrackerUpgradable is
     mapping(uint256 => mapping(uint256 => uint256)) private _balances;
 
     //Index Unique Members for each TokenId
-    mapping(uint256 => address[]) internal _uniqueMembers;
-    mapping(uint256 => uint256[]) internal _uniqueMemberTokens; //TODO: Implement This (So you'd have counts)
+    // mapping(uint256 => address[]) internal _uniqueMembers;
+    mapping(uint256 => uint256[]) internal _uniqueMemberTokens;
 
     // Target Contract (External Source)
     address _targetContract;
@@ -99,16 +98,17 @@ abstract contract ERC1155TrackerUpgradable is
     // }
 
     /// Unique Members Count (w/Token)
-    function uniqueMembers(uint256 id) public view override returns (address[] memory) {
-        return _uniqueMembers[id];
+    function uniqueMembers(uint256 id) public view override returns (uint256[] memory) {
+        return _uniqueMemberTokens[id];
     }
+    // function uniqueMembers(uint256 id) public view override returns (address[] memory) {
+    //     return _uniqueMembers[id];
+    // }
 
     /// Unique Members Count (w/Token)
     function uniqueMembersCount(uint256 id) public view override returns (uint256) {
         return uniqueMembers(id).length;
     }
-
-    
 
     function _getAccount(uint256 extTokenId) internal view returns (address) {
         return IERC721(_targetContract).ownerOf(extTokenId);
@@ -392,11 +392,12 @@ abstract contract ERC1155TrackerUpgradable is
         uint256[] memory amounts = _asSingletonArray(amount);
 
         _beforeTokenTransfer(operator, address(0), to, ids, amounts, data);
-        
-        if(_balances[id][toToken] == 0){
-            //Reverse Index
-            _uniqueMemberTokens[id].push(toToken);
-        }
+        _beforeTokenTransferTracker(operator, 0, toToken, ids, amounts, data);
+
+        // if(_balances[id][toToken] == 0){
+        //     //New Owner
+        //     _uniqueMemberTokens[id].push(toToken);
+        // }
 
         // _balances[id][to] += amount;
         _balances[id][toToken] += amount;       //Can I Just count Unique Members Here ??? Not Exactly...
@@ -405,6 +406,7 @@ abstract contract ERC1155TrackerUpgradable is
         emit TransferByToken(operator, 0, toToken, id, amount);
 
         _afterTokenTransfer(operator, address(0), to, ids, amounts, data);
+        _afterTokenTransferTracker(operator, 0, toToken, ids, amounts, data);
 
         // _doSafeTransferAcceptanceCheck(operator, address(0), to, id, amount, data);
     }
@@ -429,22 +431,27 @@ abstract contract ERC1155TrackerUpgradable is
 
         address operator = _msgSender();
 
-        _beforeTokenTransfer(operator, address(0), to, ids, amounts, data);
+        uint256 toToken = getExtTokenId(to);
 
-        uint256 ownerToken = getExtTokenId(to);
+        _beforeTokenTransfer(operator, address(0), to, ids, amounts, data);
+        _beforeTokenTransferTracker(operator, 0, toToken, ids, amounts, data);
 
         for (uint256 i = 0; i < ids.length; i++) {
-            // _balances[ids[i]][to] += amounts[i];
-            _balances[ids[i]][ownerToken] += amounts[i];
-            //Reverse Index
-            _uniqueMemberTokens[ids[i]].push(ownerToken);
+            
+            // if(_balances[ids[i]][toToken] == 0){
+            //     //New Owner
+            //     _uniqueMemberTokens[ids[i]].push(toToken);
+            // }
 
+            // _balances[ids[i]][to] += amounts[i];
+            _balances[ids[i]][toToken] += amounts[i];
         }
 
         emit TransferBatch(operator, address(0), to, ids, amounts);
-        emit TransferBatchByToken(operator, 0, ownerToken, ids, amounts);
+        emit TransferBatchByToken(operator, 0, toToken, ids, amounts);
 
         _afterTokenTransfer(operator, address(0), to, ids, amounts, data);
+        _afterTokenTransferTracker(operator, 0, toToken, ids, amounts, data);
 
         // _doSafeBatchTransferAcceptanceCheck(operator, address(0), to, ids, amounts, data);
     }
@@ -480,6 +487,7 @@ abstract contract ERC1155TrackerUpgradable is
         uint256[] memory amounts = _asSingletonArray(amount);
 
         _beforeTokenTransfer(operator, from, address(0), ids, amounts, "");
+        _beforeTokenTransferTracker(operator, fromToken, 0, ids, amounts, "");
 
         // uint256 fromBalance = _balances[id][from];
         uint256 fromBalance = _balances[id][fromToken];
@@ -487,15 +495,13 @@ abstract contract ERC1155TrackerUpgradable is
         unchecked {
             // _balances[id][from] = fromBalance - amount;
             _balances[id][fromToken] = fromBalance - amount;
-            if(fromBalance == amount){ 
-                _uniqueMemberTokens[id].removeItem(fromToken);
-            }
         }
 
         emit TransferSingle(operator, from, address(0), id, amount);
         emit TransferByToken(operator, fromToken, 0, id, amount);
 
         _afterTokenTransfer(operator, from, address(0), ids, amounts, "");
+        _afterTokenTransferTracker(operator, fromToken, 0, ids, amounts, "");
     }
 
     /**
@@ -514,26 +520,28 @@ abstract contract ERC1155TrackerUpgradable is
         require(ids.length == amounts.length, "ERC1155: ids and amounts length mismatch");
 
         address operator = _msgSender();
-        uint256 ownerFrom = getExtTokenId(from);
+        uint256 fromToken = getExtTokenId(from);
 
         _beforeTokenTransfer(operator, from, address(0), ids, amounts, "");
+        _beforeTokenTransferTracker(operator, fromToken, 0, ids, amounts, "");
 
         for (uint256 i = 0; i < ids.length; i++) {
             uint256 id = ids[i];
             uint256 amount = amounts[i];
             // uint256 fromBalance = _balances[id][from];
-            uint256 fromBalance = _balances[id][ownerFrom];
+            uint256 fromBalance = _balances[id][fromToken];
             require(fromBalance >= amount, "ERC1155: burn amount exceeds balance");
             unchecked {
                 // _balances[id][from] = fromBalance - amount;
-                _balances[id][ownerFrom] = fromBalance - amount;
+                _balances[id][fromToken] = fromBalance - amount;
             }
         }
 
         emit TransferBatch(operator, from, address(0), ids, amounts);
-        emit TransferBatchByToken(operator, ownerFrom, 0, ids, amounts);
+        emit TransferBatchByToken(operator, fromToken, 0, ids, amounts);
 
         _afterTokenTransfer(operator, from, address(0), ids, amounts, "");
+        _afterTokenTransferTracker(operator, fromToken, 0, ids, amounts, "");
     }
 
     /**
@@ -549,6 +557,11 @@ abstract contract ERC1155TrackerUpgradable is
         require(owner != operator, "ERC1155: setting approval status for self");
         _operatorApprovals[owner][operator] = approved;
         emit ApprovalForAll(owner, operator, approved);
+    }
+
+    /// An 'onwer' Address (Not Address 0 and not Target Contract)
+    function _isOwnerAddress(address addr) internal view returns(bool){
+        return (addr != address(0) && addr != _targetContract);
     }
 
     /**
@@ -591,9 +604,7 @@ abstract contract ERC1155TrackerUpgradable is
         bytes memory data
     ) internal virtual {
 
-
-
-        
+        /* DEPRECATED - Now Tracking Token IDs instead of Accounts
         //Index Unique Owners to Token IDs
         // if ((from == address(0)) {   //Mint
         // if (!_isOwnerAddress(from) && _isOwnerAddress(to)) { //Mint
@@ -614,13 +625,30 @@ abstract contract ERC1155TrackerUpgradable is
                     _uniqueMembers[id].removeItem(from);
                 }
             }
-        }else{
-
         }
+        */
+
+
     }
-    //Onwer Address (Not Address 0 and not Target Contract)
-    function _isOwnerAddress(address addr) internal view returns(bool){
-        return (addr != address(0) && addr != _targetContract);
+
+    function _beforeTokenTransferTracker(    //[WIP]
+        address operator,
+        uint256 fromToken,
+        uint256 toToken,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) internal virtual {
+        if(toToken != 0){
+            for (uint256 i = 0; i < ids.length; ++i) {
+                uint256 id = ids[i];
+                //If New Owner 
+                if(_balances[id][toToken] == 0){
+                    //Register New Owner
+                    _uniqueMemberTokens[id].push(toToken);
+                }
+            }
+        }
     }
 
     /**
@@ -651,6 +679,29 @@ abstract contract ERC1155TrackerUpgradable is
         uint256[] memory amounts,
         bytes memory data
     ) internal virtual {}
+
+
+
+    function _afterTokenTransferTracker(    //[WIP]
+        address operator,
+        uint256 fromToken,
+        uint256 toToken,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) internal virtual {
+        if(fromToken != 0){
+            for (uint256 i = 0; i < ids.length; ++i) {
+                uint256 id = ids[i];
+                //If Owner Ran Out of Tokens
+                if(_balances[id][fromToken] == 0){
+                    //Remvoed Owner
+                    _uniqueMemberTokens[id].removeItem(fromToken);
+                }
+            }
+        }
+    }
+
 
     /* Unecessary, because token's aren't really controlled by that account anymore
     function _doSafeTransferAcceptanceCheck(

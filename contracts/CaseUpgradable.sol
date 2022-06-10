@@ -326,11 +326,12 @@ contract CaseUpgradable is
         */
 
         //Fetch Case's Subject(s)
-        address[] memory subjects = uniqueRoleMembers("subject");
+        uint256[] memory subjects = uniqueRoleMembers("subject");
         //Each Subject
         for (uint256 i = 0; i < subjects.length; ++i) {
             //Get Subject's Token ID For 
-            uint256 tokenId = avatarContract.tokenByAddress(subjects[i]);
+            // uint256 tokenId = avatarContract.tokenByAddress(subjects[i]);
+            uint256 tokenId = subjects[i];
             if(tokenId > 0){
                 DataTypes.Effect[] memory effects = ruleGetEffects(ruleId);
                 //Run Each Effect

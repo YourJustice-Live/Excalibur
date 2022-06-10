@@ -11,7 +11,7 @@ interface IERC1155Roles {
     //--- Functions
 
     /// Unique Members Addresses
-    function uniqueRoleMembers(string memory role) external view returns (address[] memory);
+    function uniqueRoleMembers(string memory role) external view returns (uint256[] memory);
 
     /// Unique Members Count (w/Token)
     function uniqueRoleMembersCount(string memory role) external view returns (uint256);    
