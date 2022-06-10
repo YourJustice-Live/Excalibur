@@ -475,8 +475,7 @@ describe("Protocol", function () {
       let roleRefArr = [
         {
           role: "subject",
-          // tokenId: tester2Token,
-          tokenId: unOwnedTokenId,
+          tokenId: tester2Token,
         },
         {
           role: "affected",
@@ -509,7 +508,6 @@ describe("Protocol", function () {
     });
     
     it("Should be Created & Opened (by Jurisdiction)", async function () {
-    
       let caseName = "Test Case #1";
       let ruleRefArr = [
         {
@@ -562,11 +560,15 @@ describe("Protocol", function () {
     });
 
     it("Should Auto-Appoint creator as Admin", async function () {
-      expect(await this.caseContract.roleHas(this.adminAddr, "admin")).to.equal(true);
+      expect(
+        await this.caseContract.roleHas(this.adminAddr, "admin")
+      ).to.equal(true);
     });
 
     it("Tester expected to be in the subject role", async function () {
-      expect(await this.caseContract.roleHas(this.tester2Addr, "subject")).to.equal(true);
+      expect(
+        await this.caseContract.roleHas(this.tester2Addr, "subject")
+      ).to.equal(true);
     });
 
     it("Should Update", async function () {
@@ -611,10 +613,10 @@ describe("Protocol", function () {
     });
 
     it("Should Assign Witness", async function () {
-          //Assign Admin
-          await this.caseContract.connect(admin).roleAssign(this.tester3Addr, "witness");
-          //Validate
-          expect(await this.caseContract.roleHas(this.tester3Addr, "witness")).to.equal(true);
+      //Assign Admin
+      await this.caseContract.connect(admin).roleAssign(this.tester3Addr, "witness");
+      //Validate
+      expect(await this.caseContract.roleHas(this.tester3Addr, "witness")).to.equal(true);
     });
 
     it("Jurisdiction Judges Can Assign Themselves", async function () {
@@ -676,15 +678,6 @@ describe("Protocol", function () {
       await expect(tx).to.emit(this.caseContract, 'Verdict').withArgs(test_uri, this.judgeAddr);
       //Expect State Event
       await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(6);
-
-
-      //[DEBUG]
-      // console.log(tx);
-      // let receipt = await tx.wait();
-      // console.log("Emited "+receipt.events.length+" Events", receipt.events);
-
-
-
     });
 
     
