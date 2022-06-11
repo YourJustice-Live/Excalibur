@@ -1,11 +1,11 @@
 //Track Addresses (Fill in present addresses to prevent new deplopyment)
 const contractAddr = {
-    config:"0x14E5D5B68A41665E86225e6830a69bb2b5F6E484",  //V2.0
-    jurisdiction:"0x5CC48aDB4FDB750BB862bB7fe2F3110f859CA7c6",  //V2.8
-    case:"0x03DE6Be8CFBD3e8fc9eD0f59838F8eb0189e5Dcb",  //V2.5
-    hub:"0x997f2f4d8fA9a2d7688ae293Dc7Ab1da3f462701", //V4.2 (Proxy)
-    avatar:"0xfE0B5A71323f2aCA18643ad79B7bd7d916286898",  //V2.4 (Proxy)
-    history:"0xe699f8dd6968F7a60786E846899CEf56154D3573", //V4.0
+    config:"0xA888d7f44638AEEBA9048Ca08bCF83a23e9f58dc",  //D2.1
+    jurisdiction:"0x6D9c0313Ab8D5C2b76711d201472E9d0F565d381",  //D2.9
+    case:"0xded92D349f97f969e435c6e6b417B541874FC46a",  //D2.6
+    hub:"0x101F8810070D7A89E4e79BEB919b45717839C360", //D4.3 (Proxy)
+    avatar:"0x56e7D301070592d0f9A877bB885A10EB7eC713B0",  //D2.5 (Proxy)
+    history:"0xEf0bEf48C827349e87BF06D6c79655582713C9ce", //D4.1
 };
 
 export default contractAddr;
