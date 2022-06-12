@@ -78,8 +78,9 @@ async function main() {
   //--- TEST: Upgradable Hub
   if(!contractAddr.hub){
 
+    //Deploy Hub Upgradable
 
-    //Deploy Avatar Upgradable
+/*
     const HubUpgradable = await ethers.getContractFactory("HubUpgradable");
           
     console.log("*** Start W/HubUpgradable",  [
@@ -101,8 +102,26 @@ async function main() {
         kind: "uups",
         timeout: 120000
     });
-    await proxyHub.deployed();
     hubContract = proxyHub;
+*/
+    
+    hubContract = await ethers.getContractFactory("HubUpgradable").then(Contract => 
+      upgrades.deployProxy(Contract,
+        [
+          publicAddr.assocRepo,
+          contractAddr.config, 
+          contractAddr.jurisdiction,
+          contractAddr.case,
+        ],{
+        kind: "uups",
+        timeout: 120000
+      })
+    );
+
+    await hubContract.deployed();
+
+    //Set Address
+    contractAddr.hub = hubContract.address;
 
     console.log("HubUpgradable deployed to:", hubContract.address);
 
@@ -116,9 +135,6 @@ async function main() {
       console.error("Failed to Set Contracts to Hub", error);
     }
 
-    //Set Address
-    contractAddr.hub = hubContract.address;
-
     //Log
     console.log("Deployed Hub Upgradable Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " jurisdiction: "+contractAddr.jurisdiction+ " Case: "+ contractAddr.case);
     console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.hub+" "+publicAddr.assocRepo+" "+ contractAddr.config+" "+contractAddr.jurisdiction+ " "+contractAddr.case);
@@ -126,7 +142,7 @@ async function main() {
 
 
 
-  /*
+  /* DEPRECATED - Non-Upgradable
   //--- Avatar
   if(!contractAddr.avatar){
     //Deploy Avatar
@@ -152,15 +168,26 @@ async function main() {
 
   //--- Avatar Upgradable
   if(!contractAddr.avatar){
+
     //Deploy Avatar Upgradable
-    const SoulUpgradable = await ethers.getContractFactory("SoulUpgradable");
-    // deploying new proxy
-    const proxyAvatar = await upgrades.deployProxy(SoulUpgradable,
+
+    // const SoulUpgradable = await ethers.getContractFactory("SoulUpgradable");
+    // // deploying new proxy
+    // const proxyAvatar = await upgrades.deployProxy(SoulUpgradable,
+    //     [contractAddr.hub],{
+    //     // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
+    //     kind: "uups",
+    //     timeout: 120000
+    // });
+
+    const proxyAvatar = await ethers.getContractFactory("SoulUpgradable").then(Contract => 
+      upgrades.deployProxy(Contract,
         [contractAddr.hub],{
-        // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
         kind: "uups",
         timeout: 120000
-    });
+      })
+    );
+
     await proxyAvatar.deployed();
     contractAddr.avatar = proxyAvatar.address;
     
@@ -180,11 +207,28 @@ async function main() {
 
   //--- Action Repo
   if(!contractAddr.history){
+
+    /* DEPRECAETD - Non-Upgradable
     //Deploy Action Repo
     let actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(contractAddr.hub));
     await actionContract.deployed();
     //Set Address
     contractAddr.history = actionContract.address;
+    */
+
+    //Deploy History Upgradable (UUDP)
+    const proxyActionRepo = await ethers.getContractFactory("ActionRepoTrackerUp").then(Contract => 
+      upgrades.deployProxy(Contract,
+        [contractAddr.hub],{
+        kind: "uups",
+        timeout: 120000
+      })
+    );
+
+    await proxyActionRepo.deployed();
+    
+    //Set Address
+    contractAddr.history = proxyActionRepo.address;
     //Log
     console.log("Deployed ActionRepo Contract to " + contractAddr.history);
 
