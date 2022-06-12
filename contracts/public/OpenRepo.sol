@@ -13,14 +13,18 @@ import "../interfaces/IOpenRepo.sol";
  * Version 1.0
  * - Save & Return Associations
  * - Owned by Requesting Address
+ * [TODO] Support Multiple Similar Relations
  */
-contract OpenRepo is IOpenRepo, Context, ERC165 {
+contract OpenRepo is 
+        IOpenRepo, 
+        Context, 
+        ERC165 {
 
     //--- Storage
     
     //Arbitrary Contract Name & Symbol 
-    string public constant symbol = "ASSOC";
-    string public constant name = "Open Association Repository";
+    string public constant symbol = "OPENREPO";
+    string public constant name = "Open Edge Repository";
     
     //Associations by Contract Address
     mapping(address => mapping(string => address)) internal _addresses;
