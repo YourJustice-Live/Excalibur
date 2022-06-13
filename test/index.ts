@@ -35,14 +35,14 @@ describe("Protocol", function () {
     const ConfigContract = await ethers.getContractFactory("Config");
     configContract = await ConfigContract.deploy();
 
-    //Deploy Assoc Repo
-    this.assocRepo = await ethers.getContractFactory("AssocRepo").then(res => res.deploy());
+    //--- Deploy Assoc Repo
+    // this.assocRepo = await ethers.getContractFactory("AssocRepo").then(res => res.deploy());
 
-    //Deploy OpenRepo Upgradable (UUDP)
+    //--- Deploy OpenRepo Upgradable (UUDP)
     this.openRepo = await ethers.getContractFactory("OpenRepoUpgradable")
       .then(Contract => upgrades.deployProxy(Contract, [],{kind: "uups", timeout: 120000}));
 
-    //Deploy Case Implementation
+    //--- Deploy Case Implementation
     this.caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
     //Jurisdiction Upgradable Implementation
     this.jurisdictionUpContract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
@@ -50,11 +50,10 @@ describe("Protocol", function () {
     //Deploy Hub
     // hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.jurisdictionUpContract.address, this.caseContract.address));
 
-    //Deploy Hub Upgradable (UUDP)
+    //--- Deploy Hub Upgradable (UUDP)
     hubContract = await ethers.getContractFactory("HubUpgradable").then(Contract => 
       upgrades.deployProxy(Contract,
         [
-          // this.assocRepo.address,
           this.openRepo.address,
           configContract.address, 
           this.jurisdictionUpContract.address, 
@@ -67,16 +66,7 @@ describe("Protocol", function () {
     );
     // await hubContract.deployed();
 
-    /* Testing Rep Change Failure Recovery
-    //Deploy a Second Hub
-    let hubContract2 = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.jurisdictionUpContract.address, this.caseContract.address));
-    avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract2.address));
-    */
-
-    //Deploy Avatar
-    // avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract.address));
-
-    //Deploy Soul Upgradable (UUDP)
+    //--- Deploy Soul Upgradable (UUDP)
     avatarContract = await ethers.getContractFactory("SoulUpgradable").then(Contract => 
       upgrades.deployProxy(Contract,
         [hubContract.address],{
@@ -92,7 +82,7 @@ describe("Protocol", function () {
     //Deploy History
     // actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
 
-    //Deploy History Upgradable (UUDP)
+    //--- Deploy History Upgradable (UUDP)
     actionContract = await ethers.getContractFactory("ActionRepoTrackerUp").then(Contract => 
       upgrades.deployProxy(Contract,
         [hubContract.address],{
