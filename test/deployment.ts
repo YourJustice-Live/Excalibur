@@ -15,6 +15,7 @@ describe("Deployment", function () {
     let configContract: Contract;
     let actionRepoContract: Contract;
     let assocRepoContract: Contract;
+    let openRepoContract: Contract;
     let SoulUpgradable: Contract;
     // let actionContract: Contract;
     let oldHubContract: Contract;
@@ -29,9 +30,13 @@ describe("Deployment", function () {
         [account1, account2] = await ethers.getSigners();
 
         //--- AssocRepo
-        assocRepoContract = await ethers.getContractFactory("AssocRepo").then(res => res.deploy());
-        await assocRepoContract.deployed();
+        // assocRepoContract = await ethers.getContractFactory("AssocRepo").then(res => res.deploy());
+        // await assocRepoContract.deployed();
        
+        //--- OpenRepo (UUDP)
+        openRepoContract = await ethers.getContractFactory("OpenRepoUpgradable")
+            .then(Contract => upgrades.deployProxy(Contract, [],{kind: "uups", timeout: 120000}));
+
         //--- Config
         configContract = await ethers.getContractFactory("Config").then(res => res.deploy());
         await configContract.deployed();
@@ -73,7 +78,8 @@ describe("Deployment", function () {
         // deploying new proxy
         const proxyHub = await upgrades.deployProxy(HubUpgradable,
             [
-                assocRepoContract.address, 
+                // assocRepoContract.address, 
+                openRepoContract.address,
                 configContract.address, 
                 jurisdictionContract.address,
                 caseContract.address,
@@ -175,7 +181,8 @@ describe("Deployment", function () {
         it("Should Deploy Mock Hub Contract", async function () {
             //--- Mock Hub
             let mockHub = await ethers.getContractFactory("HubMock").then(res => res.deploy(
-                assocRepoContract.address, 
+                // assocRepoContract.address, 
+                openRepoContract.address,
                 configContract.address, 
                 jurisdictionContract.address,
                 caseContract.address
