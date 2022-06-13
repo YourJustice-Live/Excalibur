@@ -13,7 +13,7 @@ import "./interfaces/IERC1155Roles.sol";
 import "./interfaces/IJurisdictionUp.sol";
 // import "./interfaces/IJurisdiction.sol";
 import "./interfaces/IAssoc.sol";
-import "./abstract/ContractBase.sol";
+// import "./abstract/ContractBase.sol";
 import "./abstract/CommonYJUpgradable.sol";
 // import "./abstract/ERC1155RolesUpgradable.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
@@ -26,7 +26,7 @@ import "./abstract/Posts.sol";
 contract CaseUpgradable is 
     ICase, 
     Posts, 
-    ContractBase,
+    // ContractBase,    //Redundant
     CommonYJUpgradable, 
     ERC1155RolesTrackerUp {
     // ERC1155RolesUpgradable {
