@@ -4,10 +4,12 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { ethers } from "hardhat";
+const {  upgrades } = require("hardhat");
 
 //Track Addresses (Fill in present addresses to prevent new deplopyment)
-// import contractAddr from "./_contractAddr";
+import contractAddr from "./_contractAddr";
 import publicAddr from "./_publicAddrs";
+
 
 /**
  * Deploy Independent Public Agents
@@ -25,6 +27,26 @@ async function main() {
         console.log("Deployed AssocRepo Contract to " + contractInstance.address);
     }
 
+    //--- Open Repo
+    if(!publicAddr.openRepo){
+      //Deploy Config
+      // let contractInstance = await ethers.getContractFactory("OpenRepo").then(res => res.deploy());
+      // await contractInstance.deployed();
+
+      //Deploy OpenRepo Upgradable (UUDP)
+      let contractInstance = await ethers.getContractFactory("OpenRepoUpgradable").then(Contract => 
+      upgrades.deployProxy(Contract, [],{
+          kind: "uups",
+          timeout: 120000
+        })
+      );
+
+      //Set Address
+      publicAddr.openRepo = contractInstance.address;
+      //Log
+      console.log("Deployed OpenRepo Contract to " + contractInstance.address);
+  }
+  
 }
 
 // We recommend this pattern to be able to use async/await everywhere
