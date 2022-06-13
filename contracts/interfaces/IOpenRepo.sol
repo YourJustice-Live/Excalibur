@@ -3,7 +3,7 @@ pragma solidity 0.8.4;
 
 interface IOpenRepo {
 
-   //--- Functions
+    //--- Functions
 
     /// Set  Association
     function setAddress(string memory key, address destinationContract) external;

@@ -1,9 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 import "../interfaces/IAssocRepo.sol";
+import "../interfaces/IOpenRepo.sol";
 
 /**
  * @title Generic Associations (to other contracts)
@@ -14,9 +15,13 @@ abstract contract AssocExt {
     //AssocExt
             
     //--- Storage
+    IOpenRepo private _OpenRepo;
+    /*
     IAssocRepo private _AssocRepo;
-
+    
     //--- Functions
+
+    //--- Legacy Functions (DEPRECATE)
 
     //Set Assoc Repo
     function _setAssocRepo(IAssocRepo assocRepo_) internal {
@@ -26,6 +31,21 @@ abstract contract AssocExt {
     //Get Assoc Repo
     function assocRepo() internal view returns (IAssocRepo) {
         return _AssocRepo;
+    }
+
+    */
+    
+    //--- New Version
+
+    //Set Assoc Repo
+    function _setRepo(IOpenRepo reposotoryAddress_) internal {
+        // console.log("Setting Repo", address(reposotoryAddress_));
+        _OpenRepo = reposotoryAddress_;
+    }
+
+    //Get Assoc Repo
+    function repo() internal view returns (IOpenRepo) {
+        return _OpenRepo;
     }
 
 }
