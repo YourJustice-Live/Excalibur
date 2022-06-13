@@ -77,38 +77,11 @@ async function main() {
   
   //--- TEST: Upgradable Hub
   if(!contractAddr.hub){
-
-    //Deploy Hub Upgradable
-
-/*
-    const HubUpgradable = await ethers.getContractFactory("HubUpgradable");
-          
-    console.log("*** Start W/HubUpgradable",  [
-      publicAddr.assocRepo,
-      contractAddr.config, 
-      contractAddr.jurisdiction,
-      contractAddr.case,
-    ]);
-
-    // deploying new proxy
-    const proxyHub = await upgrades.deployProxy(HubUpgradable,
-        [
-          publicAddr.assocRepo,
-          contractAddr.config, 
-          contractAddr.jurisdiction,
-          contractAddr.case,
-        ],{
-        // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
-        kind: "uups",
-        timeout: 120000
-    });
-    hubContract = proxyHub;
-*/
-    
+    //Deploy Hub Upgradable (UUDP)    
     hubContract = await ethers.getContractFactory("HubUpgradable").then(Contract => 
       upgrades.deployProxy(Contract,
         [
-          publicAddr.assocRepo,
+          publicAddr.openRepo,
           contractAddr.config, 
           contractAddr.jurisdiction,
           contractAddr.case,
@@ -137,7 +110,7 @@ async function main() {
 
     //Log
     console.log("Deployed Hub Upgradable Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " jurisdiction: "+contractAddr.jurisdiction+ " Case: "+ contractAddr.case);
-    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.hub+" "+publicAddr.assocRepo+" "+ contractAddr.config+" "+contractAddr.jurisdiction+ " "+contractAddr.case);
+    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.hub+" "+publicAddr.openRepo+" "+ contractAddr.config+" "+contractAddr.jurisdiction+ " "+contractAddr.case);
   }
 
 
