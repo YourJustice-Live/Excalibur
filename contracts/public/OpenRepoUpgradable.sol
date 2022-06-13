@@ -15,7 +15,7 @@ import "../abstract/ContractBase.sol";
 /**
  * @title Generic Data Repository
  * @dev Retains Data for Other Contracts
- * Version 1.0
+ * Version 1.0.1
  * - Save & Return Associations
  * - Owned by Requesting Address
  * [TODO] Support Multiple Similar Relations
@@ -57,18 +57,17 @@ contract OpenRepoUpgradable is
     /// Upgrade Permissions
     function _authorizeUpgrade(address newImplementation) internal onlyOwner override { }
 
-    /** 
-     * Set Address
-     */
+    /// Set Address
     function setAddress(string memory key, address destinationContract) external override {
+        //Validate
+        require(_addresses[_msgSender()][key] != destinationContract , "No Change");
+        //Set
         _addresses[_msgSender()][key] = destinationContract;
         //Association Changed Event
         emit AddressSet(_msgSender(), key, destinationContract);
     }
 
-    /** 
-     * Get Address
-     */
+    /// Get Address
     function getAddress(string memory key) external view override returns(address) {
         address originContract = _msgSender();
         //Validate
@@ -76,14 +75,11 @@ contract OpenRepoUpgradable is
         return _addresses[originContract][key];
     }
 
-    /** 
-     * Get Address By Origin Owner Node
-     */
+    /// Get Address By Origin Owner Node
     function getAddressOf(address originContract, string memory key) external view override returns(address) {
         //Validate
         require(_addresses[originContract][key] != address(0) , string(abi.encodePacked("Faild to Find Address: ", key)));
         return _addresses[originContract][key];
     }
-
 
 }
