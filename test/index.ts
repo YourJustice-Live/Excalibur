@@ -38,6 +38,10 @@ describe("Protocol", function () {
     //Deploy Assoc Repo
     this.assocRepo = await ethers.getContractFactory("AssocRepo").then(res => res.deploy());
 
+    //Deploy OpenRepo Upgradable (UUDP)
+    this.openRepo = await ethers.getContractFactory("OpenRepoUpgradable")
+      .then(Contract => upgrades.deployProxy(Contract, [],{kind: "uups", timeout: 120000}));
+
     //Deploy Case Implementation
     this.caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
     //Jurisdiction Upgradable Implementation
@@ -50,7 +54,8 @@ describe("Protocol", function () {
     hubContract = await ethers.getContractFactory("HubUpgradable").then(Contract => 
       upgrades.deployProxy(Contract,
         [
-          this.assocRepo.address,
+          // this.assocRepo.address,
+          this.openRepo.address,
           configContract.address, 
           this.jurisdictionUpContract.address, 
           this.caseContract.address
