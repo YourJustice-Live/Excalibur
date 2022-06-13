@@ -14,7 +14,8 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "./interfaces/IConfig.sol";
 import "./interfaces/IAssoc.sol";
-import "./interfaces/IAssocRepo.sol";
+// import "./interfaces/IAssocRepo.sol";
+import "./interfaces/IOpenRepo.sol";
 import "./interfaces/ICommonYJ.sol";
 import "./interfaces/IHub.sol";
 import "./interfaces/IJurisdictionUp.sol";
@@ -81,13 +82,16 @@ contract HubUpgradable is
 
     /// Initializer
     function initialize (
-        IAssocRepo assocRepo, 
+        // IAssocRepo assocRepo, 
+        IOpenRepo openRepo,
         address config, 
         address jurisdictionContract, 
         address caseContract
     ) public initializer {
         //Set Association Repo Address
-        _setAssocRepo(assocRepo);
+        // _setAssocRepo(assocRepo);
+        _setRepo(openRepo);
+
         //Initializers
         __UUPSUpgradeable_init();
         //Set Protocol's Config Address
@@ -112,7 +116,8 @@ contract HubUpgradable is
 
     /// Get Configurations Contract Address
     function getConfig() public view returns (address) {
-        return assocRepo().get("config");
+        // return assocRepo().get("config");
+        return repo().getAddress("config");
     }
 
     /// Expose Configurations Set for Current Owner
@@ -125,19 +130,22 @@ contract HubUpgradable is
         //Validate Contract's Designation
         require(keccak256(abi.encodePacked(IConfig(config).symbol())) == keccak256(abi.encodePacked("YJConfig")), "Invalid Config Contract");
         //Set
-        assocRepo().set("config", config);
+        // assocRepo().set("config", config);
+        repo().setAddress("config", config);
     }
 
     /// Update Hub
     function hubChange(address newHubAddr) external override onlyOwner {
         //Avatar
-        address avatarContract = assocRepo().get("avatar");
+        // address avatarContract = assocRepo().get("avatar");
+        address avatarContract = repo().getAddress("avatar");
         if(avatarContract != address(0)){
             try ICommonYJ(avatarContract).setHub(newHubAddr){}  //Failure should not be fatal
             catch Error(string memory /*reason*/) {}
         }
         //History
-        address actionRepo = assocRepo().get("history");
+        // address actionRepo = assocRepo().get("history");
+        address actionRepo = repo().getAddress("history");
         if(actionRepo != address(0)){
             try ICommonYJ(actionRepo).setHub(newHubAddr) {}   //Failure should not be fatal
             catch Error(string memory reason) {
@@ -152,12 +160,14 @@ contract HubUpgradable is
 
     /// Set Association
     function setAssoc(string memory key, address contractAddr) external onlyOwner {
-        assocRepo().set(key, contractAddr);
+        // assocRepo().set(key, contractAddr);
+        repo().setAddress(key, contractAddr);
     }
 
     /// Get Contract Association
     function getAssoc(string memory key) public view override returns(address) {
-        return assocRepo().get(key);
+        // return assocRepo().get(key);
+        return repo().getAddress(key);
     }
 
     //--- Factory 
@@ -225,7 +235,8 @@ contract HubUpgradable is
         //TODO: Validate - Known Jurisdiction
         // require(_jurisdictions[_msgSender()], "NOT A VALID JURISDICTION");
 
-        address avatarContract = assocRepo().get("avatar");
+        // address avatarContract = assocRepo().get("avatar");
+        address avatarContract = repo().getAddress("avatar");
         //Update Avatar's Reputation    //TODO: Just Check if Contract Implements IRating
         if(avatarContract != address(0) && avatarContract == contractAddr){
             _repAddAvatar(tokenId, domain, rating, amount);
@@ -234,7 +245,8 @@ contract HubUpgradable is
 
     /// Add Repuation to Avatar
     function _repAddAvatar(uint256 tokenId, string calldata domain, bool rating, uint8 amount) internal {
-        address avatarContract = assocRepo().get("avatar");
+        // address avatarContract = assocRepo().get("avatar");
+        address avatarContract = repo().getAddress("avatar");
         try IAvatar(avatarContract).repAdd(tokenId, domain, rating, amount) {}   //Failure should not be fatal
         catch Error(string memory /*reason*/) {}
     }
