@@ -10,15 +10,23 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "../interfaces/IOpenRepo.sol";
 import "../abstract/ContractBase.sol";
-
+import "../libraries/AddressArray.sol";
 
 /**
  * @title Generic Data Repository
  * @dev Retains Data for Other Contracts
- * Version 1.0.1
+ * Version 2.0.0
  * - Save & Return Associations
  * - Owned by Requesting Address
- * [TODO] Support Multiple Similar Relations
+ * - Support Multiple Similar Associations
+ *
+ * Address Functions:
+    Set 
+    Add
+    Remove 
+    Get (first) 
+    GetAll
+    GetSlot(index)
  */
 contract OpenRepoUpgradable is 
         IOpenRepo, 
@@ -37,6 +45,9 @@ contract OpenRepoUpgradable is
     
     //Associations by Contract Address
     mapping(address => mapping(string => address)) internal _addresses;
+
+    using AddressArray for address[];
+    mapping(address => mapping(string => address[])) internal _addressesMulti;
     
     //--- Functions
 
@@ -56,30 +67,62 @@ contract OpenRepoUpgradable is
 
     /// Upgrade Permissions
     function _authorizeUpgrade(address newImplementation) internal onlyOwner override { }
+    
+    /// Get Address By Origin Owner Node
+    function addressGetOf(address originContract, string memory key) public view override returns(address) {
+        //Validate
+        require(_addressesMulti[originContract][key][0] != address(0) , string(abi.encodePacked("Faild to Find Address: ", key)));
+        return _addressesMulti[originContract][key][0];
+    }
+
+    /// Get First Address in Slot
+    function addressGet(string memory key) external view override returns(address) {
+        address originContract = _msgSender();
+        //Validate
+        return addressGetOf(originContract, key);
+    }
+    
+    /// Get First Address by Index
+    function addressGetIndexOf(address originContract, string memory key, uint256 index) public view override returns(address) {
+        //Fetch
+        return _addressesMulti[originContract][key][index];
+    }
+
+    /// Get First Address in Index
+    function addressGetIndex(string memory key, uint256 index) external view override returns(address) {
+        address originContract = _msgSender();
+        //Fetch
+        return addressGetIndexOf(originContract, key, index);
+    }
+    
+    /// Get All Address in Slot
+    function addressGetAll(string memory key) external view returns(address[] memory) {
+        address originContract = _msgSender();
+        //Validate
+        return _addressesMulti[originContract][key];
+    }
 
     /// Set Address
-    function setAddress(string memory key, address destinationContract) external override {
-        //Validate
-        require(_addresses[_msgSender()][key] != destinationContract , "No Change");
-        //Set
-        _addresses[_msgSender()][key] = destinationContract;
+    function addressSet(string memory key, address destinationContract) external override {
+        //Set as the first slot of an empty array
+        _addressesMulti[_msgSender()][key] = [destinationContract];
         //Association Changed Event
         emit AddressSet(_msgSender(), key, destinationContract);
     }
-
-    /// Get Address
-    function getAddress(string memory key) external view override returns(address) {
-        address originContract = _msgSender();
-        //Validate
-        // require(_addresses[originContract][key] != address(0) , string(abi.encodePacked("Assoc:Faild to Get Assoc: ", key)));
-        return _addresses[originContract][key];
+    
+    /// Add Address to Slot
+    function addressAdd(string memory key, address destinationContract) external override {
+        //Set as the first slot of an empty array
+        _addressesMulti[_msgSender()][key].push(destinationContract);
+        //Association Changed Event
+        emit AddressAdd(_msgSender(), key, destinationContract);
     }
-
-    /// Get Address By Origin Owner Node
-    function getAddressOf(address originContract, string memory key) external view override returns(address) {
-        //Validate
-        require(_addresses[originContract][key] != address(0) , string(abi.encodePacked("Faild to Find Address: ", key)));
-        return _addresses[originContract][key];
+    
+    /// Remove Address from Slot
+    function addressRemove(string memory key, address destinationContract) external override {
+        //Set as the first slot of an empty array
+        _addressesMulti[_msgSender()][key].removeItem(destinationContract);
+        //Association Changed Event
+        emit AddressRemoved(_msgSender(), key, destinationContract);
     }
-
 }
