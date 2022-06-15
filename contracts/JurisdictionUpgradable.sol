@@ -83,6 +83,8 @@ contract JurisdictionUpgradable is
         // __ERC1155RolesUpgradable_init("");
         __CommonYJ_init(hub);
         __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
+        //Init Recursion Controls
+        __Recursion_init(address(_HUB));
         //Set Contract URI
         _setContractURI(uri_);
         //Identifiers

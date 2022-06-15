@@ -3,21 +3,33 @@ pragma solidity 0.8.4;
 
 // import "hardhat/console.sol";
 
-import "../libraries/DataTypes.sol";
 import "../interfaces/IRecursion.sol";
+import "../interfaces/IAssoc.sol";
+import "../libraries/DataTypes.sol";
 import "../libraries/AddressArray.sol";
+import "../abstract/AssocExt.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
 
 /**
  * @title Core Contract Recursion Functionality
  * @dev Designed To Be Used by Jurisdictions
  */
-contract Recursion is IRecursion {
+contract Recursion is IRecursion, Initializable, AssocExt {
     //-- Storage
 
     //Parent Addresses
     using AddressArray for address[];
     address[] _parentAddrs;
 
+    /// Initializer
+    function __Recursion_init(address hub) internal onlyInitializing {
+        //Fetch Repo From Hub
+        address openRepo = IAssoc(hub).getAssoc("repo");
+        //Set Repo
+        _setRepo(openRepo);
+    }
+    
     /// Check if a Contract Address is a an Immediate Parent of Current Contract
     function isParent(address contractAddr) public view override returns (bool) {
         //Flat Check
