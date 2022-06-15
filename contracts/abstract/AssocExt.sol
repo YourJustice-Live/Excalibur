@@ -38,14 +38,16 @@ abstract contract AssocExt {
     //--- New Version
 
     //Set Assoc Repo
-    function _setRepo(IOpenRepo reposotoryAddress_) internal {
+    function _setRepo(address reposotoryAddress_) internal {
         // console.log("Setting Repo", address(reposotoryAddress_));
-        _OpenRepo = reposotoryAddress_;
+        // _OpenRepo = reposotoryAddress_;
+        _OpenRepo = IOpenRepo(reposotoryAddress_);
     }
 
     //Get Assoc Repo
     function repo() internal view returns (IOpenRepo) {
         return _OpenRepo;
     }
+    
 
 }

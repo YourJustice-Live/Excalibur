@@ -13,14 +13,12 @@ import "../HubUpgradable.sol";
 contract HubMock is HubUpgradable {
 
     constructor(
-        // IAssocRepo assocRepo, 
-        IOpenRepo openRepo,
+        address openRepo,
         address config, 
         address jurisdictionContract, 
         address caseContract
         ) {
         initialize(
-        //    assocRepo, 
             openRepo,
             config, 
             jurisdictionContract, 

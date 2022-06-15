@@ -81,7 +81,7 @@ contract HubUpgradable is
 
     /// Initializer
     function initialize (
-        IOpenRepo openRepo,
+        address openRepo,
         address config, 
         address jurisdictionContract, 
         address caseContract
