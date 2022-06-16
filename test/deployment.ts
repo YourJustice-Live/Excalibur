@@ -49,27 +49,6 @@ describe("Deployment", function () {
         caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
         await caseContract.deployed();
         
-        /* */  
-        //--- Hub Contract
-        // hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(
-        oldHubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(
-            configContract.address, 
-            jurisdictionContract.address,
-            caseContract.address,
-        ));
-        // await hubContract.deployed();
-        await oldHubContract.deployed();
-        // console.log("Hub Address:", hubContract.address);
-        
-        
-        /*
-        //Deploy Avatar
-        avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract.address));
-        //Set Avatar Contract to Hub
-        hubContract.setAssoc("avatar", avatarContract.address);
-        */
-
-
     });
 
     it("Should Deploy Upgradable Hub Contract", async function () {
@@ -98,7 +77,26 @@ describe("Deployment", function () {
     });
 
     it("Should Change Hub", async function () {
-        oldHubContract.hubChange(hubContract.address);
+       //--- Hub Contract
+       //Deploy Hub Upgradable
+       const HubUpgradable = await ethers.getContractFactory("HubUpgradable");
+       const proxyHub2 = await upgrades.deployProxy(HubUpgradable,
+           [
+               // assocRepoContract.address, 
+               openRepoContract.address,
+               configContract.address, 
+               jurisdictionContract.address,
+               caseContract.address,
+           ],{
+           // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
+           kind: "uups",
+           timeout: 120000
+       });
+       await proxyHub2.deployed();
+       
+        // console.log("Hub Address:", hubContract.address);
+    
+        proxyHub2.hubChange(hubContract.address);
     });
 
     it("Should Deploy Upgradable Soul Contract", async function () {

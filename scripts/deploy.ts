@@ -50,31 +50,6 @@ async function main() {
     console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.case);
   }
 
-  /*
-  //--- Hub
-  if(!contractAddr.hub){
-    //Deploy Hub
-    hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(
-        contractAddr.config, 
-        contractAddr.jurisdiction,
-        contractAddr.case,
-      ));
-    await hubContract.deployed();
-
-    //Set Avatars
-    if(!!contractAddr.avatar) await hubContract.setAssoc("avatar", contractAddr.avatar);
-    //Set to History
-    if(!!contractAddr.history) await hubContract.setAssoc("history", contractAddr.history);
-
-    //Set Address
-    contractAddr.hub = hubContract.address;
-    //Log
-    console.log("Deployed Hub Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " jurisdiction: "+contractAddr.jurisdiction+ " Case: "+ contractAddr.case);
-    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.hub+ " "+ contractAddr.config+ " "+contractAddr.jurisdiction+ " "+contractAddr.case);
-  }
-  */
-
-  
   //--- TEST: Upgradable Hub
   if(!contractAddr.hub){
     //Deploy Hub Upgradable (UUDP)    
@@ -171,6 +146,8 @@ async function main() {
       try{
         //Set to HUB
         hubContract.setAssoc("avatar", contractAddr.avatar);
+        //Log
+        console.log("Registered Avatar Contract to Hub");
       }
       catch(error){
         console.error("Failed to Set Avatar Contract to Hub", error);
@@ -197,7 +174,6 @@ async function main() {
         timeout: 120000
       })
     );
-
     await proxyActionRepo.deployed();
     
     //Set Address
@@ -207,6 +183,9 @@ async function main() {
 
     if(!!hubContract){  //If Deployed Together
       try{
+        //Log
+        console.log("Will Register History to Hub");
+
         //Set to HUB
         hubContract.setAssoc("history", contractAddr.history);
       }

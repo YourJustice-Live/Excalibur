@@ -17,7 +17,7 @@ let oldHubAddr = "0x288B2040e78dC90D73d8Ed0957ed706260DC8EfE";
  */
 async function main() {
     //Old Hub
-    let oldHubContract = await ethers.getContractFactory("Hub").then(res => res.attach(oldHubAddr));
+    let oldHubContract = await ethers.getContractFactory("HubUpgradable").then(res => res.attach(oldHubAddr));
     //Move Asset Contracts to new Hub
     oldHubContract.hubChange(contractAddr.hub);
 }

@@ -9,6 +9,7 @@ let test_uri = "ipfs://QmQxkoWcpFgMa7bCzxaANWtSt43J1iMgksjNnT4vM1Apd7"; //"TEST_
 
 
 describe("Hub", function () {
+    let openRepoContract: Contract;
     let hubContract: Contract;
     let hubContract2: Contract;
     let avatarContract: Contract;
@@ -29,6 +30,10 @@ describe("Hub", function () {
         this.addr1 = await account1.getAddress();
         this.addr2 = await account2.getAddress();
 
+        //Deploy OpenRepo (UUDP)
+        openRepoContract = await ethers.getContractFactory("OpenRepoUpgradable")
+            .then(Contract => upgrades.deployProxy(Contract, [],{kind: "uups", timeout: 120000}));
+
         //Deploy Config
         const ConfigContract = await ethers.getContractFactory("Config");
         configContract1 = await ConfigContract.connect(account1).deploy();
@@ -39,15 +44,44 @@ describe("Hub", function () {
         //Jurisdiction Upgradable Implementation
         this.jurisdictionUpContract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
 
-        //Deploy Hub
-        hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract1.address, this.jurisdictionUpContract.address, this.caseContract.address));
-        //Deploy Hub
-        hubContract2 = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract2.address, this.jurisdictionUpContract.address, this.caseContract.address));
+        //--- Deploy Hub
+        // hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract1.address, this.jurisdictionUpContract.address, this.caseContract.address));
+        //Deploy Hub Upgradable
+        const HubUpgradable = await ethers.getContractFactory("HubUpgradable");
+        hubContract = await upgrades.deployProxy(HubUpgradable,
+            [
+                openRepoContract.address,
+                configContract1.address,
+                this.jurisdictionUpContract.address,
+                this.caseContract.address
+            ],{
+            // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
+            kind: "uups",
+            timeout: 120000
+        });
+        await hubContract.deployed();
 
+        //Deploy Another Hub
+        // hubContract2 = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract2.address, this.jurisdictionUpContract.address, this.caseContract.address));
+        hubContract2 = await upgrades.deployProxy(HubUpgradable,
+            [
+                openRepoContract.address,
+                configContract2.address,
+                this.jurisdictionUpContract.address,
+                this.caseContract.address
+            ],{
+            // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
+            kind: "uups",
+            timeout: 120000
+        });
+        await hubContract2.deployed();
+
+        
         //Deploy Avatar
         avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract.address));
         //Set Avatar Contract to Hub
         hubContract.setAssoc("avatar", avatarContract.address);
+        hubContract2.setAssoc("avatar", avatarContract.address);
 
         //Deploy History
         // actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
@@ -62,6 +96,7 @@ describe("Hub", function () {
 
         //Set Avatar Contract to Hub
         hubContract.setAssoc("history", actionContract.address);
+        hubContract2.setAssoc("history", actionContract.address);
     });
 
     it("Should Be Secure", async function () {

@@ -15,7 +15,7 @@ import contractAddr from "./_contractAddr";
  */
 async function main() {
     //Hub
-    let hubContract = await ethers.getContractFactory("Hub").then(res => res.attach(contractAddr.hub));
+    let hubContract = await ethers.getContractFactory("HubUpgradable").then(res => res.attach(contractAddr.hub));
     //Update Implementations
     await hubContract.upgradeCaseImplementation(contractAddr.case);
     await hubContract.upgradeJurisdictionImplementation(contractAddr.jurisdiction);
