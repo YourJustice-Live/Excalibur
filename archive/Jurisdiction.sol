@@ -103,12 +103,10 @@ contract Jurisdiction is
     // ) public returns (uint256, address) {
     ) public returns (address) {
         //Make Case
-        // (uint256 caseId, address caseContract) = caseMake(name_, addRules, assignRoles, posts);
         address caseContract = caseMake(name_, addRules, assignRoles, posts);
         //File Case
         ICase(caseContract).stageFile();
         //Return
-        // return (caseId, caseContract);
         return caseContract;
     }
 
@@ -135,9 +133,8 @@ contract Jurisdiction is
         emit CaseCreated(caseId, caseContract);
         //Posts
         for (uint256 i = 0; i < posts.length; ++i) {
-            ICase(caseContract).post(posts[i].entRole, posts[i].uri);
+            ICase(caseContract).post(posts[i].entRole, posts[i].tokenId, posts[i].uri);
         }
-        // return (caseId, caseContract);
         return caseContract;
     }
     

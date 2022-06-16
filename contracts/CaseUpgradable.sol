@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 // import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
@@ -190,20 +190,33 @@ contract CaseUpgradable is
 
     // function post(uint256 token_id, string entRole, string uri) 
     //- Post by Entity (Token ID or a token identifier struct)
-
+    
+    /// Check if the Current Account has Control over a Token
+    function _hasTokenControl(uint256 tokenId) internal view returns (bool){
+        address ownerAccount = _getAccount(tokenId);
+        return (
+            // ownerAccount == _msgSender()    //Token Owner
+            ownerAccount == tx.origin    //Token Owner (Allows it to go therough the hub)
+            || (ownerAccount == _targetContract && owner() == _msgSender()) //Unclaimed Token Controlled by Contract Owner/DAO
+        );
+    }
+    
     /// Add Post 
     /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
-    function post(string calldata entRole, string calldata uri_) external override {     //postRole in the URI
+    function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {     //postRole in the URI
         //Validate: Sender Holds The Entity-Role 
         // require(roleHas(_msgSender(), entRole), "ROLE:INVALID_PERMISSION");
         require(roleHas(tx.origin, entRole), "ROLE:INVALID_PERMISSION");    //Validate the Calling Account
         //Validate Stage
         require(stage < DataTypes.CaseStage.Closed, "STAGE:CASE_CLOSED");
+        //Validate that User Controls The Token
+        require(_hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+
         //Post Event
         // emit Post(_msgSender(), entRole, postRole, uri_);
         // emit Post(tx.origin, entRole, postRole, uri_);
         // emit Post(tx.origin, entRole, uri_);
-        _post(tx.origin, entRole, uri_);
+        _post(tx.origin, tokenId, entRole, uri_);
     }
 
     //--- Rule Reference 

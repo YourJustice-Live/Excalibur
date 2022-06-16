@@ -126,9 +126,8 @@ contract JurisdictionUpgradable is
         emit CaseCreated(caseId, caseContract);
         //Posts
         for (uint256 i = 0; i < posts.length; ++i) {
-            ICase(caseContract).post(posts[i].entRole, posts[i].uri);
+            ICase(caseContract).post(posts[i].entRole, posts[i].tokenId, posts[i].uri);
         }
-        // return (caseId, caseContract);
         return caseContract;
     }
     
@@ -147,7 +146,6 @@ contract JurisdictionUpgradable is
         //File Case
         ICase(caseContract).stageFile();
         //Return
-        // return (caseId, caseContract);
         return caseContract;
     }
 
