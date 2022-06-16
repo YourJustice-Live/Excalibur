@@ -45,8 +45,6 @@ interface ICase {
     function stageCancel(string calldata uri) external;
 
     /// Add Post 
-    // function post(string calldata entRole, string calldata postRole, string calldata uri) external;
-    // function post(string calldata entRole, string calldata uri) external;
     function post(string calldata entRole, uint256 tokenId, string calldata uri) external;
 
     /// Set Metadata URI For Role

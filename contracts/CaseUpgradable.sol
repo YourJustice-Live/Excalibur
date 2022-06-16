@@ -204,13 +204,13 @@ contract CaseUpgradable is
     /// Add Post 
     /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
     function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {     //postRole in the URI
+        //Validate that User Controls The Token
+        require(_hasTokenControl(tokenId), "SOUL:NOT_YOURS");
         //Validate: Sender Holds The Entity-Role 
         // require(roleHas(_msgSender(), entRole), "ROLE:INVALID_PERMISSION");
         require(roleHas(tx.origin, entRole), "ROLE:INVALID_PERMISSION");    //Validate the Calling Account
         //Validate Stage
         require(stage < DataTypes.CaseStage.Closed, "STAGE:CASE_CLOSED");
-        //Validate that User Controls The Token
-        require(_hasTokenControl(tokenId), "SOUL:NOT_YOURS");
 
         //Post Event
         // emit Post(_msgSender(), entRole, postRole, uri_);
