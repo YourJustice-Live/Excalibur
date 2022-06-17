@@ -494,8 +494,12 @@ describe("Protocol", function () {
    * Case Contract
    */
   describe("Case", function () {
-    
+
     it("Should be Created (by Jurisdiction)", async function () {
+      //Soul Tokens
+      let adminToken = await avatarContract.tokenByAddress(this.adminAddr);
+      let tester2Token = await avatarContract.tokenByAddress(this.tester2Addr);
+    
       let caseName = "Test Case #1";
       let ruleRefArr = [
         {
@@ -503,7 +507,6 @@ describe("Protocol", function () {
           ruleId: 1,
         }
       ];
-      let tester2Token = await avatarContract.tokenByAddress(this.tester2Addr);
       let roleRefArr = [
         {
           role: "subject",
@@ -516,10 +519,12 @@ describe("Protocol", function () {
       ];
       let posts = [
         {
+          tokenId: adminToken, 
           entRole: "admin",
           uri: test_uri,
         }
       ];
+
       //Join Jurisdiction (as member)
       await jurisdictionContract.connect(admin).join();
 
@@ -536,10 +541,15 @@ describe("Protocol", function () {
       //Expect Case Created Event
       await expect(tx).to.emit(jurisdictionContract, 'CaseCreated').withArgs(1, caseAddr);
       //Expect Post Event
-      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].uri);
+      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].uri);
     });
     
     it("Should be Created & Opened (by Jurisdiction)", async function () {
+      //Soul Tokens
+      let adminToken = await avatarContract.tokenByAddress(this.adminAddr);
+      let tester2Token = await avatarContract.tokenByAddress(this.tester2Addr);
+      let tester3Token = await avatarContract.tokenByAddress(this.tester3Addr);
+
       let caseName = "Test Case #1";
       let ruleRefArr = [
         {
@@ -547,22 +557,19 @@ describe("Protocol", function () {
           ruleId: 1,
         }
       ];
-      let tester2Token = await avatarContract.tokenByAddress(this.tester2Addr);
-      let tester3Token = await avatarContract.tokenByAddress(this.tester3Addr);
       let roleRefArr = [
         {
           role: "subject",
-          // account: this.tester2Addr,
           tokenId: tester2Token,
         },
         {
           role: "witness",
-          // account: this.tester3Addr, 
           tokenId: tester3Token,
         }
       ];
       let posts = [
         {
+          tokenId: adminToken, 
           entRole: "admin",
           uri: test_uri,
         }
@@ -578,11 +585,11 @@ describe("Protocol", function () {
       //Expect Case Created Event
       await expect(tx).to.emit(jurisdictionContract, 'CaseCreated').withArgs(2, caseAddr);
       //Expect Post Event
-      // await expect(tx).to.emit(caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].postRole, posts[0].uri);
-      await expect(tx).to.emit(caseContract, 'Post').withArgs(this.adminAddr, posts[0].entRole, posts[0].uri);
+      // await expect(tx).to.emit(caseContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].postRole, posts[0].uri);
+      await expect(tx).to.emit(caseContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].uri);
     });
 
-    it("Should Update Contract URI", async function () {
+    it("Should Update Case Contract URI", async function () {
       //Before
       expect(await this.caseContract.contractURI()).to.equal(test_uri);
       //Change
@@ -621,16 +628,25 @@ describe("Protocol", function () {
     });
     
     it("Should Write a Post", async function () {
+      let tester2Token = await avatarContract.tokenByAddress(this.tester2Addr);
       let post = {
+        tokenId: tester2Token,
         entRole:"subject",
         uri:test_uri,
       }
-      //Post
-      let tx = await this.caseContract.connect(tester2).post(post.entRole, post.uri);
+
+      //Validate Permissions
+      await expect(
+        //Failed Post
+        this.caseContract.connect(tester).post(post.entRole, post.tokenId, post.uri)
+      ).to.be.revertedWith("SOUL:NOT_YOURS");
+
+      //Successful Post
+      let tx = await this.caseContract.connect(tester2).post(post.entRole, post.tokenId, post.uri);
       // wait until the transaction is mined
       await tx.wait();
       //Expect Event
-      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, post.entRole, post.uri);
+      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, tester2Token, post.entRole, post.uri);
     });
 
     it("Should Update Token URI", async function () {
