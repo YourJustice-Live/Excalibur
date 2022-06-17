@@ -19,8 +19,8 @@ import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/Rules.sol";
 import "./abstract/ContractBase.sol";
 import "./abstract/Opinions.sol";
-import "./abstract/Recursion.sol";
-import "./abstract/Posts.sol";
+// import "./abstract/Recursion.sol";
+// import "./abstract/Posts.sol";
 
 
 /**
@@ -46,8 +46,8 @@ contract JurisdictionUpgradable is
         ContractBase,
         CommonYJUpgradable, 
         Opinions, 
-        Recursion, 
-        Posts,
+        // Recursion,      //DEPRECATE / Cleanp
+        // Posts,
         ERC1155RolesTrackerUp {
         // ERC1155RolesUpgradable {
 
@@ -68,6 +68,13 @@ contract JurisdictionUpgradable is
     // mapping(uint256 => address) internal _cases;   // Mapping for Case Contracts      //DEPRECATED - No need for Case IDs, Use Hash
     mapping(address => bool) internal _active;        // Mapping for Case Contracts
 
+    //Post Input Struct
+    struct PostInput {
+        uint256 tokenId;
+        string entRole;
+        string uri;
+    }
+
     //--- Functions
 
     /// ERC165 - Supported Interfaces
@@ -76,15 +83,17 @@ contract JurisdictionUpgradable is
             || interfaceId == type(IRules).interfaceId 
             || super.supportsInterface(interfaceId);
     }
-    
+
     /// Initializer
     function initialize (address hub, string calldata name_, string calldata uri_) public override initializer {
         //Initializers
         // __ERC1155RolesUpgradable_init("");
         __CommonYJ_init(hub);
         __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
+        
         //Init Recursion Controls
-        __Recursion_init(address(_HUB));
+        // __Recursion_init(address(_HUB)); //DEPRECATED
+
         //Set Contract URI
         _setContractURI(uri_);
         //Identifiers
@@ -168,7 +177,7 @@ contract JurisdictionUpgradable is
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external override {
         //Validate - Called by Child Case
         require(caseHas(_msgSender()), "NOT A VALID CASE");
-        //Run
+        //Run on Self
         _repAdd(contractAddr, tokenId, domain, rating, amount);
         //Update Hub
         _HUB.repAdd(contractAddr, tokenId, domain, rating, amount);

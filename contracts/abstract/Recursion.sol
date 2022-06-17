@@ -7,7 +7,7 @@ import "../interfaces/IRecursion.sol";
 import "../interfaces/IAssoc.sol";
 import "../libraries/DataTypes.sol";
 import "../libraries/AddressArray.sol";
-import "../abstract/AssocExt.sol";
+// import "../abstract/AssocExt.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 
@@ -15,21 +15,24 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
  * @title Core Contract Recursion Functionality
  * @dev Designed To Be Used by Jurisdictions
  */
-contract Recursion is IRecursion, Initializable, AssocExt {
+contract Recursion is IRecursion, Initializable {
+
     //-- Storage
 
     //Parent Addresses
     using AddressArray for address[];
     address[] _parentAddrs;
 
+    /* DEPRECATE - Get Directly from Hub 
     /// Initializer
     function __Recursion_init(address hub) internal onlyInitializing {
-        //Fetch Repo From Hub
+    //Fetch Repo From Hub
         address openRepo = IAssoc(hub).getAssoc("repo");
         //Set Repo
         _setRepo(openRepo);
     }
-    
+    */
+
     /// Check if a Contract Address is a an Immediate Parent of Current Contract
     function isParent(address contractAddr) public view override returns (bool) {
         //Flat Check
