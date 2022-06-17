@@ -159,9 +159,15 @@ contract HubUpgradable is
     /// Get Contract Association
     function getAssoc(string memory key) public view override returns(address) {
         //If string match "repo" return the repo address
-        if(keccak256(abi.encodePacked("repo")) == keccak256(abi.encodePacked(key))) return address(repo());
+        // if(keccak256(abi.encodePacked("repo")) == keccak256(abi.encodePacked(key))) return address(repo());
+        
         //Return address from the Repo
         return repo().addressGet(key);
+    }
+
+    //Repo Address
+    function repoAddr() external view override returns(address) {
+        return address(repo());
     }
 
     //--- Factory 
