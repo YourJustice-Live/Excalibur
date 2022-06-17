@@ -395,8 +395,8 @@ describe("Protocol", function () {
         // bool negation;  //false - Commision  true - Omission
         negation: false,
       };
-        // Effect Object (Describes Changes to Rating By Type)
-        let effects1 = [
+      // Effect Object (Describes Changes to Rating By Type)
+      let effects1 = [
         {name:'professional', value:5, direction:false},
         {name:'social', value:5, direction:true},
       ];
