@@ -344,7 +344,6 @@ describe("Protocol", function () {
     });
 
     it("Admin can appoint judge", async function () {
-      // let testerAddr = await tester.getAddress();
       //Check Before
       expect(await this.jurisdictionContract.roleHas(this.judgeAddr, "judge")).to.equal(false);
       //Should Fail - Require Permissions
