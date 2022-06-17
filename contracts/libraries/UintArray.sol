@@ -12,7 +12,7 @@ library UintArray {
     }
     
     /// Remove Item From Array
-    function removeIndex(uint256[] storage array, uint index) internal {
+    function removeIndex(uint256[] storage array, uint256 index) internal {
         require(index < array.length, "UintArray:INDEX_OUT_OF_BOUNDS");
         array[index] = array[array.length-1];
         array.pop();

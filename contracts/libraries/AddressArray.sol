@@ -12,7 +12,7 @@ library AddressArray {
     }
     
     /// Remove Address From Array
-    function removeIndex(address[] storage array, uint index) internal {
+    function removeIndex(address[] storage array, uint256 index) internal {
         require(index < array.length, "AddressArray:INDEX_OUT_OF_BOUNDS");
         array[index] = array[array.length-1];
         array.pop();
