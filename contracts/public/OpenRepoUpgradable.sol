@@ -3,7 +3,6 @@ pragma solidity 0.8.4;
 
 // import "hardhat/console.sol";
 
-// import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -44,7 +43,8 @@ contract OpenRepoUpgradable is
     string public constant name = "Open Edge Repository";
     
     //Associations by Contract Address
-    mapping(address => mapping(string => address)) internal _addresses;
+    mapping(address => mapping(string => address)) internal _addresses; //DEPRECATED
+
 
     using AddressArray for address[];
     mapping(address => mapping(string => address[])) internal _addressesMulti;
@@ -103,26 +103,26 @@ contract OpenRepoUpgradable is
     }
 
     /// Set Address
-    function addressSet(string memory key, address destinationContract) external override {
+    function addressSet(string memory key, address value) external override {
         //Set as the first slot of an empty array
-        _addressesMulti[_msgSender()][key] = [destinationContract];
+        _addressesMulti[_msgSender()][key] = [value];
         //Association Changed Event
-        emit AddressSet(_msgSender(), key, destinationContract);
+        emit AddressSet(_msgSender(), key, value);
     }
     
     /// Add Address to Slot
-    function addressAdd(string memory key, address destinationContract) external override {
+    function addressAdd(string memory key, address value) external override {
         //Set as the first slot of an empty array
-        _addressesMulti[_msgSender()][key].push(destinationContract);
+        _addressesMulti[_msgSender()][key].push(value);
         //Association Changed Event
-        emit AddressAdd(_msgSender(), key, destinationContract);
+        emit AddressAdd(_msgSender(), key, value);
     }
     
     /// Remove Address from Slot
-    function addressRemove(string memory key, address destinationContract) external override {
+    function addressRemove(string memory key, address value) external override {
         //Set as the first slot of an empty array
-        _addressesMulti[_msgSender()][key].removeItem(destinationContract);
+        _addressesMulti[_msgSender()][key].removeItem(value);
         //Association Changed Event
-        emit AddressRemoved(_msgSender(), key, destinationContract);
+        emit AddressRemoved(_msgSender(), key, value);
     }
 }

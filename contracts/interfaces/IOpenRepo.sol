@@ -18,24 +18,24 @@ interface IOpenRepo {
     function addressGetIndex(string memory key, uint256 index) external view returns(address);
 
     /// Set  Association
-    function addressSet(string memory key, address destinationContract) external;
+    function addressSet(string memory key, address value) external;
 
     /// Add Address to Slot
-    function addressAdd(string memory key, address destinationContract) external;
+    function addressAdd(string memory key, address value) external;
 
     /// Remove Address from Slot
-    function addressRemove(string memory key, address destinationContract) external;
+    function addressRemove(string memory key, address value) external;
 
 
     //--- Events
 
     /// Association Set
-    event AddressSet(address originContract, string key, address destinationContract);
+    event AddressSet(address originAddress, string key, address destinationAddress);
 
     /// Association Added
-    event AddressAdd(address originContract, string key, address destinationContract);
+    event AddressAdd(address originAddress, string key, address destinationAddress);
 
     /// Association Added
-    event AddressRemoved(address originContract, string key, address destinationContract);
+    event AddressRemoved(address originAddress, string key, address destinationAddress);
 
 }
