@@ -358,21 +358,12 @@ describe("Protocol", function () {
     });
 
     it("Admin can Assign Roles to Lost-Souls", async function () {
-
-      // let unOwnedAccount = await avatarContract.ownerOf(unOwnedTokenId);
-      // console.log("Unowned Token Address", unOwnedTokenId, unOwnedAccount);
-      // console.log("Avatar Contaract Address", avatarContract.address);
-
-      // let testerAddr = await tester.getAddress();
       //Check Before
-      // expect(await this.jurisdictionContract.roleHas(this.judgeAddr, "judge")).to.equal(false);
+      expect(await this.jurisdictionContract.roleHasByToken(unOwnedTokenId, "judge")).to.equal(false);
       //Assign Judge
       await this.jurisdictionContract.connect(admin).roleAssignToToken(unOwnedTokenId, "judge")
       //Check After
-      // expect(await this.jurisdictionContract.roleHas(this.judgeAddr, "judge")).to.equal(true);
-
-      //TODO: Role Check by Token ID
-      
+      expect(await this.jurisdictionContract.roleHasByToken(unOwnedTokenId, "judge")).to.equal(true);
     });
 
     it("Can change Roles (Promote / Demote)", async function () {
