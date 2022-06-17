@@ -11,7 +11,7 @@ pragma solidity 0.8.4;
 // import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "../abstract/ERC1155TrackerUpgradable.sol";
-import "../interfaces/IERC1155GUID.sol";
+import "../interfaces/IERC1155GUIDTracker.sol";
 import "../libraries/AddressArray.sol";
 
 /**
@@ -19,7 +19,7 @@ import "../libraries/AddressArray.sol";
  * @dev use GUID as a meaningful index
  */
 abstract contract ERC1155GUIDTrackerUp is 
-        IERC1155GUID, 
+        IERC1155GUIDTracker, 
         ERC1155TrackerUpgradable {
 
     //--- Storage
@@ -47,7 +47,13 @@ abstract contract ERC1155GUIDTrackerUp is
      * @dev See {IERC165-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IERC1155GUID).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IERC1155GUIDTracker).interfaceId 
+            || super.supportsInterface(interfaceId);
+    }
+
+    /// Check if Soul Token is assigned to GUID
+    function GUIDHasByToken(uint256 soulToken, bytes32 guid) public view override returns (bool) {
+        return (balanceOfToken(soulToken, _GUIDToId(guid)) > 0);
     }
 
     /// Check if account is assigned to GUID
@@ -89,10 +95,10 @@ abstract contract ERC1155GUIDTrackerUp is
     }
     
     /// Assign Token
-    function _GUIDAssignToToken(uint256 ownerToken, bytes32 guid, uint256 amount) internal GUIDExists(guid) returns (uint256) {
+    function _GUIDAssignToToken(uint256 soulToken, bytes32 guid, uint256 amount) internal GUIDExists(guid) returns (uint256) {
         uint256 tokenId = _GUIDToId(guid);  //_GUID[guid];
         //Mint Token
-        _mintForToken(ownerToken, tokenId, amount, "");
+        _mintForToken(soulToken, tokenId, amount, "");
         //Retrun New Token ID
         return tokenId;
     }
@@ -109,12 +115,12 @@ abstract contract ERC1155GUIDTrackerUp is
     }
 
     /// Unassign Token
-    function _GUIDRemoveFromToken(uint256 ownerToken, bytes32 guid, uint256 amount) internal GUIDExists(guid) returns (uint256) {
+    function _GUIDRemoveFromToken(uint256 soulToken, bytes32 guid, uint256 amount) internal GUIDExists(guid) returns (uint256) {
         uint256 tokenId = _GUID[guid];
         //Validate
         // require(balanceOf(account, tokenId) > 0, "NOT_ASSIGNED");
         //Burn Token
-        _burnForToken(ownerToken, tokenId, amount);
+        _burnForToken(soulToken, tokenId, amount);
         //Retrun New Token ID
         return tokenId;
     }

@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 // import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
@@ -9,7 +9,7 @@ import "./libraries/DataTypes.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/IAvatar.sol";
-import "./interfaces/IERC1155Roles.sol";
+import "./interfaces/IERC1155RolesTracker.sol";
 import "./interfaces/IJurisdictionUp.sol";
 // import "./interfaces/IJurisdiction.sol";
 import "./interfaces/IAssoc.sol";
@@ -112,6 +112,9 @@ contract CaseUpgradable is
         require(IERC165(container).supportsInterface(type(IJurisdiction).interfaceId), "Implmementation Does Not Support Jurisdiction Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
         //Set        
         _jurisdiction = container;
+
+        //TODO: Use OpenRepo
+
     }
 
     /// Assign to a Role
@@ -120,7 +123,7 @@ contract CaseUpgradable is
         if (keccak256(abi.encodePacked(role)) == keccak256(abi.encodePacked("judge"))){
             require(_jurisdiction != address(0), "Unknown Parent Container");
             //Validate: Must Hold same role in Containing Jurisdiction
-            require(IERC1155Roles(_jurisdiction).roleHas(account, role), "User Required to hold same role in Jurisdiction");
+            require(IERC1155RolesTracker(_jurisdiction).roleHas(account, role), "User Required to hold same role in Jurisdiction");
         }
         else{
             //Validate Permissions
@@ -208,7 +211,7 @@ contract CaseUpgradable is
         require(_hasTokenControl(tokenId), "SOUL:NOT_YOURS");
         //Validate: Sender Holds The Entity-Role 
         // require(roleHas(_msgSender(), entRole), "ROLE:INVALID_PERMISSION");
-        require(roleHas(tx.origin, entRole), "ROLE:INVALID_PERMISSION");    //Validate the Calling Account
+        require(roleHas(tx.origin, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
         //Validate Stage
         require(stage < DataTypes.CaseStage.Closed, "STAGE:CASE_CLOSED");
 

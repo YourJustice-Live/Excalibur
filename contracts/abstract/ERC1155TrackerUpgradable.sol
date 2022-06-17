@@ -384,7 +384,7 @@ abstract contract ERC1155TrackerUpgradable is
         _beforeTokenTransferTracker(operator, 0, toToken, ids, amounts, data);
 
         // _balances[id][to] += amount;
-        _balances[id][toToken] += amount;       //Can I Just count Unique Members Here ??? Not Exactly...
+        _balances[id][toToken] += amount;
         
         emit TransferSingle(operator, address(0), to, id, amount);
         emit TransferByToken(operator, 0, toToken, id, amount);

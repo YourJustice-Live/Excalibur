@@ -5,15 +5,16 @@ pragma solidity 0.8.4;
 
 // import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 // import "@openzeppelin/contracts/utils/Context.sol";
-import "../interfaces/IERC1155Roles.sol";
+import "../interfaces/IERC1155RolesTracker.sol";
 import "./ERC1155GUIDTrackerUp.sol";
 
 /**
  * @title Sub-Groups with Role NFTs
  * @dev ERC1155 using GUID as Role
  * To Extend Cases & Jutisdictions
- * - [TODO] Hold Roles
- * - [TODO] Assign Roles
+ * - Create Roles
+ * - Assign Roles
+ * - Remove Roles
  * ---- 
  * - [TODO] request + approve 
  * - [TODO] offer + accept
@@ -23,14 +24,13 @@ import "./ERC1155GUIDTrackerUp.sol";
  *  OZ Access Control  https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/AccessControl.sol
  */
 abstract contract ERC1155RolesTrackerUp is 
-        IERC1155Roles, 
+        IERC1155RolesTracker, 
         ERC1155GUIDTrackerUp {
     
     //--- Storage
 
     //--- Modifiers
     modifier roleExists(string memory role) {
-        // require(_GUIDExists(_stringToBytes32(role)), "INEXISTENT_ROLE");
         require(roleExist(role), "INEXISTENT_ROLE");
         _;
     }
@@ -59,7 +59,7 @@ abstract contract ERC1155RolesTrackerUp is
      * @dev See {IERC165-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IERC1155Roles).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(IERC1155RolesTracker).interfaceId || super.supportsInterface(interfaceId);
     }
 
     //** Role Functions
@@ -78,6 +78,11 @@ abstract contract ERC1155RolesTrackerUp is
     /// Check if Role Exists
     function roleExist(string memory role) public view override returns (bool) {
         return _GUIDExists(_stringToBytes32(role));
+    }
+
+    /// Check if Soul Token is assigned to role
+    function roleHasByToken(uint256 soulToken, string memory role) public view override returns (bool) {
+        return GUIDHasByToken(soulToken, _stringToBytes32(role));
     }
 
     /// Check if account is assigned to role
