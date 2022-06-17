@@ -3,23 +3,31 @@ pragma solidity 0.8.4;
 
 // import "hardhat/console.sol";
 
-import "../interfaces/IPosts.sol";
+// import "../interfaces/IPosts.sol";   //Unecessary
 
 /**
  * @title Rules Contract 
  * @dev To Extend or Be Used by Jurisdictions
  * - Hold, Update, Delete & Serve Rules
  */
-abstract contract Posts is IPosts {
+abstract contract Posts {
     
     //--- Storage
 
+    /* DEPRECATED
     //Post Input Struct
-    struct PostInput {
-        uint256 tokenId;
+    struct PostInput {      //DEPRECATE - Localize to Jurisdiction
         string entRole;
         string uri;
     }
+    */
+
+    //--- Events
+
+    /// General Post / Evidence, etc'
+    // event Post(address indexed account, string entRole, string postRole, string uri);        //postRole Moved to uri
+    // event Post(address indexed account, string entRole, string uri); //Added Caller Token ID
+    event Post(address indexed account, uint256 tokenId, string entRole, string uri);
 
     //--- Functions
 
@@ -35,4 +43,5 @@ abstract contract Posts is IPosts {
         // emit Post(origin, entRole, uri);
         emit Post(origin, tokenId, entRole, uri);
     }
+    
 }
