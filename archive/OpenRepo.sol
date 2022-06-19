@@ -5,7 +5,7 @@ pragma solidity 0.8.4;
 
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "../interfaces/IOpenRepo.sol";
+import "./interfaces/IOpenRepo.sol";
 
 /**
  * @title Generic Data Repository
@@ -40,10 +40,10 @@ contract OpenRepo is
     /** 
      * Set Address
      */
-    function setAddress(string memory key, address destinationContract) external override {
-        _addresses[_msgSender()][key] = destinationContract;
+    function setAddress(string memory key, address value) external override {
+        _addresses[_msgSender()][key] = value;
         //Association Changed Event
-        emit AddressSet(_msgSender(), key, destinationContract);
+        emit AddressSet(_msgSender(), key, value);
     }
 
     /** 

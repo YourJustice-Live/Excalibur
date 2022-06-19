@@ -14,7 +14,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "./interfaces/IConfig.sol";
 import "./interfaces/IAssoc.sol";
-import "./interfaces/IOpenRepo.sol";
+import "./public/interfaces/IOpenRepo.sol";
 import "./interfaces/ICommonYJ.sol";
 import "./interfaces/IHub.sol";
 import "./interfaces/IJurisdictionUp.sol";
