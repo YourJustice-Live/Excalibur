@@ -145,7 +145,7 @@ async function main() {
     if(!!hubContract){  //If Deployed Together
       try{
         //Set to HUB
-        hubContract.setAssoc("avatar", contractAddr.avatar);
+        await hubContract.setAssoc("avatar", contractAddr.avatar);
         //Log
         console.log("Registered Avatar Contract to Hub");
       }
@@ -166,6 +166,8 @@ async function main() {
     contractAddr.history = actionContract.address;
     */
 
+    console.log("BEFORE History Contract Deployment");
+
     //Deploy History Upgradable (UUDP)
     const proxyActionRepo = await ethers.getContractFactory("ActionRepoTrackerUp").then(Contract => 
       upgrades.deployProxy(Contract,
@@ -176,6 +178,8 @@ async function main() {
     );
     await proxyActionRepo.deployed();
     
+    console.log("Deployed History Contract", proxyActionRepo.address);
+
     //Set Address
     contractAddr.history = proxyActionRepo.address;
     //Log
@@ -187,7 +191,7 @@ async function main() {
         console.log("Will Register History to Hub");
 
         //Set to HUB
-        hubContract.setAssoc("history", contractAddr.history);
+        await hubContract.setAssoc("history", contractAddr.history);
       }
       catch(error){
         console.error("Failed to Set History Contract to Hub", error);
