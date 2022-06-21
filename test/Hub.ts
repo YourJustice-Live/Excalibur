@@ -76,9 +76,15 @@ describe("Hub", function () {
         });
         await hubContract2.deployed();
 
-        
         //Deploy Avatar
-        avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(hubContract.address));
+        avatarContract = await ethers.getContractFactory("SoulUpgradable").then(Contract => 
+            upgrades.deployProxy(Contract,
+              [hubContract.address],{
+              kind: "uups",
+              timeout: 120000
+            })
+          );
+
         //Set Avatar Contract to Hub
         hubContract.setAssoc("avatar", avatarContract.address);
         hubContract2.setAssoc("avatar", avatarContract.address);

@@ -88,32 +88,6 @@ async function main() {
     console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.hub+" "+publicAddr.openRepo+" "+ contractAddr.config+" "+contractAddr.jurisdiction+ " "+contractAddr.case);
   }
 
-
-
-  /* DEPRECATED - Non-Upgradable
-  //--- Avatar
-  if(!contractAddr.avatar){
-    //Deploy Avatar
-    let avatarContract = await ethers.getContractFactory("AvatarNFT").then(res => res.deploy(contractAddr.hub));
-    await avatarContract.deployed();
-    //Set Address
-    contractAddr.avatar = avatarContract.address;
-    //Log
-    console.log("Deployed Avatar Contract to " + contractAddr.avatar);
-    console.log("Run: npx hardhat verify --network rinkeby "+contractAddr.avatar+" "+contractAddr.hub);
-    if(!!hubContract){  //If Deployed Together
-      try{
-        //Set to HUB
-        hubContract.setAssoc("avatar", contractAddr.avatar);
-      }
-      catch(error){
-        console.error("Failed to Set Avatar Contract to Hub", error);
-      }
-    }
-  }
-  */
-
-
   //--- Avatar Upgradable
   if(!contractAddr.avatar){
 
