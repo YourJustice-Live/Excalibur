@@ -49,7 +49,7 @@ library DataTypes {
         Verdict,
         Action,
         Appeal,
-        Enforcment,
+        Enforcement,
         Closed,
         Cancelled
     }
