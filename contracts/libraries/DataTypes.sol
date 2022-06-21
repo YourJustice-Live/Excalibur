@@ -60,17 +60,14 @@ library DataTypes {
     struct Action {
         string name;    // Title: "Breach of contract",  
         string text;    // text: "The founder of the project must comply with the terms of the contract with investors",  //Text Description
-        string uri; //Additional Info
+        string uri;     //Additional Info
         SVO entities;
-        Confirmation confirmation;
+        Confirmation confirmation;          //TODO: Should this be here? Aren't Confirmations a part of the Rule?
     }
 
     struct SVO {    //Action's Core (System Role Mapping) (Immutable)
-        //     subject: "founder",     //Accused Role
         string subject;
-        //     action: "breach",
         string verb;
-        //     object: "contract",
         string object;
         string tool; //[TBD]
         //     //Describe an event
@@ -82,7 +79,7 @@ library DataTypes {
     
     // Rule Object
     struct Rule {
-        bytes32 about;      //About What (Action's GUID)      //TODO: Maybe Call This 'action'? 
+        bytes32 about;      //About What (Action's GUID)      //TODO: Maybe Call This 'actionGUID'? 
         string affected;    // affected: "investors",  //Plaintiff Role (Filing the case)
         bool negation;      //0 - Commision  1 - Omission
         string uri;         //Test & Conditions
@@ -99,12 +96,12 @@ library DataTypes {
     
     //Rule Confirmation Method
     struct Confirmation {
-        //     ruling: "judge"|"jury"|"democracy",  //Decision Maker
         string ruling;
-        //     evidence: true, //Require Evidence
+        // ruling: "judge"|"jury"|"democracy",  //Decision Maker
         bool evidence;
-        //     witness: 1,  //Minimal number of witnesses
+        // evidence: true, //Require Evidence
         uint witness;
+        // witness: 1,  //Minimal number of witnesses
     }
 
     //--- Case Data
@@ -115,14 +112,7 @@ library DataTypes {
         uint256 ruleId;
     }
     
-    //-- Inputs
-    
-    //Rule Input Struct (Same as RuleRef)
-    // struct InputRule {
-    //     address jurisdiction;
-    //     uint256 ruleId;
-    //     string affected;
-    // }
+    //-- Function Inputs Structs
 
     //Role Input Struct
     struct InputRole {
