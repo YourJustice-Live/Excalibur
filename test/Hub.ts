@@ -44,9 +44,7 @@ describe("Hub", function () {
         //Jurisdiction Upgradable Implementation
         this.jurisdictionUpContract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
 
-        //--- Deploy Hub
-        // hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract1.address, this.jurisdictionUpContract.address, this.caseContract.address));
-        //Deploy Hub Upgradable
+        //--- Deploy Hub Upgradable
         const HubUpgradable = await ethers.getContractFactory("HubUpgradable");
         hubContract = await upgrades.deployProxy(HubUpgradable,
             [

@@ -92,16 +92,6 @@ async function main() {
   if(!contractAddr.avatar){
 
     //Deploy Avatar Upgradable
-
-    // const SoulUpgradable = await ethers.getContractFactory("SoulUpgradable");
-    // // deploying new proxy
-    // const proxyAvatar = await upgrades.deployProxy(SoulUpgradable,
-    //     [contractAddr.hub],{
-    //     // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
-    //     kind: "uups",
-    //     timeout: 120000
-    // });
-
     const proxyAvatar = await ethers.getContractFactory("SoulUpgradable").then(Contract => 
       upgrades.deployProxy(Contract,
         [contractAddr.hub],{
