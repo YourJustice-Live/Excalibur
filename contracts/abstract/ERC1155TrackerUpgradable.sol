@@ -20,7 +20,7 @@ import "../libraries/UintArray.sol";
 
 /**
  * @title ERC1155 Tracker Upgradable
- * @dev This contract is to be attached to an ERC721 contract and mapped to its tokens
+ * @dev This contract is to be attached to an ERC721 (SoulBoundToken)  contract and mapped to its tokens
  */
 abstract contract ERC1155TrackerUpgradable is 
         Initializable, 
@@ -32,10 +32,6 @@ abstract contract ERC1155TrackerUpgradable is
     using AddressArray for address[];
     using UintArray for uint256[];
     
-    // using AddressArray for unit256[];
-    // Mapping from token ID to account balances
-    // mapping(uint256 => mapping(address => uint256)) private _balances;
-
     // Mapping from account to operator approvals
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
@@ -43,7 +39,6 @@ abstract contract ERC1155TrackerUpgradable is
     mapping(uint256 => mapping(uint256 => uint256)) private _balances;
 
     //Index Unique Members for each TokenId
-    // mapping(uint256 => address[]) internal _uniqueMembers;
     mapping(uint256 => uint256[]) internal _uniqueMemberTokens;
 
     // Target Contract (External Source)
