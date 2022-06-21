@@ -16,6 +16,9 @@ interface IHub {
     /// Get Owner
     function owner() external view returns (address);
 
+    //Repo Address
+    function repoAddr() external view returns(address);
+
     /// Make a new Jurisdiction
     function jurisdictionMake(string calldata name_, string calldata uri_) external returns (address);
 
