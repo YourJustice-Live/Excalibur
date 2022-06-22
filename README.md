@@ -1,7 +1,7 @@
 
 # The Excalibur Protocol 
 
-<img src="https://cdn.discordapp.com/attachments/953010293863243801/974587991135768636/Excalibur.png" alt="Version 0.2"/>
+![The Excalibur Protocol](doc/images/cover.png)
 
 Using the magic of cryptographic technology to bring balance to the world and promote decentralized justice.
 
