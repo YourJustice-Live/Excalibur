@@ -316,7 +316,7 @@ contract JurisdictionUpgradable is
     }
 
     /*
-    /// TODO: Update Rule's Confirmation Data
+    /// TODO: Update Rule's Effects
     function ruleEffectsUpdate(uint256 id, DataTypes.Effect[] memory effects) external override {
         //Validate Caller's Permissions
         require(roleHas(_msgSender(), "admin"), "Admin Only");
