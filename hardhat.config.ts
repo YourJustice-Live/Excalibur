@@ -58,10 +58,17 @@ const config = {
       url: process.env.ALCHEMY_GOERLI_URL || "",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+
     mumbai: {
       url: process.env.ALCHEMY_MUMBAI_URL || "",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+    polygon: {
+      url: "https://rpc-mumbai.maticvigil.com",
+      // accounts: [process.env.PRIVATE_KEY]
+      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
+
     aurora:{
       url: "https://mainnet.aurora.dev/",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
