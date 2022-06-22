@@ -62,7 +62,7 @@ library DataTypes {
         string text;    // text: "The founder of the project must comply with the terms of the contract with investors",  //Text Description
         string uri;     //Additional Info
         SVO entities;
-        Confirmation confirmation;          //TODO: Should this be here? Aren't Confirmations a part of the Rule?
+        // Confirmation confirmation;          //REMOVED - Confirmations a part of the Rule, Not action
     }
 
     struct SVO {    //Action's Core (System Role Mapping) (Immutable)
