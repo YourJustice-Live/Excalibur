@@ -5,6 +5,8 @@
 // Runtime Environment's members available in the global scope.
 import { ethers } from "hardhat";
 const {  upgrades } = require("hardhat");
+const hre = require("hardhat");
+const chain = hre.hardhatArguments.network;
 
 //Track Addresses (Fill in present addresses to prevent new deplopyment)
 import contractAddr from "./_contractAddr";
@@ -12,6 +14,8 @@ import publicAddr from "./_publicAddrs";
 
 
 async function main() {
+
+  console.log("Running on Chain: ", chain);
 
   let hubContract;
 
