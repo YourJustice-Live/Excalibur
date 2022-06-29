@@ -10,7 +10,6 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 // import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-
 import "./interfaces/IAvatar.sol";
 import "./abstract/Opinions.sol";
 // import "./abstract/ContractBase.sol";
@@ -26,9 +25,8 @@ import "./abstract/CommonYJUpgradable.sol";
  *  - Minted Token's URI is updatable by Token holder
  *  - Assets are non-transferable by owner
  *  - Tokens can be merged (Multiple Owners)
- *  - [TODO] Orphan tokens can be claimed
- *  - [TODO] Contract is Updatable
-  */
+ *  - [TODO] Orphan tokens can be claimed/linked
+ */
 contract SoulUpgradable is 
         IAvatar, 
         Initializable,
