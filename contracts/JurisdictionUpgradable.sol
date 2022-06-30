@@ -6,7 +6,8 @@ import "hardhat/console.sol";
 // import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 // import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";  //Track Token Supply & Check 
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+// import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "./interfaces/IJurisdictionUp.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
@@ -52,12 +53,12 @@ contract JurisdictionUpgradable is
         // ERC1155RolesUpgradable {
 
     //--- Storage
-    string public constant override symbol = "YJ_JURISDICTION";
+    string public constant override symbol = "JURISDICTION";
     using Strings for uint256;
 
-    using Counters for Counters.Counter;
-    // Counters.Counter internal _tokenIds; //Track Last Token ID
-    Counters.Counter internal _caseIds;  //Track Last Case ID
+    using CountersUpgradeable for CountersUpgradeable.Counter;
+    // CountersUpgradeable.Counter internal _tokenIds; //Track Last Token ID
+    CountersUpgradeable.Counter internal _caseIds;  //Track Last Case ID
     
     // Contract name
     string public name;

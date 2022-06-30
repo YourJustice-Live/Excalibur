@@ -48,7 +48,7 @@ contract Jurisdiction is
         ERC1155Roles {
 
     //--- Storage
-    string public constant override symbol = "YJ_Jurisdiction";
+    string public constant override symbol = "JURISDICTION";
     using Strings for uint256;
 
     using Counters for Counters.Counter;

@@ -4,6 +4,7 @@ pragma solidity 0.8.4;
 // import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "../interfaces/IRules.sol";
 import "../interfaces/IActionRepo.sol";
 import "../libraries/DataTypes.sol";
@@ -18,8 +19,8 @@ abstract contract Rules is IRules {
     
     //--- Storage
 
-    using Counters for Counters.Counter;
-    Counters.Counter private _ruleIds;
+    using CountersUpgradeable for CountersUpgradeable.Counter;
+    CountersUpgradeable.Counter private _ruleIds;
     //Action Repository Contract (HISTORY)
     // IActionRepo internal _actionRepo;
     // address private _actionRepo;
