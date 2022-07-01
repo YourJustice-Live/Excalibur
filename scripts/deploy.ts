@@ -9,9 +9,10 @@ const hre = require("hardhat");
 const chain = hre.hardhatArguments.network;
 
 //Track Addresses (Fill in present addresses to prevent new deplopyment)
-import contractAddr from "./_contractAddr";
-import publicAddr from "./_publicAddrs";
-
+import contractAddrs from "./_contractAddr";
+const contractAddr = contractAddrs[chain];
+import publicAddrs from "./_publicAddrs";
+const publicAddr = publicAddrs[chain];
 
 async function main() {
 

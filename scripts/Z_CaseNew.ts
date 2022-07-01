@@ -7,9 +7,6 @@
 import { ethers } from "hardhat";
 const {  upgrades } = require("hardhat");
 
-// import publicAddr from "./_publicAddrs";
-// import contractAddr from "./_contractAddr";
-
 /**
  * Create a new Jurisdiction Script
  */

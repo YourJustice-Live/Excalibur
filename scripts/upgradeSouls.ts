@@ -6,7 +6,12 @@
 
 // import { ethers } from "hardhat";
 const { ethers, upgrades } = require("hardhat");
-import contractAddr from "./_contractAddr";
+const hre = require("hardhat");
+const chain = hre.hardhatArguments.network;
+
+import contractAddrs from "./_contractAddr";
+const contractAddr = contractAddrs[chain];
+
 const proxyAddress = contractAddr.hub;
 
 

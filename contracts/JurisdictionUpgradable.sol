@@ -47,7 +47,6 @@ contract JurisdictionUpgradable is
         ContractBase,
         CommonYJUpgradable, 
         Opinions, 
-        // Recursion,      //DEPRECATE / Cleanp
         // Posts,
         ERC1155RolesTrackerUp {
         // ERC1155RolesUpgradable {
@@ -62,12 +61,8 @@ contract JurisdictionUpgradable is
     
     // Contract name
     string public name;
-    // Contract symbol
-    // string public symbol;
-
-    // mapping(string => uint256) internal _roles;    //NFTs as Roles
-    // mapping(uint256 => address) internal _cases;   // Mapping for Case Contracts      //DEPRECATED - No need for Case IDs, Use Hash
-    mapping(address => bool) internal _active;        // Mapping for Case Contracts
+    // Mapping for Case Contracts
+    mapping(address => bool) internal _active;
 
     //Post Input Struct
     struct PostInput {
@@ -131,7 +126,6 @@ contract JurisdictionUpgradable is
         //Create new Case
         address caseContract = _HUB.caseMake(name_, uri_, addRules, assignRoles);
         //Remember Address
-        // _cases[caseId] = caseContract;
         _active[caseContract] = true;
         //New Case Created Event
         emit CaseCreated(caseId, caseContract);

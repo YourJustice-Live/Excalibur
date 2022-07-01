@@ -6,9 +6,11 @@
 
 import { ethers } from "hardhat";
 const {  upgrades } = require("hardhat");
+const hre = require("hardhat");
+const chain = hre.hardhatArguments.network;
 
-// import publicAddr from "./_publicAddrs";
-import contractAddr from "./_contractAddr";
+import contractAddrs from "./_contractAddr";
+const contractAddr = contractAddrs[chain];
 
 let oldHubAddr = "0x288B2040e78dC90D73d8Ed0957ed706260DC8EfE";
 
