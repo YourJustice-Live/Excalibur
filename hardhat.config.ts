@@ -77,6 +77,18 @@ const config = {
       url: "https://testnet.aurora.dev/",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+    
+    
+    optimism: {
+      url: process.env.ALCHEMY_OP_URL || "",
+      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
+    optimism_kovan: {
+      url: process.env.ALCHEMY_OP_TEST_URL || "",
+      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
+
+
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
