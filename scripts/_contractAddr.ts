@@ -8,6 +8,12 @@ const contractAddr: any = {
         avatar:"0x0665dfc970Bd599e08ED6084DC12B2dD028cC416",  //D2.8 (Proxy)
         history:"0xD7ab715a2C1e5b450b54B1E3cE5136D755c715B8", //D4.4 (Proxy)
     },
+    mumbai:{
+    },
+    optimism:{
+    },
+    optimism_kovan:{
+    },
 };
 
 export default contractAddr;
