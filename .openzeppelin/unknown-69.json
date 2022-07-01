@@ -1,0 +1,184 @@
+{
+  "manifestVersion": "3.2",
+  "proxies": [
+    {
+      "address": "0xDB4236A452aD591F39d04F758D3A8aBc92EC4bd4",
+      "txHash": "0xc0b004f69c91f4347a176fa3889394b83fdf4c5f77963129ed9d5c5f9cf426f0",
+      "kind": "uups"
+    },
+    {
+      "address": "0x8761b3E3bCDd243A063f18d5C24528C1400FA95B",
+      "txHash": "0xf3b51100a1ccf0b1fb218e627a6ea101c8dd5ab9a189dee71c01dc8c709965b4",
+      "kind": "uups"
+    }
+  ],
+  "impls": {
+    "6cc88e0ecc1531480389b07675a949f6496c58a9c0a0456b654b4b52e621174a": {
+      "address": "0xD1a6789c8A47a931833369E9EAAD5c42BF819473",
+      "txHash": "0x8049a2d5a9bec4182f240217293b5910f4f6cf5837aaa6a059e4c7f1fd334d2f",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\ERC1967\\ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "_contract_uri",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_string_storage",
+            "contract": "ContractBase",
+            "src": "contracts\\abstract\\ContractBase.sol:15"
+          },
+          {
+            "label": "_addressesMulti",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_mapping(t_address,t_mapping(t_string_memory_ptr,t_array(t_address)dyn_storage))",
+            "contract": "OpenRepoUpgradable",
+            "src": "contracts\\public\\OpenRepoUpgradable.sol:51"
+          },
+          {
+            "label": "_RepoString",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_mapping(t_address,t_mapping(t_string_memory_ptr,t_array(t_string_storage)dyn_storage))",
+            "contract": "OpenRepoUpgradable",
+            "src": "contracts\\public\\OpenRepoUpgradable.sol:55"
+          },
+          {
+            "label": "_RepoBool",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_mapping(t_address,t_mapping(t_string_memory_ptr,t_array(t_bool)dyn_storage))",
+            "contract": "OpenRepoUpgradable",
+            "src": "contracts\\public\\OpenRepoUpgradable.sol:59"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_bool)dyn_storage": {
+            "label": "bool[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_string_storage)dyn_storage": {
+            "label": "string[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_mapping(t_string_memory_ptr,t_array(t_address)dyn_storage))": {
+            "label": "mapping(address => mapping(string => address[]))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_string_memory_ptr,t_array(t_bool)dyn_storage))": {
+            "label": "mapping(address => mapping(string => bool[]))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_string_memory_ptr,t_array(t_string_storage)dyn_storage))": {
+            "label": "mapping(address => mapping(string => string[]))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_array(t_address)dyn_storage)": {
+            "label": "mapping(string => address[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_array(t_bool)dyn_storage)": {
+            "label": "mapping(string => bool[])",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_array(t_string_storage)dyn_storage)": {
+            "label": "mapping(string => string[])",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    }
+  }
+}

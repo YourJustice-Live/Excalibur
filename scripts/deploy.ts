@@ -40,7 +40,7 @@ async function main() {
     contractAddr.jurisdiction = contract.address;
     //Log
     console.log("Deployed Jurisdiction Contract to " + contractAddr.jurisdiction);
-    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.jurisdiction);
+    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.jurisdiction);
   }
 
   //--- Case Implementation
@@ -52,7 +52,7 @@ async function main() {
     contractAddr.case = contract.address;
     //Log
     console.log("Deployed Case Contract to " + contractAddr.case);
-    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.case);
+    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.case);
   }
 
   //--- TEST: Upgradable Hub
@@ -90,7 +90,7 @@ async function main() {
 
     //Log
     console.log("Deployed Hub Upgradable Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " jurisdiction: "+contractAddr.jurisdiction+ " Case: "+ contractAddr.case);
-    console.log("Run: npx hardhat verify --network rinkeby " + contractAddr.hub+" "+publicAddr.openRepo+" "+ contractAddr.config+" "+contractAddr.jurisdiction+ " "+contractAddr.case);
+    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.hub+" "+publicAddr.openRepo+" "+ contractAddr.config+" "+contractAddr.jurisdiction+ " "+contractAddr.case);
   }
 
   //--- Avatar Upgradable
@@ -110,7 +110,7 @@ async function main() {
     
     //Log
     console.log("Deployed Avatar Proxy Contract to " + contractAddr.avatar);
-    // console.log("Run: npx hardhat verify --network rinkeby "+contractAddr.avatar);
+    // console.log("Run: npx hardhat verify --network "+chain+" "+contractAddr.avatar);
     if(!!hubContract){  //If Deployed Together
       try{
         //Set to HUB

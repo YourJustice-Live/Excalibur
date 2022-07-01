@@ -12,12 +12,14 @@ const chain = hre.hardhatArguments.network;
 import publicAddrs from "./_publicAddrs";
 const publicAddr = publicAddrs[chain];
 
+console.log()
 
 /**
  * Deploy Independent Public Agents
  */
 async function main() {
 
+    /* DEPRECATED
     //--- Assoc Repo
     if(!publicAddr.assocRepo){
         //Deploy Config
@@ -28,13 +30,10 @@ async function main() {
         //Log
         console.log("Deployed AssocRepo Contract to " + contractInstance.address);
     }
-
+    */
+  
     //--- Open Repo
     if(!publicAddr.openRepo){
-      //Deploy Config
-      // let contractInstance = await ethers.getContractFactory("OpenRepo").then(res => res.deploy());
-      // await contractInstance.deployed();
-
       //Deploy OpenRepo Upgradable (UUDP)
       let contractInstance = await ethers.getContractFactory("OpenRepoUpgradable").then(Contract => 
       upgrades.deployProxy(Contract, [],{
@@ -42,11 +41,11 @@ async function main() {
           timeout: 120000
         })
       );
-
       //Set Address
       publicAddr.openRepo = contractInstance.address;
       //Log
-      console.log("Deployed OpenRepo Contract to " + contractInstance.address);
+      console.log("Deployed OpenRepo Contract to Chain:"+chain+" Address:" + contractInstance.address);
+      console.log("Run: npx hardhat verify --network "+chain+" " + contractInstance.address);
   }
   
 }
