@@ -286,6 +286,16 @@ describe("Protocol", function () {
       expect(await this.jurisdictionContract.contractURI()).to.equal(test_uri2);
     });
 
+    it("Should Apply to Join", async function () {
+      //Apply to Join Jurisdiction
+      let tx = await this.jurisdictionContract.connect(tester).applyTojoin(test_uri);
+      await tx.wait();
+      //Get Tester's Avatar TokenID
+      let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
+      //Expect Event
+      await expect(tx).to.emit(jurisdictionContract, 'Application').withArgs(tokenId, this.testerAddr, test_uri);
+    });
+
     it("Users can join as a member", async function () {
       //Check Before
       expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(false);

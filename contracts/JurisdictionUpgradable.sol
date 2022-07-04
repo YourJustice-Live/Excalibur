@@ -191,6 +191,12 @@ contract JurisdictionUpgradable is
         return _GUIDRemove(_msgSender(), _stringToBytes32("member"), 1);
     }
 
+    /// Apply to join a jurisdiction
+    function applyTojoin(string memory uri_) external override {
+        uint256 soulToken = _getExtTokenId(_msgSender());
+        emit Application(soulToken, _msgSender(), uri_);
+    }
+
     /// Assign Someone Else to a Role
     function roleAssign(address account, string memory role) public override roleExists(role) {
         //Validate Permissions
