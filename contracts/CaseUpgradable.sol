@@ -116,6 +116,13 @@ contract CaseUpgradable is
 
     }
 
+    /// Apply to join a jurisdiction
+    function applyTojoin(string memory uri_) external override {
+        // uint256 soulToken = _getExtTokenId(_msgSender());
+        uint256 soulToken = _getExtTokenId(msg.sender); //May be a contract
+        emit Application(soulToken, _msgSender(), uri_);
+    }
+
     /// Assign to a Role
     function roleAssign(address account, string memory role) public override roleExists(role) {
         //Special Validations for 'judge' role

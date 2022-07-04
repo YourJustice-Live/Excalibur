@@ -287,16 +287,6 @@ describe("Protocol", function () {
       expect(await this.jurisdictionContract.contractURI()).to.equal(test_uri2);
     });
 
-    it("Should Apply to Join", async function () {
-      //Apply to Join Jurisdiction
-      let tx = await this.jurisdictionContract.connect(tester).applyTojoin(test_uri);
-      await tx.wait();
-      //Get Tester's Avatar TokenID
-      let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
-      //Expect Event
-      await expect(tx).to.emit(jurisdictionContract, 'Application').withArgs(tokenId, this.testerAddr, test_uri);
-    });
-
     it("Users can join as a member", async function () {
       //Check Before
       expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(false);
@@ -503,7 +493,17 @@ describe("Protocol", function () {
           jurisdictionContract.connect(tester4).join()
         ).to.be.revertedWith("CLOSED_SPACE");
       });
-      
+        
+      it("Can Apply to Join", async function () {
+        //Apply to Join Jurisdiction
+        let tx = await this.jurisdictionContract.connect(tester).applyTojoin(test_uri);
+        await tx.wait();
+        //Get Tester's Avatar TokenID
+        let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
+        //Expect Event
+        await expect(tx).to.emit(jurisdictionContract, 'Application').withArgs(tokenId, this.testerAddr, test_uri);
+      });
+
       it("Can Re-Open Jurisdiction", async function () {
         //Change to Closed Jurisdiction
         await this.jurisdictionContract.connect(admin).confSet("isClosed", "false");
@@ -694,7 +694,7 @@ describe("Protocol", function () {
       expect(await this.caseContract.roleHas(this.tester3Addr, "witness")).to.equal(true);
     });
 
-    it("Jurisdiction Judges Can Assign Themselves", async function () {
+    it("Jurisdiction Judges Can Assign Themselves to Case", async function () {
       //Assign as Jurisdiction Judge
       jurisdictionContract.connect(admin).roleAssign(this.tester4Addr, "judge")
       //Assign Case Judge
@@ -745,6 +745,16 @@ describe("Protocol", function () {
       expect(await this.caseContract.roleHas(this.judgeAddr, "judge")).to.equal(true);
     });
     
+    it("Anyonw Can Apply to Join", async function () {
+      //Apply to Join Jurisdiction
+      let tx = await this.caseContract.connect(tester).applyTojoin(test_uri);
+      await tx.wait();
+      //Get Tester's Avatar TokenID
+      let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
+      //Expect Event
+      await expect(tx).to.emit(this.caseContract, 'Application').withArgs(tokenId, this.testerAddr, test_uri);
+    });
+
     it("Should Accept Verdict URI & Close Case", async function () {
       let verdict = [{ruleId:1, decision:true}];
       //Submit Verdict & Close Case
