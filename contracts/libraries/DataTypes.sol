@@ -23,35 +23,19 @@ library DataTypes {
         Community,
         Professional
     }
-    /* DEPRECAED - Using Boolean
-    /// Rating Categories
-    enum Rating {
-        Negative,   //0
-        Positive    //1
-    }
-    */
 
     //--- Cases
+
     //Case Lifecycle
-    // - Draft
-    // - Filed / Open -- Confirmation/Discussion (Evidence, Witnesses, etc’)
-    //X - Waiting for additional evidence
-    // - Pending - Awaiting verdict
-    // - Decision/Verdict (Judge, Jury, vote, etc’)
-    // - Action / Remedy - Reward / Punishment / Compensation
-    // - [Appeal
-    // - [Enforcement]
-    // - Closed
-    // - Cancelled (Denied)
     enum CaseStage {
         Draft,
-        Open,
-        Verdict,
-        Action,
+        Open,           // Filed -- Confirmation/Discussion (Evidence, Witnesses, etc’)
+        Verdict,        // Awaiting Decision (Judge, Jury, vote, etc’)
+        Action,         // Remedy - Reward / Punishment / Compensation
         Appeal,
         Enforcement,
         Closed,
-        Cancelled
+        Cancelled       // Denied / Withdrawn
     }
 
     //--- Actions
