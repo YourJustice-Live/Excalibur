@@ -13,6 +13,7 @@ import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IAssoc.sol";
 import "./interfaces/IActionRepo.sol";
+import "./public/interfaces/IOpenRepo.sol";
 // import "./libraries/DataTypes.sol";
 // import "./abstract/ERC1155RolesUpgradable.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
@@ -22,13 +23,13 @@ import "./abstract/ContractBase.sol";
 import "./abstract/Opinions.sol";
 // import "./abstract/Recursion.sol";
 // import "./abstract/Posts.sol";
-
+// import "./abstract/AssocExt.sol";
 
 /**
  * @title Jurisdiction Contract
  * @dev Retains Group Members in Roles
- * @dev Version 2.1
- * V1: Role NFTs
+ * @dev Version 2.2
+ * V1: Using Role NFTs
  * - Mints Member NFTs
  * - One for each
  * - All members are the same
@@ -37,9 +38,10 @@ import "./abstract/Opinions.sol";
  * - Contract URI
  * - Token URIs for Roles
  * - Owner account must have an Avatar NFT
+ * V2: Trackers
+ * - NFT Trackers - Assign Avatars instead of Accounts & Track the owner of the Avatar NFT
+ * V3:
  * - [TODO] Unique Rule IDs (GUID)
- * V2:  
- * - [TODO] NFT Trackers - Assign Avatars instead of Accounts & Track the owner of the Avatar NFT
  */
 contract JurisdictionUpgradable is 
         IJurisdiction, 
@@ -175,6 +177,28 @@ contract JurisdictionUpgradable is
     /// Check if Case is Owned by This Contract (& Active)
     function caseHas(address caseContract) public view override returns (bool){
         return _active[caseContract];
+    }
+
+    /// Generic Config Get Function
+    function confGet(string memory key) public view override returns(string memory) {
+        return repo().stringGet(key);
+    }
+
+    /// Generic Config Set Function
+    function confSet(string memory key, string memory value) public override AdminOrOwner {
+        repo().stringSet(key, value);
+    }
+
+    //** Data Repository 
+    
+    //Get Data Repo Address (From Hub)
+    function repoAddr() public view returns (address) {
+        return _HUB.repoAddr();
+    }
+
+    //Get Assoc Repo
+    function repo() internal view returns (IOpenRepo) {
+        return IOpenRepo(repoAddr());
     }
 
     //** Custom Rating Functions

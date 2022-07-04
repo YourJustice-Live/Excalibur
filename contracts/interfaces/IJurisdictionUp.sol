@@ -85,6 +85,11 @@ interface IJurisdiction {
     /// Set Metadata URI For Role
     function setRoleURI(string memory role, string memory _tokenURI) external;
 
+    /// Generic Config Get Function
+    function confGet(string memory key) external view returns(string memory);
+
+    /// Generic Config Set Function
+    function confSet(string memory key, string memory value) external;
 
     //--- Events
 
