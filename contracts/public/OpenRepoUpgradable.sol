@@ -53,11 +53,11 @@ contract OpenRepoUpgradable is
     //Associations by Contract Address
     using StringArray for string[];
     mapping(address => mapping(string => string[])) internal _RepoString;
-   
+    
     //Associations by Contract Address
     using BoolArray for bool[];
     mapping(address => mapping(string => bool[])) internal _RepoBool;
-    
+
     //--- Functions
 
     /// ERC165 - Supported Interfaces
@@ -195,19 +195,18 @@ contract OpenRepoUpgradable is
     }
 
     //-- Strings
-
         
     /// Get Boolean By Origin Owner Node
-    function stringGetOf(address originContract, string memory key) public view override returns(string memory) {
+    function stringGetOf(address ownerAddr, string memory key) public view override returns(string memory) {
+        //Validate
+        if(_RepoString[ownerAddr][key].length == 0) return "";
         //Return Item
-        return _RepoString[originContract][key][0];
+        return _RepoString[ownerAddr][key][0];
     }
 
     /// Get First Boolean in Slot
     function stringGet(string memory key) external view override returns(string memory) {
-        address originContract = _msgSender();
-        //Validate
-        return stringGetOf(originContract, key);
+        return stringGetOf(_msgSender(), key);
     }
     
     /// Get First Boolean by Index
