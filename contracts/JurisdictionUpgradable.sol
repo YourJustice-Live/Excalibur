@@ -216,12 +216,14 @@ contract JurisdictionUpgradable is
 
     //** Role Management
 
-     /// Join a role in current jurisdiction
+    /// Join a jurisdiction (as a regular 'member')
     function join() external override returns (uint256) {
+        require (!_stringMatch(confGet("isClosed"), "true"), "CLOSED_SPACE");
+        //Mint Member Token to Self
         return _GUIDAssign(_msgSender(), _stringToBytes32("member"), 1);
     }
 
-    /// Leave Role in current jurisdiction
+    /// Leave 'member' Role in jurisdiction
     function leave() external override returns (uint256) {
         return _GUIDRemove(_msgSender(), _stringToBytes32("member"), 1);
     }

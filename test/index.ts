@@ -267,6 +267,7 @@ describe("Protocol", function () {
       // let JAddr = await hubContract.connect(admin).callStatic.jurisdictionMake("Test Jurisdiction", test_uri);
 
       //Create New Jurisdiction
+      // let tx = await hubContract.connect(admin).jurisdictionMake("Test Jurisdiction", test_uri);
       let tx = await hubContract.jurisdictionMake("Test Jurisdiction", test_uri);
       //Expect Valid Address
       expect(JAddr).to.be.properAddress;
@@ -488,6 +489,30 @@ describe("Protocol", function () {
       expect(await jurisdictionContract.roleURI("admin")).to.equal(test_uri);
     });
 
+    describe("Closed Jurisdiction", function () {
+      it("Can Close Jurisdiction", async function () {
+        //Change to Closed Jurisdiction
+        await this.jurisdictionContract.connect(admin).confSet("isClosed", "true");
+        //Validate
+        expect(await this.jurisdictionContract.confGet("isClosed")).to.equal("true");
+      });
+
+      it("Should Fail to Join Jurisdiction", async function () {
+        //Validate Permissions
+        await expect(
+          jurisdictionContract.connect(tester4).join()
+        ).to.be.revertedWith("CLOSED_SPACE");
+      });
+      
+      it("Can Re-Open Jurisdiction", async function () {
+        //Change to Closed Jurisdiction
+        await this.jurisdictionContract.connect(admin).confSet("isClosed", "false");
+        //Validate
+        expect(await this.jurisdictionContract.confGet("isClosed")).to.equal("false");
+      });
+
+    });
+
   }); //Jurisdiction
 
   /**
@@ -527,6 +552,8 @@ describe("Protocol", function () {
 
       //Join Jurisdiction (as member)
       await jurisdictionContract.connect(admin).join();
+      //Assign Admin as Member
+      // await this.jurisdictionContract.roleAssign(this.adminAddr, "member");
 
       //Simulate - Get New Case Address
       let caseAddr = await jurisdictionContract.connect(admin).callStatic.caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
