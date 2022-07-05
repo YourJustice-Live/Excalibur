@@ -478,11 +478,13 @@ describe("Protocol", function () {
       //Validate
       expect(await jurisdictionContract.roleURI("admin")).to.equal(test_uri);
     });
-
+    
     describe("Closed Jurisdiction", function () {
       it("Can Close Jurisdiction", async function () {
         //Change to Closed Jurisdiction
-        await this.jurisdictionContract.connect(admin).confSet("isClosed", "true");
+        let tx = await this.jurisdictionContract.connect(admin).confSet("isClosed", "true");
+        //Expect Case Created Event
+        await expect(tx).to.emit(this.openRepo, 'StringSet').withArgs(this.jurisdictionContract.address, "isClosed", "true");
         //Validate
         expect(await this.jurisdictionContract.confGet("isClosed")).to.equal("true");
       });
@@ -493,7 +495,7 @@ describe("Protocol", function () {
           jurisdictionContract.connect(tester4).join()
         ).to.be.revertedWith("CLOSED_SPACE");
       });
-        
+      
       it("Can Apply to Join", async function () {
         //Apply to Join Jurisdiction
         let tx = await this.jurisdictionContract.connect(tester).applyTojoin(test_uri);
@@ -510,7 +512,7 @@ describe("Protocol", function () {
         //Validate
         expect(await this.jurisdictionContract.confGet("isClosed")).to.equal("false");
       });
-
+      
     });
 
   }); //Jurisdiction
