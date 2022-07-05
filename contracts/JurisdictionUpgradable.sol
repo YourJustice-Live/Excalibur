@@ -3,27 +3,25 @@ pragma solidity 0.8.4;
 
 import "hardhat/console.sol";
 
-// import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-// import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";  //Track Token Supply & Check 
 import "@openzeppelin/contracts/utils/Strings.sol";
 // import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
+// import "./libraries/DataTypes.sol";
 import "./interfaces/IJurisdictionUp.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IAssoc.sol";
 import "./interfaces/IActionRepo.sol";
-import "./public/interfaces/IOpenRepo.sol";
-// import "./libraries/DataTypes.sol";
-// import "./abstract/ERC1155RolesUpgradable.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/Rules.sol";
 import "./abstract/ContractBase.sol";
 import "./abstract/Opinions.sol";
-// import "./abstract/Recursion.sol";
 import "./abstract/Posts.sol";
+// import "./abstract/ERC1155RolesUpgradable.sol";
+// import "./abstract/Recursion.sol";
 // import "./abstract/AssocExt.sol";
+// import "./public/interfaces/IOpenRepo.sol";
 
 /**
  * @title Jurisdiction Contract
@@ -179,6 +177,22 @@ contract JurisdictionUpgradable is
         return _active[caseContract];
     }
 
+    /// Add Post 
+    /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
+    /// @param tokenId  Acting SBT Token ID
+    /// @param uri_     post URI
+    function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {
+        //Validate that User Controls The Token
+        require(IAvatar( repo().addressGetOf(address(_HUB), "avatar") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        //Validate: Soul Assigned to the Role 
+        require(roleHasByToken(tokenId, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
+        // require(roleHasByToken(tokenId, entRole), string(abi.encodePacked("TOKEN: ", tokenId, " NOT_ASSIGNED_AS: ", entRole)) );    //Validate the Calling Account
+        //Post Event
+        _post(tx.origin, tokenId, entRole, uri_);
+    }
+
+    //** Generic Config
+    
     /// Generic Config Get Function
     function confGet(string memory key) public view override returns(string memory) {
         return repo().stringGet(key);
@@ -187,42 +201,6 @@ contract JurisdictionUpgradable is
     /// Generic Config Set Function
     function confSet(string memory key, string memory value) public override AdminOrOwner {
         repo().stringSet(key, value);
-    }
-
-
-    /// Check if the Current Account has Control over a Token
-    function _hasTokenControl(uint256 tokenId) internal view returns (bool){
-        address ownerAccount = _getAccount(tokenId);
-        return (
-            // ownerAccount == _msgSender()    //Token Owner
-            ownerAccount == tx.origin    //Token Owner (Allows it to go therough the hub)
-            || (ownerAccount == _targetContract && owner() == _msgSender()) //Unclaimed Token Controlled by Contract Owner/DAO
-        );
-    }
-
-    /// Add Post 
-    /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
-    function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {     //postRole in the URI
-        //Validate that User Controls The Token
-        require(_hasTokenControl(tokenId), "SOUL:NOT_YOURS");
-        //Validate: Soul Assigned to the Role 
-        require(roleHasByToken(tokenId, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
-        // require(roleHasByToken(tokenId, entRole), string(abi.encodePacked("TOKEN: ", tokenId, " NOT_ASSIGNED_AS: ", entRole)) );    //Validate the Calling Account
-
-        //Post Event
-        _post(tx.origin, tokenId, entRole, uri_);
-    }
-
-    //** Data Repository 
-    
-    //Get Data Repo Address (From Hub)
-    function repoAddr() public view returns (address) {
-        return _HUB.repoAddr();
-    }
-
-    //Get Assoc Repo
-    function repo() internal view returns (IOpenRepo) {
-        return IOpenRepo(repoAddr());
     }
 
     //** Custom Rating Functions
