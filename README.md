@@ -25,7 +25,7 @@ The Excalibur Protocol is an on-chain justice system, carefully designed to imit
 Clone .env.example to .env and fill in your environment parameters
 
 
-### Some Basic Commands
+### Commands
 
 - Install environemnt: `npm install`
 - Run tests: `npx hardhat test`
