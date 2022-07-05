@@ -198,6 +198,8 @@ contract CaseUpgradable is
     
     /// Add Post 
     /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
+    /// @param tokenId  Acting SBT Token ID
+    /// @param uri_     post URI
     function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {
         //Validate that User Controls The Token
         // require(_hasTokenControl(tokenId), "SOUL:NOT_YOURS");
