@@ -20,18 +20,9 @@ The Excalibur Protocol is an on-chain justice system, carefully designed to imit
 
 ## Getting Started
 
-### .env file
+### Environment
 
-Create an .env file and fill in your infura API key and the private key of the account which will send the deployment transaction.
-
-
-```shell
-
-INFURA_KEY = 
-PRIVATE_KEY = 
-ETHERSCAN_API_KEY = 
-
-```
+Clone .env.example to .env and fill in your environment parameters
 
 
 ### Some Basic Commands
