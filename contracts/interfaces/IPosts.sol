@@ -7,6 +7,9 @@ interface IPosts {
 
     //--- Functions
 
+    //Add a new Post
+    // function post(string calldata entRole, uint256 tokenId, string calldata uri_) external;
+
     //--- Events
 
     /// General Post / Evidence, etc'

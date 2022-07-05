@@ -479,7 +479,34 @@ describe("Protocol", function () {
 
     });
 
-    it("Should Update Token URI", async function () {
+    it("Should Write a Post", async function () {
+      let testerToken = await avatarContract.tokenByAddress(this.testerAddr);
+      let post = {
+        entRole:"member",
+        tokenId: testerToken,
+        uri:test_uri,
+      };
+
+      //Join Jurisdiction
+      let tx1 = await this.jurisdictionContract.connect(tester).join();
+      await tx1.wait();
+      //Make Sure Account Has Role
+      expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(true);
+
+      //Validate Permissions
+      await expect(
+        //Failed Post
+        this.jurisdictionContract.connect(tester4).post(post.entRole, post.tokenId, post.uri)
+      ).to.be.revertedWith("SOUL:NOT_YOURS");
+
+      //Successful Post
+      let tx2 = await this.jurisdictionContract.connect(tester).post(post.entRole, post.tokenId, post.uri);
+      await tx2.wait();  //wait until the transaction is mined
+      //Expect Event
+      await expect(tx2).to.emit(this.jurisdictionContract, 'Post').withArgs(this.testerAddr, testerToken, post.entRole, post.uri);
+    });
+    
+    it("Should Update Membership Token URI", async function () {
       //Protected
       await expect(
         jurisdictionContract.connect(tester3).setRoleURI("admin", test_uri)
@@ -491,6 +518,7 @@ describe("Protocol", function () {
     });
 
     describe("Closed Jurisdiction", function () {
+
       it("Can Close Jurisdiction", async function () {
         //Change to Closed Jurisdiction
         let tx = await this.jurisdictionContract.connect(admin).confSet("isClosed", "true");
@@ -683,7 +711,7 @@ describe("Protocol", function () {
         tokenId: tester2Token,
         entRole:"subject",
         uri:test_uri,
-      }
+      };
 
       //Validate Permissions
       await expect(

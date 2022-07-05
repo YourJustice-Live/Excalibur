@@ -22,7 +22,7 @@ import "./abstract/Rules.sol";
 import "./abstract/ContractBase.sol";
 import "./abstract/Opinions.sol";
 // import "./abstract/Recursion.sol";
-// import "./abstract/Posts.sol";
+import "./abstract/Posts.sol";
 // import "./abstract/AssocExt.sol";
 
 /**
@@ -49,7 +49,7 @@ contract JurisdictionUpgradable is
         ContractBase,
         CommonYJUpgradable, 
         Opinions, 
-        // Posts,
+        Posts,
         ERC1155RolesTrackerUp {
         // ERC1155RolesUpgradable {
 
@@ -187,6 +187,30 @@ contract JurisdictionUpgradable is
     /// Generic Config Set Function
     function confSet(string memory key, string memory value) public override AdminOrOwner {
         repo().stringSet(key, value);
+    }
+
+
+    /// Check if the Current Account has Control over a Token
+    function _hasTokenControl(uint256 tokenId) internal view returns (bool){
+        address ownerAccount = _getAccount(tokenId);
+        return (
+            // ownerAccount == _msgSender()    //Token Owner
+            ownerAccount == tx.origin    //Token Owner (Allows it to go therough the hub)
+            || (ownerAccount == _targetContract && owner() == _msgSender()) //Unclaimed Token Controlled by Contract Owner/DAO
+        );
+    }
+
+    /// Add Post 
+    /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
+    function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {     //postRole in the URI
+        //Validate that User Controls The Token
+        require(_hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        //Validate: Soul Assigned to the Role 
+        require(roleHasByToken(tokenId, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
+        // require(roleHasByToken(tokenId, entRole), string(abi.encodePacked("TOKEN: ", tokenId, " NOT_ASSIGNED_AS: ", entRole)) );    //Validate the Calling Account
+
+        //Post Event
+        _post(tx.origin, tokenId, entRole, uri_);
     }
 
     //** Data Repository 

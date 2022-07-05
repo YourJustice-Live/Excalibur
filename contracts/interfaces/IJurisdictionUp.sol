@@ -17,6 +17,9 @@ interface IJurisdiction {
     /// Symbol As Arbitrary contract designation signature
     function symbol() external view returns (string memory);
 
+    /// Add Post 
+    function post(string calldata entRole, uint256 tokenId, string calldata uri) external;
+
     /// Disable Case
     function caseDisable(address caseContract) external;
 
