@@ -26,14 +26,6 @@ interface ICase {
     /// Remove Tethered Token from a Role
     function roleRemoveFromToken(uint256 ownerToken, string memory role) external;
 
-    // RoleRequest()
-
-    // RoleOffered()
-
-    // RoleAccepted()
-
-    // RoleAssigned()
-
     /// File the Case (Validate & Open Discussion)  --> Open
     function stageFile() external;
 

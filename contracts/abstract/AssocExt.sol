@@ -12,30 +12,10 @@ import "../public/interfaces/IOpenRepo.sol";
  * - Hold, Update & Serve Associations
  */
 abstract contract AssocExt {
-    //AssocExt
-            
     //--- Storage
     IOpenRepo private _OpenRepo;
-    /*
-    IAssocRepo private _AssocRepo;
     
     //--- Functions
-
-    //--- Legacy Functions (DEPRECATE)
-
-    //Set Assoc Repo
-    function _setAssocRepo(IAssocRepo assocRepo_) internal {
-        _AssocRepo = assocRepo_;
-    }
-
-    //Get Assoc Repo
-    function assocRepo() internal view returns (IAssocRepo) {
-        return _AssocRepo;
-    }
-
-    */
-
-    //--- New Version
 
     //Set Assoc Repo
     function _setRepo(address reposotoryAddress_) internal {
@@ -49,5 +29,4 @@ abstract contract AssocExt {
         return _OpenRepo;
     }
     
-
 }
