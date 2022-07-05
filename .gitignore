@@ -17,6 +17,3 @@ typechain-types/IERC1155GUID.ts
 typechain-types/index.ts
 typechain-types/IJurisdiction.ts
 typechain-types/hardhat.d.ts
-
-# OpenZeppelin
-.openzeppelin
