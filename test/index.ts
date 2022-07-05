@@ -127,6 +127,45 @@ describe("Protocol", function () {
 
   });
 
+  /**
+   * Action Repository
+   */
+   describe("Action Repository", function () {
+  
+    it("Should store Actions", async function () {
+      let action = {
+        subject: "founder",     //Accused Role
+        verb: "breach",
+        object: "contract",
+        tool: "",
+      };
+
+      // actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2'; //Wrong GUID
+      actionGUID = await actionContract.actionHash(action); //Gets hash if exists or not
+      // console.log("actionGUID:", actionGUID);
+      let tx = await actionContract.actionAdd(action, test_uri);
+      await tx.wait();
+      //Expect Added Event
+      await expect(tx).to.emit(actionContract, 'ActionAdded').withArgs(1, actionGUID, action.subject, action.verb, action.object, action.tool);
+      // await expect(tx).to.emit(actionContract, 'URI').withArgs(actionGUID, test_uri);
+
+      //Fetch Action's Struct
+      let actionRet = await actionContract.actionGet(actionGUID);
+      
+      // console.log("actionGet:", actionRet);
+      // expect(Object.values(actionRet)).to.eql(Object.values(action));
+      expect(actionRet).to.include.members(Object.values(action));
+      // expect(actionRet).to.eql(action);  //Fails
+      // expect(actionRet).to.include(action); //Fails
+      // expect(actionRet).to.own.include(action); //Fails
+
+      //Additional Rule Data
+      expect(await actionContract.actionGetURI(actionGUID)).to.equal(test_uri);
+      // expect(await actionContract.actionGetConfirmation(actionGUID)).to.include.members(["judge", true]);    //TODO: Find a better way to check this
+    });
+
+  }); //Action Repository
+
   describe("Soul", function () {
 
     it("Should inherit protocol owner", async function () {
@@ -259,45 +298,6 @@ describe("Protocol", function () {
     });
 
   }); //Soul
-
-  /**
-   * Action Repository
-   */
-  describe("Action Repository", function () {
-  
-    it("Should store Actions", async function () {
-      let action = {
-        subject: "founder",     //Accused Role
-        verb: "breach",
-        object: "contract",
-        tool: "",
-      };
-
-      // actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2'; //Wrong GUID
-      actionGUID = await actionContract.actionHash(action); //Gets hash if exists or not
-      // console.log("actionGUID:", actionGUID);
-      let tx = await actionContract.actionAdd(action, test_uri);
-      await tx.wait();
-      //Expect Added Event
-      await expect(tx).to.emit(actionContract, 'ActionAdded').withArgs(1, actionGUID, action.subject, action.verb, action.object, action.tool);
-      // await expect(tx).to.emit(actionContract, 'URI').withArgs(actionGUID, test_uri);
-
-      //Fetch Action's Struct
-      let actionRet = await actionContract.actionGet(actionGUID);
-      
-      // console.log("actionGet:", actionRet);
-      // expect(Object.values(actionRet)).to.eql(Object.values(action));
-      expect(actionRet).to.include.members(Object.values(action));
-      // expect(actionRet).to.eql(action);  //Fails
-      // expect(actionRet).to.include(action); //Fails
-      // expect(actionRet).to.own.include(action); //Fails
-
-      //Additional Rule Data
-      expect(await actionContract.actionGetURI(actionGUID)).to.equal(test_uri);
-      // expect(await actionContract.actionGetConfirmation(actionGUID)).to.include.members(["judge", true]);    //TODO: Find a better way to check this
-    });
-
-  }); //Action Repository
 
   /**
    * Jurisdiction Contract
