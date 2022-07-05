@@ -21,11 +21,14 @@ library StringArray {
     /// Find Item Index in Array
     function findIndex(string[] storage array, string memory value) internal view returns (uint256) {
         for (uint256 i = 0; i < array.length; ++i) {
-            // if(array[i] == value) return i;
-            //String Match
-            if( keccak256(abi.encodePacked(array[i])) == keccak256(abi.encodePacked(value)) ) return i;
+            if(_stringMatch(array[i], value)) return i;
         }
         revert("StringArray:ITEM_NOT_IN_ARRAY");
+    }
+
+    /// Match Two Strings
+    function _stringMatch(string memory str1, string memory str2) internal pure returns(bool){
+        return (keccak256(abi.encodePacked(str1)) == keccak256(abi.encodePacked(str2)));
     }
 
 }

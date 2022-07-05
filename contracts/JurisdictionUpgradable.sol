@@ -13,6 +13,7 @@ import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IAssoc.sol";
 import "./interfaces/IActionRepo.sol";
+import "./public/interfaces/IOpenRepo.sol";
 // import "./libraries/DataTypes.sol";
 // import "./abstract/ERC1155RolesUpgradable.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
@@ -22,13 +23,13 @@ import "./abstract/ContractBase.sol";
 import "./abstract/Opinions.sol";
 // import "./abstract/Recursion.sol";
 // import "./abstract/Posts.sol";
-
+// import "./abstract/AssocExt.sol";
 
 /**
  * @title Jurisdiction Contract
  * @dev Retains Group Members in Roles
- * @dev Version 2.1
- * V1: Role NFTs
+ * @dev Version 2.2
+ * V1: Using Role NFTs
  * - Mints Member NFTs
  * - One for each
  * - All members are the same
@@ -37,9 +38,10 @@ import "./abstract/Opinions.sol";
  * - Contract URI
  * - Token URIs for Roles
  * - Owner account must have an Avatar NFT
+ * V2: Trackers
+ * - NFT Trackers - Assign Avatars instead of Accounts & Track the owner of the Avatar NFT
+ * V3:
  * - [TODO] Unique Rule IDs (GUID)
- * V2:  
- * - [TODO] NFT Trackers - Assign Avatars instead of Accounts & Track the owner of the Avatar NFT
  */
 contract JurisdictionUpgradable is 
         IJurisdiction, 
@@ -69,6 +71,17 @@ contract JurisdictionUpgradable is
         uint256 tokenId;
         string entRole;
         string uri;
+    }
+
+    //--- Modifiers
+
+    /// Check if GUID Exists
+    modifier AdminOrOwner() {
+       //Validate Permissions
+        require(owner() == _msgSender()      //Owner
+            || roleHas(_msgSender(), "admin")    //Admin Role
+            , "INVALID_PERMISSIONS");
+        _;
     }
 
     //--- Functions
@@ -166,6 +179,28 @@ contract JurisdictionUpgradable is
         return _active[caseContract];
     }
 
+    /// Generic Config Get Function
+    function confGet(string memory key) public view override returns(string memory) {
+        return repo().stringGet(key);
+    }
+
+    /// Generic Config Set Function
+    function confSet(string memory key, string memory value) public override AdminOrOwner {
+        repo().stringSet(key, value);
+    }
+
+    //** Data Repository 
+    
+    //Get Data Repo Address (From Hub)
+    function repoAddr() public view returns (address) {
+        return _HUB.repoAddr();
+    }
+
+    //Get Assoc Repo
+    function repo() internal view returns (IOpenRepo) {
+        return IOpenRepo(repoAddr());
+    }
+
     //** Custom Rating Functions
     
     /// Add Reputation (Positive or Negative)
@@ -181,51 +216,59 @@ contract JurisdictionUpgradable is
 
     //** Role Management
 
-     /// Join a role in current jurisdiction
+    /// Join a jurisdiction (as a regular 'member')
     function join() external override returns (uint256) {
+        require (!_stringMatch(confGet("isClosed"), "true"), "CLOSED_SPACE");
+        //Mint Member Token to Self
         return _GUIDAssign(_msgSender(), _stringToBytes32("member"), 1);
     }
 
-    /// Leave Role in current jurisdiction
+    /// Leave 'member' Role in jurisdiction
     function leave() external override returns (uint256) {
         return _GUIDRemove(_msgSender(), _stringToBytes32("member"), 1);
     }
 
+    /// Apply to join a jurisdiction
+    function applyTojoin(string memory uri_) external override {
+        uint256 soulToken = _getExtTokenId(_msgSender());
+        emit Application(soulToken, _msgSender(), uri_);
+    }
+
     /// Assign Someone Else to a Role
-    function roleAssign(address account, string memory role) public override roleExists(role) {
+    function roleAssign(address account, string memory role) public override roleExists(role) AdminOrOwner {
         //Validate Permissions
-        require(owner() == _msgSender()      //Owner
-            || roleHas(_msgSender(), "admin")    //Admin Role
-            , "INVALID_PERMISSIONS");
+        // require(owner() == _msgSender()      //Owner
+        //     || roleHas(_msgSender(), "admin")    //Admin Role
+        //     , "INVALID_PERMISSIONS");
         //Add
         _roleAssign(account, role, 1);
     }
 
     /// Assign Tethered Token to a Role
-    function roleAssignToToken(uint256 ownerToken, string memory role) public override roleExists(role) {
+    function roleAssignToToken(uint256 ownerToken, string memory role) public override roleExists(role) AdminOrOwner {
         //Validate Permissions
-        require(owner() == _msgSender()      //Owner
-            || roleHas(_msgSender(), "admin")    //Admin Role
-            , "INVALID_PERMISSIONS");
+        // require(owner() == _msgSender()      //Owner
+        //     || roleHas(_msgSender(), "admin")    //Admin Role
+        //     , "INVALID_PERMISSIONS");
         _roleAssignToToken(ownerToken, role, 1);
     }
 
     /// Remove Someone Else from a Role
-    function roleRemove(address account, string memory role) public override roleExists(role) {
+    function roleRemove(address account, string memory role) public override roleExists(role) AdminOrOwner {
         //Validate Permissions
-        require(owner() == _msgSender()      //Owner
-            || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Role
-            , "INVALID_PERMISSIONS");
+        // require(owner() == _msgSender()      //Owner
+        //     || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Role
+        //     , "INVALID_PERMISSIONS");
         //Remove
         _roleRemove(account, role, 1);
     }
 
     /// Remove Tethered Token from a Role
-    function roleRemoveFromToken(uint256 ownerToken, string memory role) public override roleExists(role) {
+    function roleRemoveFromToken(uint256 ownerToken, string memory role) public override roleExists(role) AdminOrOwner {
         //Validate Permissions
-        require(owner() == _msgSender()      //Owner
-            || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Role
-            , "INVALID_PERMISSIONS");
+        // require(owner() == _msgSender()      //Owner
+        //     || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Role
+        //     , "INVALID_PERMISSIONS");
         //Remove
         _roleRemoveFromToken(ownerToken, role, 1);
     }
@@ -330,20 +373,20 @@ contract JurisdictionUpgradable is
     }
 
     /// Set Metadata URI For Role
-    function setRoleURI(string memory role, string memory _tokenURI) external override {
+    function setRoleURI(string memory role, string memory _tokenURI) external override AdminOrOwner {
         //Validate Permissions
-        require(owner() == _msgSender()      //Owner
-            || roleHas(_msgSender(), "admin")    //Admin Role
-            , "INVALID_PERMISSIONS");
+        // require(owner() == _msgSender()      //Owner
+        //     || roleHas(_msgSender(), "admin")    //Admin Role
+        //     , "INVALID_PERMISSIONS");
         _setRoleURI(role, _tokenURI);
     }
     
     /// Set Contract URI
-    function setContractURI(string calldata contract_uri) external override {
+    function setContractURI(string calldata contract_uri) external override AdminOrOwner {
         //Validate Permissions
-        require( owner() == _msgSender()      //Owner
-            || roleHas(_msgSender(), "admin")    //Admin Role
-            , "INVALID_PERMISSIONS");
+        // require( owner() == _msgSender()      //Owner
+        //     || roleHas(_msgSender(), "admin")    //Admin Role
+        //     , "INVALID_PERMISSIONS");
         //Set
         _setContractURI(contract_uri);
     }

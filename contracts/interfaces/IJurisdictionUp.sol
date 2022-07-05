@@ -29,6 +29,9 @@ interface IJurisdiction {
     /// Leave member role in current jurisdiction
     function leave() external returns (uint256);
 
+    /// Apply to join a jurisdiction
+    function applyTojoin(string memory uri) external;
+
     /// Assign Someone to a Role
     function roleAssign(address account, string calldata role) external;
 
@@ -82,9 +85,19 @@ interface IJurisdiction {
     /// Set Metadata URI For Role
     function setRoleURI(string memory role, string memory _tokenURI) external;
 
+    /// Generic Config Get Function
+    function confGet(string memory key) external view returns(string memory);
+
+    /// Generic Config Set Function
+    function confSet(string memory key, string memory value) external;
 
     //--- Events
 
     /// New Case Created
     event CaseCreated(uint256 indexed id, address contractAddress);    
+
+    /// Applied to Join Jurisdiction
+    event Application(uint256 indexed id, address account, string uri);
+
+
 }
