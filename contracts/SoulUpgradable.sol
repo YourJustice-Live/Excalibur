@@ -12,7 +12,6 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "./interfaces/ISoul.sol";
 import "./abstract/Opinions.sol";
-// import "./abstract/ContractBase.sol";
 import "./abstract/CommonYJUpgradable.sol";
 
 
@@ -30,7 +29,6 @@ import "./abstract/CommonYJUpgradable.sol";
 contract SoulUpgradable is 
         ISoul, 
         Initializable,
-        // ContractBase,
         CommonYJUpgradable, 
         UUPSUpgradeable,
         Opinions,
