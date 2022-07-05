@@ -86,7 +86,7 @@ contract HubUpgradable is
         address jurisdictionContract, 
         address caseContract
     ) public initializer {
-        //Set Association Repo Address
+        //Set Data Repo Address
         _setRepo(openRepo);
 
         //Initializers

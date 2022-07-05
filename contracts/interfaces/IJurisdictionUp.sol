@@ -72,11 +72,9 @@ interface IJurisdiction {
     //-- Rule Func.
 
     /// Create New Rule
-    // function ruleAdd(DataTypes.Rule memory rule, DataTypes.Confirmation memory confirmation) external returns (uint256);
     function ruleAdd(DataTypes.Rule memory rule, DataTypes.Confirmation memory confirmation, DataTypes.Effect[] memory effects) external returns (uint256);
 
     /// Update Rule
-    // function ruleUpdate(uint256 id, DataTypes.Rule memory rule) external;
     function ruleUpdate(uint256 id, DataTypes.Rule memory rule, DataTypes.Effect[] memory effects) external;
     
     /// Update Rule's Confirmation Data
@@ -98,6 +96,5 @@ interface IJurisdiction {
 
     /// Applied to Join Jurisdiction
     event Application(uint256 indexed id, address account, string uri);
-
 
 }
