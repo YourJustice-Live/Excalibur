@@ -650,6 +650,16 @@ describe("Protocol", function () {
       ).to.equal(true);
     });
 
+    it("Users Can Apply to Join", async function () {
+      //Apply to Join Jurisdiction
+      let tx = await this.caseContract.connect(tester).applyTojoin(test_uri);
+      await tx.wait();
+      //Get Tester's Avatar TokenID
+      let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
+      //Expect Event
+      await expect(tx).to.emit(this.caseContract, 'Application').withArgs(tokenId, this.testerAddr, test_uri);
+    });
+
     it("Should Update", async function () {
       let testCaseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
       await testCaseContract.deployed();
