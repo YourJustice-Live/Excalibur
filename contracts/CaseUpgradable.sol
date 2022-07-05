@@ -10,11 +10,8 @@ import "./interfaces/IRules.sol";
 import "./interfaces/IAvatar.sol";
 import "./interfaces/IERC1155RolesTracker.sol";
 import "./interfaces/IJurisdictionUp.sol";
-// import "./interfaces/IJurisdiction.sol";
 import "./interfaces/IAssoc.sol";
-// import "./abstract/ContractBase.sol";
 import "./abstract/CommonYJUpgradable.sol";
-// import "./abstract/ERC1155RolesUpgradable.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/Posts.sol";
 
@@ -25,7 +22,6 @@ import "./abstract/Posts.sol";
 contract CaseUpgradable is 
     ICase, 
     Posts, 
-    // ContractBase,    //Redundant
     CommonYJUpgradable, 
     ERC1155RolesTrackerUp {
     // ERC1155RolesUpgradable {
@@ -200,31 +196,19 @@ contract CaseUpgradable is
     // function post(uint256 token_id, string entRole, string uri) 
     //- Post by Entity (Token ID or a token identifier struct)
     
-    /// Check if the Current Account has Control over a Token
-    function _hasTokenControl(uint256 tokenId) internal view returns (bool){
-        address ownerAccount = _getAccount(tokenId);
-        return (
-            // ownerAccount == _msgSender()    //Token Owner
-            ownerAccount == tx.origin    //Token Owner (Allows it to go therough the hub)
-            || (ownerAccount == _targetContract && owner() == _msgSender()) //Unclaimed Token Controlled by Contract Owner/DAO
-        );
-    }
-    
     /// Add Post 
     /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
-    function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {     //postRole in the URI
+    function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {
         //Validate that User Controls The Token
-        require(_hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        // require(_hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        // require(IAvatar( IAssoc(address(_HUB)).getAssoc("avatar") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        require(IAvatar( repo().addressGetOf(address(_HUB), "avatar") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
         //Validate: Soul Assigned to the Role 
         // require(roleHas(tx.origin, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
         require(roleHasByToken(tokenId, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
         //Validate Stage
         require(stage < DataTypes.CaseStage.Closed, "STAGE:CASE_CLOSED");
-
         //Post Event
-        // emit Post(_msgSender(), entRole, postRole, uri_);
-        // emit Post(tx.origin, entRole, postRole, uri_);
-        // emit Post(tx.origin, entRole, uri_);
         _post(tx.origin, tokenId, entRole, uri_);
     }
 
