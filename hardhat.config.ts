@@ -1,14 +1,14 @@
 import * as dotenv from "dotenv";
 
-import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
+import { task } from "hardhat/config";
 import "solidity-coverage";
 
-require('@openzeppelin/hardhat-upgrades');
-require('hardhat-contract-sizer');
+require("@openzeppelin/hardhat-upgrades");
+require("hardhat-contract-sizer");
 
 dotenv.config();
 
@@ -24,11 +24,7 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
-
-// const config: HardhatUserConfig = {
 const config = {
-  
-  // solidity: "0.8.4",
   solidity: {
     compilers: [
       {
@@ -44,66 +40,62 @@ const config = {
   },
 
   networks: {
-    hardhat: {
-    },
+    hardhat: {},
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/${process.env.INFURA_KEY}`,
-      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
       gas: 2100000,
-      gasPrice: 8000000000
-      // gasPrice: 10000000000,
-      
+      gasPrice: 8000000000,
     },
     goerli: {
       url: process.env.GOERLI_RPC || "",
-      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
-
     mumbai: {
       url: process.env.MUMBAI_RPC || "",
-      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     polygon: {
       url: "https://rpc-mumbai.maticvigil.com",
-      // accounts: [process.env.PRIVATE_KEY]
-      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
-
-    aurora:{
+    aurora: {
       url: "https://mainnet.aurora.dev/",
-      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
-    aurora_testnet:{
+    aurora_testnet: {
       url: "https://testnet.aurora.dev/",
-      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
-    
-    
     optimism: {
       url: process.env.OP_RPC || "",
-      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     optimism_kovan: {
       url: process.env.OP_TEST_RPC || "",
-      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
-
-
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
     currency: "USD",
   },
   etherscan: {
-    // apiKey: process.env.ETHERSCAN_API_KEY,
     apiKey: {
       rinkeby: process.env.ETHERSCAN_API_KEY,
       polygonMumbai: process.env.ETHERSCAN_API_KEY_POLY,
       optimisticEthereum: process.env.ETHERSCAN_API_KEY_OP,
       optimisticKovan: process.env.ETHERSCAN_API_KEY_OP,
-    }    
+    },
   },
-
 };
 
 export default config;
