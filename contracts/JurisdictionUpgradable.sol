@@ -10,7 +10,7 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "./interfaces/IJurisdictionUp.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
-import "./interfaces/IAssoc.sol";
+// import "./interfaces/IAssoc.sol";
 import "./interfaces/IActionRepo.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/CommonYJUpgradable.sol";
@@ -96,7 +96,8 @@ contract JurisdictionUpgradable is
         //Initializers
         // __ERC1155RolesUpgradable_init("");
         __CommonYJ_init(hub);
-        __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
+        // __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
+        __setTargetContract(repo().addressGetOf(address(_HUB), "avatar"));
         
         //Init Recursion Controls
         // __Recursion_init(address(_HUB)); //DEPRECATED
@@ -318,7 +319,8 @@ contract JurisdictionUpgradable is
         require(roleHas(_msgSender(), "admin"), "Admin Only");
 
         //Validate rule.about -- actionGUID Exists
-        address actionRepo = IAssoc(address(_HUB)).getAssoc("history");
+        // address actionRepo = IAssoc(address(_HUB)).getAssoc("history");
+        address actionRepo = repo().addressGetOf(address(_HUB), "history");
         IActionRepo(actionRepo).actionGet(rule.about);  //Revetrs if does not exist
 
         //Add Rule

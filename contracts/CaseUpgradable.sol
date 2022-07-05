@@ -10,7 +10,7 @@ import "./interfaces/IRules.sol";
 import "./interfaces/ISoul.sol";
 import "./interfaces/IERC1155RolesTracker.sol";
 import "./interfaces/IJurisdictionUp.sol";
-import "./interfaces/IAssoc.sol";
+// import "./interfaces/IAssoc.sol";
 import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/Posts.sol";
@@ -56,7 +56,6 @@ contract CaseUpgradable is
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return interfaceId == type(ICase).interfaceId 
             || interfaceId == type(IRules).interfaceId 
-            || interfaceId == type(IAssoc).interfaceId 
             || super.supportsInterface(interfaceId);
     }
 
@@ -73,8 +72,9 @@ contract CaseUpgradable is
         _setParentCTX(container);
         //Initializers
         __CommonYJ_init(hub);
-        // __setTargetContract(_HUB.getAssoc("avatar"));
-        __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
+        // __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
+        __setTargetContract(repo().addressGetOf(address(_HUB), "avatar"));
+        
         //Set Contract URI
         _setContractURI(uri_);
         //Identifiers
@@ -326,7 +326,9 @@ contract CaseUpgradable is
     function _ruleConfirmed(uint256 ruleId) internal {
         //Get Avatar Contract
         // ISoul avatarContract = ISoul(_HUB.getAssoc("avatar"));
-        ISoul avatarContract = ISoul(IAssoc(address(_HUB)).getAssoc("avatar"));
+        // ISoul avatarContract = ISoul(IAssoc(address(_HUB)).getAssoc("avatar"));
+        ISoul avatarContract = ISoul(repo().addressGetOf(address(_HUB), "avatar"));
+        
 
         /* REMOVED for backward compatibility while in dev mode.
         //Validate Avatar Contract Interface
