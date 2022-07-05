@@ -4,11 +4,11 @@ coverage
 coverage.json
 package-lock.json
 
-
-#Hardhat files
+# Hardhat files
 cache
 artifacts
 
+# Typechain
 typechain-types
 typechain-types/
 typechain-types/AvatarNFT.ts
@@ -17,3 +17,6 @@ typechain-types/IERC1155GUID.ts
 typechain-types/index.ts
 typechain-types/IJurisdiction.ts
 typechain-types/hardhat.d.ts
+
+# OpenZeppelin
+.openzeppelin
