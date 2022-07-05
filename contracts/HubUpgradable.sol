@@ -13,7 +13,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "./interfaces/IConfig.sol";
-import "./interfaces/IAssoc.sol";
+// import "./interfaces/IAssoc.sol";
 import "./public/interfaces/IOpenRepo.sol";
 import "./interfaces/ICommonYJ.sol";
 import "./interfaces/IHub.sol";
@@ -34,7 +34,7 @@ import "./abstract/AssocExt.sol";
  */
 contract HubUpgradable is 
         IHub 
-        , IAssoc
+        // , IAssoc
         , Initializable
         , ContractBase
         , OwnableUpgradeable 
@@ -75,7 +75,7 @@ contract HubUpgradable is
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return interfaceId == type(IHub).interfaceId 
-            || interfaceId == type(IAssoc).interfaceId 
+            // || interfaceId == type(IAssoc).interfaceId 
             || super.supportsInterface(interfaceId);
     }
 
