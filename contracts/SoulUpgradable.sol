@@ -235,4 +235,22 @@ contract SoulUpgradable is
     }
     */
 
+    /// Check if the Current Account has Control over a Token
+    function hasTokenControl(uint256 tokenId) public view override returns (bool) {
+        address ownerAccount = ownerOf(tokenId);
+        return (
+            // ownerAccount == _msgSender()    //Token Owner
+            ownerAccount == tx.origin    //Token Owner (Allows it to go therough the hub)
+            || (ownerAccount == address(this) && owner() == tx.origin) //Unclaimed Tokens Controlled by Contract Owner/DAO
+        );
+    }
+
+    /// Post
+    function post(uint256 tokenId, string calldata uri_) external override {
+        //Validate that User Controls The Token
+        require(hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        //Post Event
+        emit Post(_msgSender(), tokenId, uri_);
+    }
+
 }

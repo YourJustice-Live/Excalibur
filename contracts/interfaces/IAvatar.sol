@@ -29,6 +29,12 @@ interface IAvatar {
     /// Remove Account from Existing Token
     function tokenOwnerRemove(address owner, uint256 tokenId) external;
 
+    /// Check if the Current Account has Control over a Token
+    function hasTokenControl(uint256 tokenId) external view returns (bool);
+    
+    /// Post
+    function post(uint256 tokenId, string calldata uri_) external;
+
     //--- Events
     
 	/// URI Change Event
@@ -36,5 +42,8 @@ interface IAvatar {
 
     /// Reputation Changed
     event ReputationChange(uint256 indexed id, string domain, bool rating, uint256 score);
+
+    /// General Post
+    event Post(address indexed account, uint256 tokenId, string uri);
 
 }

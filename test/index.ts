@@ -98,6 +98,7 @@ describe("Protocol", function () {
     //Populate Accounts
     [owner, admin, tester, tester2, tester3, tester4, tester5, judge, ...addrs] = await ethers.getSigners();
     //Addresses
+    this.ownerAddr = await owner.getAddress();
     this.adminAddr = await admin.getAddress();
     this.testerAddr = await tester.getAddress();
     this.tester2Addr = await tester2.getAddress();
@@ -126,7 +127,7 @@ describe("Protocol", function () {
 
   });
 
-  describe("Avatar", function () {
+  describe("Soul", function () {
 
     it("Should inherit protocol owner", async function () {
       expect(await avatarContract.owner()).to.equal(await owner.getAddress());
@@ -192,6 +193,45 @@ describe("Protocol", function () {
       expect(await avatarContract.tokenURI(3)).to.equal(test_uri);
     });
 
+    it("Should Post as Owned-Soul", async function () {
+      let testerToken = await avatarContract.tokenByAddress(this.testerAddr);
+      let post = {
+        tokenId: testerToken,
+        uri:test_uri,
+      };
+
+      //Validate Permissions
+      await expect(
+        //Failed Post
+        avatarContract.connect(tester4).post(post.tokenId, post.uri)
+      ).to.be.revertedWith("SOUL:NOT_YOURS");
+
+      //Successful Post
+      let tx = await avatarContract.connect(tester).post(post.tokenId, post.uri);
+      await tx.wait();  //wait until the transaction is mined
+      //Expect Event
+      await expect(tx).to.emit(avatarContract, 'Post').withArgs(this.testerAddr, post.tokenId, post.uri);
+    });
+
+    it("Should Post as a Lost-Soul", async function () {
+      let post = {
+        tokenId: unOwnedTokenId,
+        uri: test_uri,
+      };
+
+      //Validate Permissions
+      await expect(
+        //Failed Post
+        avatarContract.connect(tester4).post(post.tokenId, post.uri)
+      ).to.be.revertedWith("SOUL:NOT_YOURS");
+
+      //Successful Post
+      let tx = await avatarContract.post(post.tokenId, post.uri);
+      await tx.wait();  //wait until the transaction is mined
+      //Expect Event
+      await expect(tx).to.emit(avatarContract, 'Post').withArgs(this.ownerAddr, post.tokenId, post.uri);
+    });
+    
     it("Should NOT be transferable", async function () {
       //Should Fail to transfer -- "Sorry, Assets are non-transferable"
       let fromAddr = await tester.getAddress();
@@ -218,7 +258,7 @@ describe("Protocol", function () {
       ).to.be.revertedWith("UNAUTHORIZED_ACCESS");
     });
 
-  }); //Avatar
+  }); //Soul
 
   /**
    * Action Repository
@@ -503,7 +543,7 @@ describe("Protocol", function () {
       let tx2 = await this.jurisdictionContract.connect(tester).post(post.entRole, post.tokenId, post.uri);
       await tx2.wait();  //wait until the transaction is mined
       //Expect Event
-      await expect(tx2).to.emit(this.jurisdictionContract, 'Post').withArgs(this.testerAddr, testerToken, post.entRole, post.uri);
+      await expect(tx2).to.emit(this.jurisdictionContract, 'Post').withArgs(this.testerAddr, post.tokenId, post.entRole, post.uri);
     });
     
     it("Should Update Membership Token URI", async function () {
@@ -724,7 +764,7 @@ describe("Protocol", function () {
       // wait until the transaction is mined
       await tx.wait();
       //Expect Event
-      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, tester2Token, post.entRole, post.uri);
+      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, post.tokenId, post.entRole, post.uri);
     });
 
     it("Should Update Token URI", async function () {
