@@ -10,14 +10,14 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 // import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "./interfaces/IAvatar.sol";
+import "./interfaces/ISoul.sol";
 import "./abstract/Opinions.sol";
 // import "./abstract/ContractBase.sol";
 import "./abstract/CommonYJUpgradable.sol";
 
 
 /**
- * @title NFT Soulbound Identity Tokens
+ * @title Soulbound NFT Identity Tokens + Reputation Tracking
  * @dev Version 2.0
  *  - Contract is open for everyone to mint.
  *  - Max of one NFT assigned for each account
@@ -28,7 +28,7 @@ import "./abstract/CommonYJUpgradable.sol";
  *  - [TODO] Orphan tokens can be claimed/linked
  */
 contract SoulUpgradable is 
-        IAvatar, 
+        ISoul, 
         Initializable,
         // ContractBase,
         CommonYJUpgradable, 
@@ -70,7 +70,7 @@ contract SoulUpgradable is
 
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IAvatar).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(ISoul).interfaceId || super.supportsInterface(interfaceId);
     }
 
     //** Token Owner Index **/

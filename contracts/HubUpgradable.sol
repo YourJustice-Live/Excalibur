@@ -19,7 +19,7 @@ import "./interfaces/ICommonYJ.sol";
 import "./interfaces/IHub.sol";
 import "./interfaces/IJurisdictionUp.sol";
 import "./interfaces/ICase.sol";
-import "./interfaces/IAvatar.sol";
+import "./interfaces/ISoul.sol";
 import "./libraries/DataTypes.sol";
 import "./abstract/ContractBase.sol";
 // import "./abstract/Assoc.sol";
@@ -245,7 +245,7 @@ contract HubUpgradable is
     /// Add Repuation to Avatar
     function _repAddAvatar(uint256 tokenId, string calldata domain, bool rating, uint8 amount) internal {
         address avatarContract = repo().addressGet("avatar");
-        try IAvatar(avatarContract).repAdd(tokenId, domain, rating, amount) {}   //Failure should not be fatal
+        try ISoul(avatarContract).repAdd(tokenId, domain, rating, amount) {}   //Failure should not be fatal
         catch Error(string memory /*reason*/) {}
     }
 

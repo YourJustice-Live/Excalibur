@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "./libraries/DataTypes.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IRules.sol";
-import "./interfaces/IAvatar.sol";
+import "./interfaces/ISoul.sol";
 import "./interfaces/IERC1155RolesTracker.sol";
 import "./interfaces/IJurisdictionUp.sol";
 import "./interfaces/IAssoc.sol";
@@ -201,8 +201,8 @@ contract CaseUpgradable is
     function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {
         //Validate that User Controls The Token
         // require(_hasTokenControl(tokenId), "SOUL:NOT_YOURS");
-        // require(IAvatar( IAssoc(address(_HUB)).getAssoc("avatar") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
-        require(IAvatar( repo().addressGetOf(address(_HUB), "avatar") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        // require(ISoul( IAssoc(address(_HUB)).getAssoc("avatar") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        require(ISoul( repo().addressGetOf(address(_HUB), "avatar") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
         //Validate: Soul Assigned to the Role 
         // require(roleHas(tx.origin, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
         require(roleHasByToken(tokenId, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
@@ -323,12 +323,12 @@ contract CaseUpgradable is
     /// Rule (Action) Confirmed (Currently Only Judging Avatars)
     function _ruleConfirmed(uint256 ruleId) internal {
         //Get Avatar Contract
-        // IAvatar avatarContract = IAvatar(_HUB.getAssoc("avatar"));
-        IAvatar avatarContract = IAvatar(IAssoc(address(_HUB)).getAssoc("avatar"));
+        // ISoul avatarContract = ISoul(_HUB.getAssoc("avatar"));
+        ISoul avatarContract = ISoul(IAssoc(address(_HUB)).getAssoc("avatar"));
 
         /* REMOVED for backward compatibility while in dev mode.
         //Validate Avatar Contract Interface
-        require(IERC165(address(avatarContract)).supportsInterface(type(IAvatar).interfaceId), "Invalid Avatar Contract");
+        require(IERC165(address(avatarContract)).supportsInterface(type(ISoul).interfaceId), "Invalid Avatar Contract");
         */
 
         //Fetch Case's Subject(s)

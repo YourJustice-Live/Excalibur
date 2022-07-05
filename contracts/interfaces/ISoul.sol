@@ -4,7 +4,7 @@ pragma solidity 0.8.4;
 
 // import "../libraries/DataTypes.sol";
 
-interface IAvatar {
+interface ISoul {
 
     //--- Functions
 
