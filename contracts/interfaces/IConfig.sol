@@ -2,6 +2,9 @@
 
 pragma solidity 0.8.4;
 
+/** DEPRECATE
+ * Central Protocol Configuration
+ */
 interface IConfig {
     
     //-- Functions
