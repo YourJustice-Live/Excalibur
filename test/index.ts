@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { Contract, ContractReceipt, Signer } from "ethers";
+import { Contract, Signer } from "ethers";
 import { ethers } from "hardhat";
-const {  upgrades } = require("hardhat");
+const { upgrades } = require("hardhat");
 
 //Test Data
 const ZERO_ADDR = '0x0000000000000000000000000000000000000000';
@@ -111,6 +111,17 @@ describe("Protocol", function () {
 
     it("Should be owned by deployer", async function () {
       expect(await configContract.owner()).to.equal(await owner.getAddress());
+    });
+
+  });
+
+  describe("OpenRepo", function () {
+
+    it("Should Get Empty Value", async function () {
+      //Change to Closed Jurisdiction
+      await this.openRepo.stringGet("TestKey");
+      await this.openRepo.boolGet("TestKey");
+      await this.openRepo.addressGet("TestKey");
     });
 
   });
@@ -478,7 +489,7 @@ describe("Protocol", function () {
       //Validate
       expect(await jurisdictionContract.roleURI("admin")).to.equal(test_uri);
     });
-    
+
     describe("Closed Jurisdiction", function () {
       it("Can Close Jurisdiction", async function () {
         //Change to Closed Jurisdiction
@@ -768,7 +779,7 @@ describe("Protocol", function () {
     });
 
     
-    it("[TODO] Can Change Rating", async function () {
+    // it("[TODO] Can Change Rating", async function () {
 
       //TODO: Tests for Collect Rating
       // let repCall = { tokenId:?, domain:?, rating:?};
@@ -786,7 +797,7 @@ describe("Protocol", function () {
       // //Other Domain Rep - Should be 0
       // expect(await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain + 1, repCall.rating)).to.equal(0);
 
-    });
+    // });
 
   }); //Case
     
