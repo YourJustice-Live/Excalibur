@@ -10,7 +10,6 @@ import "./interfaces/IRules.sol";
 import "./interfaces/ISoul.sol";
 import "./interfaces/IERC1155RolesTracker.sol";
 import "./interfaces/IJurisdictionUp.sol";
-// import "./interfaces/IAssoc.sol";
 import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/Posts.sol";
@@ -79,7 +78,6 @@ contract CaseUpgradable is
     ) public override initializer {
         //Initializers
         __CommonYJ_init(hub);
-        // __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
         __setTargetContract(getSoulAddr());
         //Set Parent Container
         _setParentCTX(container);
@@ -109,6 +107,19 @@ contract CaseUpgradable is
         }
     }
 
+    /* Maybe, When used more than once
+    /// Set Association
+    function _setAssoc(string memory key, address contractAddr) internal {
+        repo().addressSet(key, contractAddr);
+    }
+
+    /// Get Contract Association
+    function getAssoc(string memory key) public view override returns(address) {
+        //Return address from the Repo
+        return repo().addressGet(key);
+    }
+    */
+    
     /// Set Parent Container
     function _setParentCTX(address container) internal {
         //Validate
@@ -116,6 +127,7 @@ contract CaseUpgradable is
         require(IERC165(container).supportsInterface(type(IJurisdiction).interfaceId), "Implmementation Does Not Support Jurisdiction Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
         //Set to OpenRepo
         repo().addressSet("container", container);
+        // _setAssoc("container", container);
     }
     
     /// Get Container Address
@@ -137,7 +149,7 @@ contract CaseUpgradable is
     /// Assign to a Role
     function roleAssign(address account, string memory role) public override roleExists(role) {
         //Special Validations for 'authority' role
-        if (keccak256(abi.encodePacked(role)) == keccak256(abi.encodePacked("authority"))){
+        if (_stringMatch(role, "authority")){
             require(getContainerAddr() != address(0), "Unknown Parent Container");
             //Validate: Must Hold same role in Containing Jurisdiction
             require(IERC1155RolesTracker(getContainerAddr()).roleHas(account, role), "User Required to hold same role in Jurisdiction");
