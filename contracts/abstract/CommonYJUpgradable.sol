@@ -78,4 +78,14 @@ abstract contract CommonYJUpgradable is
         return IOpenRepo(repoAddr());
     }
     
+    /// Generic Config Get Function
+    // function confGet(string memory key) public view override returns(string memory) {
+    //     return repo().stringGet(key);
+    // }
+
+    /// Generic Config Set Function
+    function _confSet(string memory key, string memory value) internal {
+        repo().stringSet(key, value);
+    }
+
 }

@@ -45,6 +45,9 @@ interface ICase {
     /// Set Metadata URI For Role
     function setRoleURI(string memory role, string memory _tokenURI) external;
 
+    //Get Contract Association
+    // function getAssoc(string memory key) external view returns(address);
+
     //--- Events
 
     /// Case Stage Change
