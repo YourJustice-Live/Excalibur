@@ -809,7 +809,7 @@ describe("Protocol", function () {
       //Validate
       await expect(
         this.incidentContract.connect(admin).roleAssign(this.tester3Addr, "authority")
-      ).to.be.revertedWith("User Required to hold same role in Game");
+      ).to.be.revertedWith("User Required to hold same role in the Game context");
     });
 
     it("Anyonw Can Apply to Join", async function () {

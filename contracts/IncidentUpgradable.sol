@@ -23,7 +23,6 @@ contract IncidentUpgradable is
     Posts, 
     CommonYJUpgradable, 
     ERC1155RolesTrackerUp {
-    // ERC1155RolesUpgradable {
 
     //--- Storage
     using CountersUpgradeable for CountersUpgradeable.Counter;
@@ -148,11 +147,11 @@ contract IncidentUpgradable is
 
     /// Assign to a Role
     function roleAssign(address account, string memory role) public override roleExists(role) {
-        //Special Validations for 'authority' role
-        if (_stringMatch(role, "authority")){
+        //Special Validations for Special Roles 
+        if (_stringMatch(role, "admin") || _stringMatch(role, "authority")){
             require(getContainerAddr() != address(0), "Unknown Parent Container");
             //Validate: Must Hold same role in Containing Game
-            require(IERC1155RolesTracker(getContainerAddr()).roleHas(account, role), "User Required to hold same role in Game");
+            require(IERC1155RolesTracker(getContainerAddr()).roleHas(account, role), "User Required to hold same role in the Game context");
         }
         else{
             //Validate Permissions
