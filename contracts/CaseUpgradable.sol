@@ -131,8 +131,6 @@ contract CaseUpgradable is
 
     /// Request to Join
     function nominate(uint256 soulToken, string memory uri_) external override {
-        // uint256 soulToken = _getExtTokenId(_msgSender());
-        // uint256 soulToken = _getExtTokenId(msg.sender); //May be a contract
         emit Nominate(_msgSender(), soulToken, uri_);
     }
 
@@ -157,21 +155,12 @@ contract CaseUpgradable is
     }
     
     /// Assign Tethered Token to a Role
-    function roleAssignToToken(uint256 ownerToken, string memory role) public override roleExists(role) {
-        //Validate Permissions
-        require(owner() == _msgSender()      //Owner
-            || roleHas(_msgSender(), "admin")    //Admin Role
-            , "INVALID_PERMISSIONS");
+    function roleAssignToToken(uint256 ownerToken, string memory role) public override roleExists(role) AdminOrOwner {
         _roleAssignToToken(ownerToken, role, 1);
     }
     
     /// Remove Tethered Token from a Role
-    function roleRemoveFromToken(uint256 ownerToken, string memory role) public override roleExists(role) {
-        //Validate Permissions
-        require(owner() == _msgSender()      //Owner
-            || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Role
-            , "INVALID_PERMISSIONS");
-        //Remove
+    function roleRemoveFromToken(uint256 ownerToken, string memory role) public override roleExists(role) AdminOrOwner {
         _roleRemoveFromToken(ownerToken, role, 1);
     }
 
