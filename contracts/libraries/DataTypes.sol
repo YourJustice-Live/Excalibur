@@ -24,10 +24,10 @@ library DataTypes {
         Professional
     }
 
-    //--- Cases
+    //--- Incidents
 
-    //Case Lifecycle
-    enum CaseStage {
+    //Incident Lifecycle
+    enum IncidentStage {
         Draft,
         Open,           // Filed -- Confirmation/Discussion (Evidence, Witnesses, etc’)
         Verdict,        // Awaiting Decision (Authority, Jury, vote, etc’)
@@ -85,7 +85,7 @@ library DataTypes {
         // witness: 1,  //Minimal number of witnesses
     }
 
-    //--- Case Data
+    //--- Incident Data
 
     //Rule Reference
     struct RuleRef {

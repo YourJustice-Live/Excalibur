@@ -11,7 +11,7 @@ import "./ERC1155GUID.sol";
 /**
  * @title Sub-Groups with Role NFTs
  * @dev ERC1155 using GUID as Role
- * To Extend Cases & Jutisdictions
+ * To Extend Incidents & Jutisdictions
  * - Hold Roles
  * - Assign Roles
  * ---- 

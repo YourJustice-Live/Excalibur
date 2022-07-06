@@ -16,7 +16,7 @@ import "./interfaces/IAssocRepo.sol";
 import "./interfaces/ICommonYJ.sol";
 import "./interfaces/IHub.sol";
 import "./interfaces/IGameUp.sol";
-import "./interfaces/ICase.sol";
+import "./interfaces/IIncident.sol";
 import "./interfaces/IAvatar.sol";
 import "./libraries/DataTypes.sol";
 // import "./abstract/CommonYJ.sol";
@@ -26,8 +26,8 @@ import "./abstract/Assoc.sol";
 /**
  * YJ Hub Contract
  * - Hold Known Contract Addresses (Avatar, History)
- * - Contract Factory (Games & Cases)
- * - Remember Products (Games & Cases)
+ * - Contract Factory (Games & Incidents)
+ * - Remember Products (Games & Incidents)
  */
 contract Hub is 
         IHub, 
@@ -39,7 +39,7 @@ contract Hub is
     
 
     //---Storage
-    address public beaconCase;
+    address public beaconIncident;
     address public beaconGame;  //TBD
 
     // mapping(string => address) internal _contracts;      // Mapping for Used Contracts
@@ -51,7 +51,7 @@ contract Hub is
 
     // using Counters for Counters.Counter;
     // Counters.Counter internal _tokenIds; //Track Last Token ID
-    // Counters.Counter internal _caseIds;  //Track Last Case ID
+    // Counters.Counter internal _incidentIds;  //Track Last Incident ID
 
     // Arbitrary contract designation signature
     string public constant override role = "YJHub";
@@ -62,7 +62,7 @@ contract Hub is
     IConfig private _CONFIG;  //Configuration Contract       //DEPRECATE
 
     mapping(address => bool) internal _games; // Mapping for Active Games   //[TBD]
-    mapping(address => address) internal _cases;      // Mapping for Case Contracts  [C] => [J]
+    mapping(address => address) internal _incidents;      // Mapping for Incident Contracts  [C] => [J]
 
 
     //--- Events
@@ -78,15 +78,15 @@ contract Hub is
             || super.supportsInterface(interfaceId);
     }
 
-    constructor(address config, address gameContract, address caseContract){
+    constructor(address config, address gameContract, address incidentContract){
         //Set Protocol's Config Address
         _setConfig(config);
         //Init Game Contract Beacon
         UpgradeableBeacon _beaconJ = new UpgradeableBeacon(gameContract);
         beaconGame = address(_beaconJ);
-        //Init Case Contract Beacon
-        UpgradeableBeacon _beaconC = new UpgradeableBeacon(caseContract);
-        beaconCase = address(_beaconC);
+        //Init Incident Contract Beacon
+        UpgradeableBeacon _beaconC = new UpgradeableBeacon(incidentContract);
+        beaconIncident = address(_beaconC);
     }
 
     /// @dev Returns the address of the current owner.
@@ -163,8 +163,8 @@ contract Hub is
         return address(newGameProxy);
     }
 
-    /// Make a new Case
-    function caseMake(
+    /// Make a new Incident
+    function incidentMake(
         string calldata name_, 
         string calldata uri_,
         DataTypes.RuleRef[] memory addRules,
@@ -174,13 +174,13 @@ contract Hub is
         require(_games[_msgSender()], "UNAUTHORIZED: Valid Game Only");
 
         //Validate
-        // require(beaconCase != address(0), "Case Beacon Missing");    //Redundant
+        // require(beaconIncident != address(0), "Incident Beacon Missing");    //Redundant
 
         //Deploy
-        BeaconProxy newCaseProxy = new BeaconProxy(
-            beaconCase,
+        BeaconProxy newIncidentProxy = new BeaconProxy(
+            beaconIncident,
             abi.encodeWithSelector(
-                ICase( payable(address(0)) ).initialize.selector,
+                IIncident( payable(address(0)) ).initialize.selector,
                 address(this),   //Hub
                 name_,          //Name
                 uri_,
@@ -190,11 +190,11 @@ contract Hub is
             )
         );
         //Event
-        emit ContractCreated("case", address(newCaseProxy));
+        emit ContractCreated("incident", address(newIncidentProxy));
         //Remember
-        _cases[address(newCaseProxy)] = _msgSender();
+        _incidents[address(newIncidentProxy)] = _msgSender();
         //Return
-        return address(newCaseProxy);
+        return address(newIncidentProxy);
     }
 
     //--- Reputation
@@ -231,22 +231,22 @@ contract Hub is
 
     //-- Upgrades
 
-    /// Upgrade Case Implementation
-    function upgradeCaseImplementation(address newImplementation) public onlyOwner {
+    /// Upgrade Incident Implementation
+    function upgradeIncidentImplementation(address newImplementation) public onlyOwner {
         //Validate Interface
-        // require(IERC165(newImplementation).supportsInterface(type(ICase).interfaceId), "Implmementation Does Not Support Case Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
+        // require(IERC165(newImplementation).supportsInterface(type(IIncident).interfaceId), "Implmementation Does Not Support Incident Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
 
         //Upgrade Beacon
-        UpgradeableBeacon(beaconCase).upgradeTo(newImplementation);
+        UpgradeableBeacon(beaconIncident).upgradeTo(newImplementation);
         //Upgrade Event
-        // emit UpdatedCaseImplementation(newImplementation);
-        emit UpdatedImplementation("case", newImplementation);
+        // emit UpdatedIncidentImplementation(newImplementation);
+        emit UpdatedImplementation("incident", newImplementation);
     }
 
     /// Upgrade Game Implementation [TBD]
     function upgradeGameImplementation(address newImplementation) public onlyOwner {
         //Validate Interface
-        // require(IERC165(newImplementation).supportsInterface(type(ICase).interfaceId), "Implmementation Does Not Support Case Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
+        // require(IERC165(newImplementation).supportsInterface(type(IIncident).interfaceId), "Implmementation Does Not Support Incident Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
 
         //Upgrade Beacon
         UpgradeableBeacon(beaconGame).upgradeTo(newImplementation);

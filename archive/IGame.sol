@@ -14,11 +14,11 @@ interface IGame {
     /// Set Contract URI
     function setContractURI(string calldata contract_uri) external;
 
-    /// Disable Case
-    function caseDisable(address caseContract) external;
+    /// Disable Incident
+    function incidentDisable(address incidentContract) external;
 
-    /// Check if Case is Owned by This Contract (& Active)
-    function caseHas(address caseContract) external view returns (bool);
+    /// Check if Incident is Owned by This Contract (& Active)
+    function incidentHas(address incidentContract) external view returns (bool);
 
     /// Join game as member
     function join() external;
@@ -38,8 +38,8 @@ interface IGame {
     /// Create a new Role
     // function roleCreate(address account, string calldata role) external;
 
-    /// Make a new Case
-    // function caseMake(
+    /// Make a new Incident
+    // function incidentMake(
     //     string calldata name_, 
     //     DataTypes.RuleRef[] calldata addRules, 
     //     DataTypes.InputRole[] calldata assignRoles, 
@@ -65,6 +65,6 @@ interface IGame {
 
     //--- Events
 
-    /// New Case Created
-    event CaseCreated(uint256 indexed id, address contractAddress);    
+    /// New Incident Created
+    event IncidentCreated(uint256 indexed id, address contractAddress);    
 }

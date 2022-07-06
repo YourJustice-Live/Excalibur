@@ -9,7 +9,7 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 // import "./libraries/DataTypes.sol";
 import "./interfaces/IGameUp.sol";
 import "./interfaces/IRules.sol";
-import "./interfaces/ICase.sol";
+import "./interfaces/IIncident.sol";
 import "./interfaces/IActionRepo.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/CommonYJUpgradable.sol";
@@ -30,7 +30,7 @@ import "./abstract/Posts.sol";
  * - One for each
  * - All members are the same
  * - Rules
- * - Creates new Cases
+ * - Creates new Incidents
  * - Contract URI
  * - Token URIs for Roles
  * - Owner account must have an Avatar NFT
@@ -55,11 +55,11 @@ contract GameUpgradable is
 
     using CountersUpgradeable for CountersUpgradeable.Counter;
     // CountersUpgradeable.Counter internal _tokenIds; //Track Last Token ID
-    CountersUpgradeable.Counter internal _caseIds;  //Track Last Case ID
+    CountersUpgradeable.Counter internal _incidentIds;  //Track Last Incident ID
     
     // Contract name
     string public name;
-    // Mapping for Case Contracts
+    // Mapping for Incident Contracts
     mapping(address => bool) internal _active;
 
     //Post Input Struct
@@ -117,11 +117,11 @@ contract GameUpgradable is
         _roleAssign(tx.origin, "member", 1);
     }
 
-    //** Case Functions
+    //** Incident Functions
 
-    /// Make a new Case
+    /// Make a new Incident
     /// @dev a wrapper function for creation, adding rules, assigning roles & posting
-    function caseMake(
+    function incidentMake(
         string calldata name_, 
         string calldata uri_, 
         DataTypes.RuleRef[] calldata addRules, 
@@ -130,49 +130,49 @@ contract GameUpgradable is
     ) public returns (address) {
         //Validate Caller Permissions (Member of Game)
         require(roleHas(_msgSender(), "member"), "Members Only");
-        //Assign Case ID
-        _caseIds.increment(); //Start with 1
-        uint256 caseId = _caseIds.current();
-        //Create new Case
-        address caseContract = _HUB.caseMake(name_, uri_, addRules, assignRoles);
+        //Assign Incident ID
+        _incidentIds.increment(); //Start with 1
+        uint256 incidentId = _incidentIds.current();
+        //Create new Incident
+        address incidentContract = _HUB.incidentMake(name_, uri_, addRules, assignRoles);
         //Remember Address
-        _active[caseContract] = true;
-        //New Case Created Event
-        emit CaseCreated(caseId, caseContract);
+        _active[incidentContract] = true;
+        //New Incident Created Event
+        emit IncidentCreated(incidentId, incidentContract);
         //Posts
         for (uint256 i = 0; i < posts.length; ++i) {
-            ICase(caseContract).post(posts[i].entRole, posts[i].tokenId, posts[i].uri);
+            IIncident(incidentContract).post(posts[i].entRole, posts[i].tokenId, posts[i].uri);
         }
-        return caseContract;
+        return incidentContract;
     }
     
-    /// Make a new Case & File it
-    /// @dev a wrapper function for creation, adding rules, assigning roles, posting & filing a case
-    function caseMakeOpen(
+    /// Make a new Incident & File it
+    /// @dev a wrapper function for creation, adding rules, assigning roles, posting & filing a incident
+    function incidentMakeOpen(
         string calldata name_, 
         string calldata uri_, 
         DataTypes.RuleRef[] calldata addRules, 
         DataTypes.InputRoleToken[] calldata assignRoles, 
         PostInput[] calldata posts
     ) public returns (address) {
-        //Make Case
-        address caseContract = caseMake(name_, uri_, addRules, assignRoles, posts);
-        //File Case
-        ICase(caseContract).stageFile();
+        //Make Incident
+        address incidentContract = incidentMake(name_, uri_, addRules, assignRoles, posts);
+        //File Incident
+        IIncident(incidentContract).stageFile();
         //Return
-        return caseContract;
+        return incidentContract;
     }
 
-    /// Disable Case
-    function caseDisable(address caseContract) public override onlyOwner {
+    /// Disable Incident
+    function incidentDisable(address incidentContract) public override onlyOwner {
         //Validate
-        require(_active[caseContract], "Case Not Active");
-        _active[caseContract] = false;
+        require(_active[incidentContract], "Incident Not Active");
+        _active[incidentContract] = false;
     }
 
-    /// Check if Case is Owned by This Contract (& Active)
-    function caseHas(address caseContract) public view override returns (bool){
-        return _active[caseContract];
+    /// Check if Incident is Owned by This Contract (& Active)
+    function incidentHas(address incidentContract) public view override returns (bool){
+        return _active[incidentContract];
     }
 
     /// Add Post 
@@ -206,8 +206,8 @@ contract GameUpgradable is
     /// Add Reputation (Positive or Negative)
     // function repAdd(address contractAddr, uint256 tokenId, string calldata domain, DataTypes.Rating rating, uint8 amount) external override {
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external override {
-        //Validate - Called by Child Case
-        require(caseHas(_msgSender()), "NOT A VALID CASE");
+        //Validate - Called by Child Incident
+        require(incidentHas(_msgSender()), "NOT A VALID CASE");
         //Run on Self
         _repAdd(contractAddr, tokenId, domain, rating, amount);
         //Update Hub

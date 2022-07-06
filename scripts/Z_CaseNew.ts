@@ -28,7 +28,7 @@ async function main() {
      let selfSoulToken = 4;
      let otherSoulToken = 2;
    
-     let caseName = "Test Case #1";
+     let incidentName = "Test Incident #1";
      let ruleRefArr = [
        {
          game: gameContract.address, 
@@ -53,9 +53,9 @@ async function main() {
        }
      ];
 
-     //Simulate - Get New Case Address
-     let caseAddr = await gameContract.callStatic.caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
-     console.log("New Case Address: ", caseAddr);
+     //Simulate - Get New Incident Address
+     let incidentAddr = await gameContract.callStatic.incidentMake(incidentName, test_uri, ruleRefArr, roleRefArr, posts);
+     console.log("New Incident Address: ", incidentAddr);
 
 }
 

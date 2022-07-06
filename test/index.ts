@@ -42,13 +42,13 @@ describe("Protocol", function () {
     this.openRepo = await ethers.getContractFactory("OpenRepoUpgradable")
       .then(Contract => upgrades.deployProxy(Contract, [],{kind: "uups", timeout: 120000}));
 
-    //--- Deploy Case Implementation
-    this.caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
+    //--- Deploy Incident Implementation
+    this.incidentContract = await ethers.getContractFactory("IncidentUpgradable").then(res => res.deploy());
     //Game Upgradable Implementation
     this.gameUpContract = await ethers.getContractFactory("GameUpgradable").then(res => res.deploy());
 
     //Deploy Hub
-    // hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.gameUpContract.address, this.caseContract.address));
+    // hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.gameUpContract.address, this.incidentContract.address));
 
     //--- Deploy Hub Upgradable (UUDP)
     hubContract = await ethers.getContractFactory("HubUpgradable").then(Contract => 
@@ -57,7 +57,7 @@ describe("Protocol", function () {
           this.openRepo.address,
           configContract.address, 
           this.gameUpContract.address, 
-          this.caseContract.address
+          this.incidentContract.address
         ],{
         // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
         kind: "uups",
@@ -322,7 +322,7 @@ describe("Protocol", function () {
       let tx = await hubContract.gameMake("Test Game", test_uri);
       //Expect Valid Address
       expect(JAddr).to.be.properAddress;
-      //Expect Case Created Event
+      //Expect Incident Created Event
       await expect(tx).to.emit(hubContract, 'ContractCreated').withArgs("game", JAddr);
       //Init Game Contract Object
       gameContract = await ethers.getContractFactory("GameUpgradable").then(res => res.attach(JAddr));
@@ -562,7 +562,7 @@ describe("Protocol", function () {
       it("Can Close Game", async function () {
         //Change to Closed Game
         let tx = await this.gameContract.connect(admin).confSet("isClosed", "true");
-        //Expect Case Created Event
+        //Expect Incident Created Event
         await expect(tx).to.emit(this.openRepo, 'StringSet').withArgs(this.gameContract.address, "isClosed", "true");
         //Validate
         expect(await this.gameContract.confGet("isClosed")).to.equal("true");
@@ -597,16 +597,16 @@ describe("Protocol", function () {
   }); //Game
 
   /**
-   * Case Contract
+   * Incident Contract
    */
-  describe("Case", function () {
+  describe("Incident", function () {
 
     it("Should be Created (by Game)", async function () {
       //Soul Tokens
       let adminToken = await avatarContract.tokenByAddress(this.adminAddr);
       let tester2Token = await avatarContract.tokenByAddress(this.tester2Addr);
     
-      let caseName = "Test Case #1";
+      let incidentName = "Test Incident #1";
       let ruleRefArr = [
         {
           game: gameContract.address, 
@@ -636,20 +636,20 @@ describe("Protocol", function () {
       //Assign Admin as Member
       // await this.gameContract.roleAssign(this.adminAddr, "member");
 
-      //Simulate - Get New Case Address
-      let caseAddr = await gameContract.connect(admin).callStatic.caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
-      // console.log("New Case Address: ", caseAddr);
+      //Simulate - Get New Incident Address
+      let incidentAddr = await gameContract.connect(admin).callStatic.incidentMake(incidentName, test_uri, ruleRefArr, roleRefArr, posts);
+      // console.log("New Incident Address: ", incidentAddr);
 
-      //Create New Case
-      let tx = await gameContract.connect(admin).caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
+      //Create New Incident
+      let tx = await gameContract.connect(admin).incidentMake(incidentName, test_uri, ruleRefArr, roleRefArr, posts);
       //Expect Valid Address
-      expect(caseAddr).to.be.properAddress;
-      //Init Case Contract
-      this.caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.attach(caseAddr));
-      //Expect Case Created Event
-      await expect(tx).to.emit(gameContract, 'CaseCreated').withArgs(1, caseAddr);
+      expect(incidentAddr).to.be.properAddress;
+      //Init Incident Contract
+      this.incidentContract = await ethers.getContractFactory("IncidentUpgradable").then(res => res.attach(incidentAddr));
+      //Expect Incident Created Event
+      await expect(tx).to.emit(gameContract, 'IncidentCreated').withArgs(1, incidentAddr);
       //Expect Post Event
-      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].uri);
+      await expect(tx).to.emit(this.incidentContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].uri);
     });
     
     it("Should be Created & Opened (by Game)", async function () {
@@ -658,7 +658,7 @@ describe("Protocol", function () {
       let tester2Token = await avatarContract.tokenByAddress(this.tester2Addr);
       let tester3Token = await avatarContract.tokenByAddress(this.tester3Addr);
 
-      let caseName = "Test Case #1";
+      let incidentName = "Test Incident #1";
       let ruleRefArr = [
         {
           game: gameContract.address, 
@@ -682,39 +682,39 @@ describe("Protocol", function () {
           uri: test_uri,
         }
       ];
-      //Simulate - Get New Case Address
-      let caseAddr = await gameContract.connect(admin).callStatic.caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
-      //Create New Case
-      let tx = await gameContract.connect(admin).caseMakeOpen(caseName, test_uri, ruleRefArr, roleRefArr, posts);
+      //Simulate - Get New Incident Address
+      let incidentAddr = await gameContract.connect(admin).callStatic.incidentMake(incidentName, test_uri, ruleRefArr, roleRefArr, posts);
+      //Create New Incident
+      let tx = await gameContract.connect(admin).incidentMakeOpen(incidentName, test_uri, ruleRefArr, roleRefArr, posts);
       //Expect Valid Address
-      expect(caseAddr).to.be.properAddress;
-      //Init Case Contract
-      let caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.attach(caseAddr));
-      //Expect Case Created Event
-      await expect(tx).to.emit(gameContract, 'CaseCreated').withArgs(2, caseAddr);
+      expect(incidentAddr).to.be.properAddress;
+      //Init Incident Contract
+      let incidentContract = await ethers.getContractFactory("IncidentUpgradable").then(res => res.attach(incidentAddr));
+      //Expect Incident Created Event
+      await expect(tx).to.emit(gameContract, 'IncidentCreated').withArgs(2, incidentAddr);
       //Expect Post Event
-      // await expect(tx).to.emit(caseContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].postRole, posts[0].uri);
-      await expect(tx).to.emit(caseContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].uri);
+      // await expect(tx).to.emit(incidentContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].postRole, posts[0].uri);
+      await expect(tx).to.emit(incidentContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].uri);
     });
 
-    it("Should Update Case Contract URI", async function () {
+    it("Should Update Incident Contract URI", async function () {
       //Before
-      expect(await this.caseContract.contractURI()).to.equal(test_uri);
+      expect(await this.incidentContract.contractURI()).to.equal(test_uri);
       //Change
-      await this.caseContract.setContractURI(test_uri2);
+      await this.incidentContract.setContractURI(test_uri2);
       //After
-      expect(await this.caseContract.contractURI()).to.equal(test_uri2);
+      expect(await this.incidentContract.contractURI()).to.equal(test_uri2);
     });
 
     it("Should Auto-Appoint creator as Admin", async function () {
       expect(
-        await this.caseContract.roleHas(this.adminAddr, "admin")
+        await this.incidentContract.roleHas(this.adminAddr, "admin")
       ).to.equal(true);
     });
 
     it("Tester expected to be in the subject role", async function () {
       expect(
-        await this.caseContract.roleHas(this.tester2Addr, "subject")
+        await this.incidentContract.roleHas(this.tester2Addr, "subject")
       ).to.equal(true);
     });
 
@@ -722,17 +722,17 @@ describe("Protocol", function () {
       //Get Tester's Avatar TokenID
       let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
       //Apply to Join Game
-      let tx = await this.caseContract.connect(tester).nominate(tokenId, test_uri);
+      let tx = await this.incidentContract.connect(tester).nominate(tokenId, test_uri);
       await tx.wait();
       //Expect Event
-      await expect(tx).to.emit(this.caseContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
+      await expect(tx).to.emit(this.incidentContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
     });
 
     it("Should Update", async function () {
-      let testCaseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
-      await testCaseContract.deployed();
-      //Update Case Beacon (to the same implementation)
-      hubContract.upgradeCaseImplementation(testCaseContract.address);
+      let testIncidentContract = await ethers.getContractFactory("IncidentUpgradable").then(res => res.deploy());
+      await testIncidentContract.deployed();
+      //Update Incident Beacon (to the same implementation)
+      hubContract.upgradeIncidentImplementation(testIncidentContract.address);
     });
 
     it("Should Add Rules", async function () {
@@ -741,8 +741,8 @@ describe("Protocol", function () {
         id: 2, 
         // affected: "investor",
       };
-      // await this.caseContract.ruleAdd(ruleRef.game,  ruleRef.id, ruleRef.affected);
-      await this.caseContract.connect(admin).ruleAdd(ruleRef.game,  ruleRef.id);
+      // await this.incidentContract.ruleAdd(ruleRef.game,  ruleRef.id, ruleRef.affected);
+      await this.incidentContract.connect(admin).ruleAdd(ruleRef.game,  ruleRef.id);
     });
     
     it("Should Write a Post", async function () {
@@ -756,59 +756,59 @@ describe("Protocol", function () {
       //Validate Permissions
       await expect(
         //Failed Post
-        this.caseContract.connect(tester).post(post.entRole, post.tokenId, post.uri)
+        this.incidentContract.connect(tester).post(post.entRole, post.tokenId, post.uri)
       ).to.be.revertedWith("SOUL:NOT_YOURS");
 
       //Successful Post
-      let tx = await this.caseContract.connect(tester2).post(post.entRole, post.tokenId, post.uri);
+      let tx = await this.incidentContract.connect(tester2).post(post.entRole, post.tokenId, post.uri);
       // wait until the transaction is mined
       await tx.wait();
       //Expect Event
-      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, post.tokenId, post.entRole, post.uri);
+      await expect(tx).to.emit(this.incidentContract, 'Post').withArgs(this.tester2Addr, post.tokenId, post.entRole, post.uri);
     });
 
     it("Should Update Token URI", async function () {
       //Protected
       await expect(
-        this.caseContract.connect(tester3).setRoleURI("admin", test_uri)
+        this.incidentContract.connect(tester3).setRoleURI("admin", test_uri)
       ).to.be.revertedWith("INVALID_PERMISSIONS");
       //Set Admin Token URI
-      await this.caseContract.connect(admin).setRoleURI("admin", test_uri);
+      await this.incidentContract.connect(admin).setRoleURI("admin", test_uri);
       //Validate
-      expect(await this.caseContract.roleURI("admin")).to.equal(test_uri);
+      expect(await this.incidentContract.roleURI("admin")).to.equal(test_uri);
     });
 
     it("Should Assign Witness", async function () {
       //Assign Admin
-      await this.caseContract.connect(admin).roleAssign(this.tester3Addr, "witness");
+      await this.incidentContract.connect(admin).roleAssign(this.tester3Addr, "witness");
       //Validate
-      expect(await this.caseContract.roleHas(this.tester3Addr, "witness")).to.equal(true);
+      expect(await this.incidentContract.roleHas(this.tester3Addr, "witness")).to.equal(true);
     });
 
-    it("Game Authoritys Can Assign Themselves to Case", async function () {
+    it("Game Authoritys Can Assign Themselves to Incident", async function () {
       //Assign as Game Authority
       gameContract.connect(admin).roleAssign(this.tester4Addr, "authority")
-      //Assign Case Authority
-      await this.caseContract.connect(tester4).roleAssign(this.tester4Addr, "authority");
+      //Assign Incident Authority
+      await this.incidentContract.connect(tester4).roleAssign(this.tester4Addr, "authority");
       //Validate
-      expect(await this.caseContract.roleHas(this.tester4Addr, "authority")).to.equal(true);
+      expect(await this.incidentContract.roleHas(this.tester4Addr, "authority")).to.equal(true);
     });
 
-    it("User Can Open Case", async function () {
+    it("User Can Open Incident", async function () {
       //Validate
       await expect(
-        this.caseContract.connect(tester2).stageFile()
+        this.incidentContract.connect(tester2).stageFile()
       ).to.be.revertedWith("ROLE:CREATOR_OR_ADMIN");
-      //File Case
-      let tx = await this.caseContract.connect(admin).stageFile();
+      //File Incident
+      let tx = await this.incidentContract.connect(admin).stageFile();
       //Expect State Event
-      await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(1);
+      await expect(tx).to.emit(this.incidentContract, 'Stage').withArgs(1);
     });
 
     it("Should Validate Authority with parent game", async function () {
       //Validate
       await expect(
-        this.caseContract.connect(admin).roleAssign(this.tester3Addr, "authority")
+        this.incidentContract.connect(admin).roleAssign(this.tester3Addr, "authority")
       ).to.be.revertedWith("User Required to hold same role in Game");
     });
 
@@ -816,44 +816,44 @@ describe("Protocol", function () {
       //Get Tester's Avatar TokenID
       let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
       //Apply to Join Game
-      let tx = await this.caseContract.connect(tester).nominate(tokenId, test_uri);
+      let tx = await this.incidentContract.connect(tester).nominate(tokenId, test_uri);
       await tx.wait();
       //Expect Event
-      await expect(tx).to.emit(this.caseContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
+      await expect(tx).to.emit(this.incidentContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
     });
 
     it("Should Accept a Authority From the parent game", async function () {
       //Check Before
       // expect(await this.gameContract.roleHas(this.testerAddr, "authority")).to.equal(true);
       //Assign Authority
-      await this.caseContract.connect(admin).roleAssign(this.authorityAddr, "authority");
+      await this.incidentContract.connect(admin).roleAssign(this.authorityAddr, "authority");
       //Check After
-      expect(await this.caseContract.roleHas(this.authorityAddr, "authority")).to.equal(true);
+      expect(await this.incidentContract.roleHas(this.authorityAddr, "authority")).to.equal(true);
     });
     
     it("Should Wait for Verdict Stage", async function () {
-      //File Case
-      let tx = await this.caseContract.connect(authority).stageWaitForVerdict();
+      //File Incident
+      let tx = await this.incidentContract.connect(authority).stageWaitForVerdict();
       //Expect State Event
-      await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(2);
+      await expect(tx).to.emit(this.incidentContract, 'Stage').withArgs(2);
     });
 
     it("Should Wait for authority", async function () {
       let verdict = [{ ruleId:1, decision: true }];
-      //File Case -- Expect Failure
+      //File Incident -- Expect Failure
       await expect(
-        this.caseContract.connect(tester2).stageVerdict(verdict, test_uri)
+        this.incidentContract.connect(tester2).stageVerdict(verdict, test_uri)
       ).to.be.revertedWith("ROLE:AUTHORITY_ONLY");
     });
 
-    it("Should Accept Verdict URI & Close Case", async function () {
+    it("Should Accept Verdict URI & Close Incident", async function () {
       let verdict = [{ruleId:1, decision:true}];
-      //Submit Verdict & Close Case
-      let tx = await this.caseContract.connect(authority).stageVerdict(verdict, test_uri);
+      //Submit Verdict & Close Incident
+      let tx = await this.incidentContract.connect(authority).stageVerdict(verdict, test_uri);
       //Expect Verdict Event
-      await expect(tx).to.emit(this.caseContract, 'Verdict').withArgs(test_uri, this.authorityAddr);
+      await expect(tx).to.emit(this.incidentContract, 'Verdict').withArgs(test_uri, this.authorityAddr);
       //Expect State Event
-      await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(6);
+      await expect(tx).to.emit(this.incidentContract, 'Stage').withArgs(6);
     });
 
     // it("[TODO] Can Change Rating", async function () {
@@ -876,6 +876,6 @@ describe("Protocol", function () {
 
     // });
 
-  }); //Case
+  }); //Incident
     
 });

@@ -43,16 +43,16 @@ async function main() {
     console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.game);
   }
 
-  //--- Case Implementation
-  if(!contractAddr.case){
-    //Deploy Case
-    let contract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
+  //--- Incident Implementation
+  if(!contractAddr.incident){
+    //Deploy Incident
+    let contract = await ethers.getContractFactory("IncidentUpgradable").then(res => res.deploy());
     await contract.deployed();
     //Set Address
-    contractAddr.case = contract.address;
+    contractAddr.incident = contract.address;
     //Log
-    console.log("Deployed Case Contract to " + contractAddr.case);
-    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.case);
+    console.log("Deployed Incident Contract to " + contractAddr.incident);
+    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.incident);
   }
 
   //--- TEST: Upgradable Hub
@@ -64,7 +64,7 @@ async function main() {
           publicAddr.openRepo,
           contractAddr.config, 
           contractAddr.game,
-          contractAddr.case,
+          contractAddr.incident,
         ],{
         kind: "uups",
         timeout: 120000
@@ -89,8 +89,8 @@ async function main() {
     }
 
     //Log
-    console.log("Deployed Hub Upgradable Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " game: "+contractAddr.game+ " Case: "+ contractAddr.case);
-    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.hub+" "+publicAddr.openRepo+" "+ contractAddr.config+" "+contractAddr.game+ " "+contractAddr.case);
+    console.log("Deployed Hub Upgradable Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " game: "+contractAddr.game+ " Incident: "+ contractAddr.incident);
+    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.hub+" "+publicAddr.openRepo+" "+ contractAddr.config+" "+contractAddr.game+ " "+contractAddr.incident);
   }
 
   //--- Avatar Upgradable

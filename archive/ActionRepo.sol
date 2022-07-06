@@ -14,7 +14,7 @@ import "./abstract/ERC1155GUID.sol";
  * @title History Retention
  * @dev Event Repository -- Retains Unique Events and Their Apperance Throught History
  * 2D - Compound GUID + Additional Data & URI
- * [TBD] 3D - Individual Instances of Action (Incidents) as NFTs + Event Details (Time, Case no.,  etc')
+ * [TBD] 3D - Individual Instances of Action (Incidents) as NFTs + Event Details (Time, Incident no.,  etc')
  */
 contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 

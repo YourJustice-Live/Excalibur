@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./interfaces/IGame.sol";
 import "./interfaces/IRules.sol";
-import "./interfaces/ICase.sol";
+import "./interfaces/IIncident.sol";
 // import "./libraries/DataTypes.sol";
 import "./abstract/ERC1155Roles.sol";
 import "./abstract/ContractBase.sol";
@@ -29,7 +29,7 @@ import "./abstract/Posts.sol";
  * - One for each
  * - All members are the same
  * - Rules
- * - Creates new Cases
+ * - Creates new Incidents
  * - Contract URI
  * - [TODO] Validation: Make Sure Account has an Avatar NFT
  * - [TODO] Token URIs for Roles
@@ -53,7 +53,7 @@ contract Game is
 
     using Counters for Counters.Counter;
     // Counters.Counter internal _tokenIds; //Track Last Token ID
-    Counters.Counter internal _caseIds;  //Track Last Case ID
+    Counters.Counter internal _incidentIds;  //Track Last Incident ID
     
     // Contract name
     string public name;
@@ -63,8 +63,8 @@ contract Game is
     // string internal _contract_uri;
 
     // mapping(string => uint256) internal _roles;    //NFTs as Roles
-    // mapping(uint256 => address) internal _cases;   // Mapping for Case Contracts      //DEPRECATED - No need for Case IDs, Use Hash
-    mapping(address => bool) internal _active;        // Mapping for Case Contracts
+    // mapping(uint256 => address) internal _incidents;   // Mapping for Incident Contracts      //DEPRECATED - No need for Incident IDs, Use Hash
+    mapping(address => bool) internal _active;        // Mapping for Incident Contracts
 
     // mapping(uint256 => string) internal _rulesURI; // Mapping Metadata URIs for Individual Role 
     // mapping(uint256 => string) internal _uri;
@@ -92,26 +92,26 @@ contract Game is
         _roleAssign(tx.origin, "admin");
     }
 
-    //** Case Functions
+    //** Incident Functions
 
-    /// Make a new Case & File it
-    function caseMakeOpen(
+    /// Make a new Incident & File it
+    function incidentMakeOpen(
         string calldata name_, 
         DataTypes.RuleRef[] calldata addRules, 
         DataTypes.InputRole[] calldata assignRoles, 
         PostInput[] calldata posts
     // ) public returns (uint256, address) {
     ) public returns (address) {
-        //Make Case
-        address caseContract = caseMake(name_, addRules, assignRoles, posts);
-        //File Case
-        ICase(caseContract).stageFile();
+        //Make Incident
+        address incidentContract = incidentMake(name_, addRules, assignRoles, posts);
+        //File Incident
+        IIncident(incidentContract).stageFile();
         //Return
-        return caseContract;
+        return incidentContract;
     }
 
-    /// Make a new Case
-    function caseMake(
+    /// Make a new Incident
+    function incidentMake(
         string calldata name_, 
         DataTypes.RuleRef[] calldata addRules, 
         DataTypes.InputRole[] calldata assignRoles, 
@@ -121,33 +121,33 @@ contract Game is
         // roleHas(_msgSender(), "admin")
         // roleHas(_msgSender(), "member")
 
-        //Assign Case ID
-        _caseIds.increment(); //Start with 1
-        uint256 caseId = _caseIds.current();
-        //Create new Case
-        address caseContract = _HUB.caseMake(name_, addRules, assignRoles);
+        //Assign Incident ID
+        _incidentIds.increment(); //Start with 1
+        uint256 incidentId = _incidentIds.current();
+        //Create new Incident
+        address incidentContract = _HUB.incidentMake(name_, addRules, assignRoles);
         //Remember Address
-        // _cases[caseId] = caseContract;
-        _active[caseContract] = true;
-        //New Case Created Event
-        emit CaseCreated(caseId, caseContract);
+        // _incidents[incidentId] = incidentContract;
+        _active[incidentContract] = true;
+        //New Incident Created Event
+        emit IncidentCreated(incidentId, incidentContract);
         //Posts
         for (uint256 i = 0; i < posts.length; ++i) {
-            ICase(caseContract).post(posts[i].entRole, posts[i].tokenId, posts[i].uri);
+            IIncident(incidentContract).post(posts[i].entRole, posts[i].tokenId, posts[i].uri);
         }
-        return caseContract;
+        return incidentContract;
     }
     
-    /// Disable Case
-    function caseDisable(address caseContract) public override onlyOwner {
+    /// Disable Incident
+    function incidentDisable(address incidentContract) public override onlyOwner {
         //Validate
-        require(_active[caseContract], "Case Not Active");
-        _active[caseContract] = false;
+        require(_active[incidentContract], "Incident Not Active");
+        _active[incidentContract] = false;
     }
 
-    /// Check if Case is Owned by This Contract (& Active)
-    function caseHas(address caseContract) public view override returns (bool){
-        return _active[caseContract];
+    /// Check if Incident is Owned by This Contract (& Active)
+    function incidentHas(address incidentContract) public view override returns (bool){
+        return _active[incidentContract];
     }
 
     //** Custom Rating Functions
@@ -155,8 +155,8 @@ contract Game is
     /// Add Reputation (Positive or Negative)
     // function repAdd(address contractAddr, uint256 tokenId, string calldata domain, DataTypes.Rating rating, uint8 amount) external override {
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external override {
-        //Validate - Called by Child Case
-        require(caseHas(_msgSender()), "NOT A VALID CASE");
+        //Validate - Called by Child Incident
+        require(incidentHas(_msgSender()), "NOT A VALID CASE");
         //Run
         _repAdd(contractAddr, tokenId, domain, rating, amount);
         //Update Hub

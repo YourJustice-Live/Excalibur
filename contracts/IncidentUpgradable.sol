@@ -5,7 +5,7 @@ import "hardhat/console.sol";
 
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "./libraries/DataTypes.sol";
-import "./interfaces/ICase.sol";
+import "./interfaces/IIncident.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/ISoul.sol";
 import "./interfaces/IERC1155RolesTracker.sol";
@@ -15,11 +15,11 @@ import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/Posts.sol";
 
 /**
- * @title Upgradable Case Contract
+ * @title Upgradable Incident Contract
  * @dev Version 1.1
  */
-contract CaseUpgradable is 
-    ICase, 
+contract IncidentUpgradable is 
+    IIncident, 
     Posts, 
     CommonYJUpgradable, 
     ERC1155RolesTrackerUp {
@@ -40,11 +40,11 @@ contract CaseUpgradable is
     //Contract URI
     // string internal _contract_uri;
 
-    //Stage (Case Lifecycle)
-    DataTypes.CaseStage public stage;
+    //Stage (Incident Lifecycle)
+    DataTypes.IncidentStage public stage;
 
     //Rules Reference
-    mapping(uint256 => DataTypes.RuleRef) internal _rules;      // Mapping for Case Rules
+    mapping(uint256 => DataTypes.RuleRef) internal _rules;      // Mapping for Incident Rules
     mapping(uint256 => bool) public decision;                   // Mapping for Rule Decisions
     
     //--- Modifiers
@@ -62,7 +62,7 @@ contract CaseUpgradable is
     
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(ICase).interfaceId 
+        return interfaceId == type(IIncident).interfaceId 
             || interfaceId == type(IRules).interfaceId 
             || super.supportsInterface(interfaceId);
     }
@@ -86,9 +86,9 @@ contract CaseUpgradable is
         _setContractURI(uri_);
         //Identifiers
         name = name_;
-        //Init Default Case Roles
+        //Init Default Incident Roles
         _roleCreate("admin");
-        _roleCreate("creator");     //Filing the case
+        _roleCreate("creator");     //Filing the incident
         _roleCreate("subject");     //Acting Agent
         _roleCreate("authority");   //Deciding authority
         _roleCreate("witness");     //Witnesses
@@ -203,7 +203,7 @@ contract CaseUpgradable is
     }
 
     // function post(string entRole, string uri) 
-    // - Post by account + role (in the case, since an account may have multiple roles)
+    // - Post by account + role (in the incident, since an account may have multiple roles)
 
     // function post(uint256 token_id, string entRole, string uri) 
     //- Post by Entity (Token ID or a token identifier struct)
@@ -221,7 +221,7 @@ contract CaseUpgradable is
         // require(roleHas(tx.origin, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
         require(roleHasByToken(tokenId, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
         //Validate Stage
-        require(stage < DataTypes.CaseStage.Closed, "STAGE:CASE_CLOSED");
+        require(stage < DataTypes.IncidentStage.Closed, "STAGE:CASE_CLOSED");
         //Post Event
         _post(tx.origin, tokenId, entRole, uri_);
     }
@@ -262,12 +262,12 @@ contract CaseUpgradable is
     
     //--- State Changers
     
-    /// File the Case (Validate & Open Discussion)  --> Open
+    /// File the Incident (Validate & Open Discussion)  --> Open
     function stageFile() public override {
         //Validate Caller
         require(roleHas(tx.origin, "creator") || roleHas(_msgSender(), "admin") , "ROLE:CREATOR_OR_ADMIN");
         //Validate Lifecycle Stage
-        require(stage == DataTypes.CaseStage.Draft, "STAGE:DRAFT_ONLY");
+        require(stage == DataTypes.IncidentStage.Draft, "STAGE:DRAFT_ONLY");
         //Validate - Has Subject
         require(uniqueRoleMembersCount("subject") > 0 , "ROLE:MISSING_SUBJECT");
         //Validate - Prevent Self Report? (subject != affected)
@@ -281,25 +281,25 @@ contract CaseUpgradable is
             //Validate Min Witness Requirements
             require(witnesses >= confirmation.witness, "INSUFFICIENT_WITNESSES");
         }
-        //Case is now Open
-        _setStage(DataTypes.CaseStage.Open);
+        //Incident is now Open
+        _setStage(DataTypes.IncidentStage.Open);
     }
 
-    /// Case Wait For Verdict  --> Pending
+    /// Incident Wait For Verdict  --> Pending
     function stageWaitForVerdict() public override {
         //Validate Stage
-        require(stage == DataTypes.CaseStage.Open, "STAGE:OPEN_ONLY");
+        require(stage == DataTypes.IncidentStage.Open, "STAGE:OPEN_ONLY");
         //Validate Caller
         require(roleHas(_msgSender(), "authority") || roleHas(_msgSender(), "admin") , "ROLE:AUTHORITY_OR_ADMIN");
-        //Case is now Waiting for Verdict
-        _setStage(DataTypes.CaseStage.Verdict);
+        //Incident is now Waiting for Verdict
+        _setStage(DataTypes.IncidentStage.Verdict);
     }   
 
-    /// Case Stage: Place Verdict  --> Closed
+    /// Incident Stage: Place Verdict  --> Closed
     // function stageVerdict(string calldata uri) public override {
     function stageVerdict(DataTypes.InputDecision[] calldata verdict, string calldata uri_) public override {
         require(roleHas(_msgSender(), "authority") , "ROLE:AUTHORITY_ONLY");
-        require(stage == DataTypes.CaseStage.Verdict, "STAGE:VERDICT_ONLY");
+        require(stage == DataTypes.IncidentStage.Verdict, "STAGE:VERDICT_ONLY");
 
         //Process Verdict
         for (uint256 i = 0; i < verdict.length; ++i) {
@@ -310,24 +310,24 @@ contract CaseUpgradable is
             }
         }
 
-        //Case is now Closed
-        _setStage(DataTypes.CaseStage.Closed);
+        //Incident is now Closed
+        _setStage(DataTypes.IncidentStage.Closed);
         //Emit Verdict Event
         emit Verdict(uri_, _msgSender());
     }
 
-    /// Case Stage: Reject Case --> Cancelled
+    /// Incident Stage: Reject Incident --> Cancelled
     function stageCancel(string calldata uri_) public override {
         require(roleHas(_msgSender(), "authority") , "ROLE:AUTHORITY_ONLY");
-        require(stage == DataTypes.CaseStage.Verdict, "STAGE:VERDICT_ONLY");
-        //Case is now Closed
-        _setStage(DataTypes.CaseStage.Cancelled);
+        require(stage == DataTypes.IncidentStage.Verdict, "STAGE:VERDICT_ONLY");
+        //Incident is now Closed
+        _setStage(DataTypes.IncidentStage.Cancelled);
         //Cancellation Event
         emit Cancelled(uri_, _msgSender());
     }
 
-    /// Change Case Stage
-    function _setStage(DataTypes.CaseStage stage_) internal {
+    /// Change Incident Stage
+    function _setStage(DataTypes.IncidentStage stage_) internal {
         //Set Stage
         stage = stage_;
         //Stage Change Event
@@ -347,7 +347,7 @@ contract CaseUpgradable is
         require(IERC165(address(avatarContract)).supportsInterface(type(ISoul).interfaceId), "Invalid Avatar Contract");
         */
 
-        //Fetch Case's Subject(s)
+        //Fetch Incident's Subject(s)
         uint256[] memory subjects = uniqueRoleMembers("subject");
         //Each Subject
         for (uint256 i = 0; i < subjects.length; ++i) {

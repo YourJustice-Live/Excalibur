@@ -22,9 +22,9 @@ interface IHub {
     /// Make a new Game
     function gameMake(string calldata name_, string calldata uri_) external returns (address);
 
-    /// Make a new Case
-    // function caseMake(string calldata name_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external returns (address);
-    function caseMake(
+    /// Make a new Incident
+    // function incidentMake(string calldata name_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external returns (address);
+    function incidentMake(
         string calldata name_, 
         string calldata uri_, 
         DataTypes.RuleRef[] memory addRules, 
