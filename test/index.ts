@@ -805,6 +805,32 @@ describe("Protocol", function () {
       await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(1);
     });
 
+    it("Should Validate Judge with parent jurisdiction", async function () {
+      //Validate
+      await expect(
+        this.caseContract.connect(admin).roleAssign(this.tester3Addr, "judge")
+      ).to.be.revertedWith("User Required to hold same role in Jurisdiction");
+    });
+
+    it("Anyonw Can Apply to Join", async function () {
+      //Get Tester's Avatar TokenID
+      let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
+      //Apply to Join Jurisdiction
+      let tx = await this.caseContract.connect(tester).nominate(tokenId, test_uri);
+      await tx.wait();
+      //Expect Event
+      await expect(tx).to.emit(this.caseContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
+    });
+
+    it("Should Accept a Judge From the parent jurisdiction", async function () {
+      //Check Before
+      // expect(await this.jurisdictionContract.roleHas(this.testerAddr, "judge")).to.equal(true);
+      //Assign Judge
+      await this.caseContract.connect(admin).roleAssign(this.judgeAddr, "judge");
+      //Check After
+      expect(await this.caseContract.roleHas(this.judgeAddr, "judge")).to.equal(true);
+    });
+    
     it("Should Wait for Verdict Stage", async function () {
       //File Case
       let tx = await this.caseContract.connect(judge).stageWaitForVerdict();
@@ -820,32 +846,6 @@ describe("Protocol", function () {
       ).to.be.revertedWith("ROLE:JUDGE_ONLY");
     });
 
-    it("Should Validate Judge with parent jurisdiction", async function () {
-      //Validate
-      await expect(
-        this.caseContract.connect(admin).roleAssign(this.tester3Addr, "judge")
-      ).to.be.revertedWith("User Required to hold same role in Jurisdiction");
-    });
-
-    it("Should Accept a Judge From the parent jurisdiction", async function () {
-      //Check Before
-      // expect(await this.jurisdictionContract.roleHas(this.testerAddr, "judge")).to.equal(true);
-      //Assign Judge
-      await this.caseContract.connect(admin).roleAssign(this.judgeAddr, "judge");
-      //Check After
-      expect(await this.caseContract.roleHas(this.judgeAddr, "judge")).to.equal(true);
-    });
-    
-    it("Anyonw Can Apply to Join", async function () {
-      //Get Tester's Avatar TokenID
-      let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
-      //Apply to Join Jurisdiction
-      let tx = await this.caseContract.connect(tester).nominate(tokenId, test_uri);
-      await tx.wait();
-      //Expect Event
-      await expect(tx).to.emit(this.caseContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
-    });
-
     it("Should Accept Verdict URI & Close Case", async function () {
       let verdict = [{ruleId:1, decision:true}];
       //Submit Verdict & Close Case
@@ -856,7 +856,6 @@ describe("Protocol", function () {
       await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(6);
     });
 
-    
     // it("[TODO] Can Change Rating", async function () {
 
       //TODO: Tests for Collect Rating

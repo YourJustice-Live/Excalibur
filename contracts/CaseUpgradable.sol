@@ -277,8 +277,8 @@ contract CaseUpgradable is
     function stageWaitForVerdict() public override {
         //Validate Stage
         require(stage == DataTypes.CaseStage.Open, "STAGE:OPEN_ONLY");
-        //TODO: Validate Caller
-        // require(roleHas(tx.origin, "judge") || roleHas(_msgSender(), "admin") , "ROLE:JUDGE_OR_ADMIN");
+        //Validate Caller
+        require(roleHas(_msgSender(), "judge") || roleHas(_msgSender(), "admin") , "ROLE:JUDGE_OR_ADMIN");
         //Case is now Waiting for Verdict
         _setStage(DataTypes.CaseStage.Verdict);
     }   
