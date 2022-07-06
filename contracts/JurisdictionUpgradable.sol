@@ -195,10 +195,10 @@ contract JurisdictionUpgradable is
     function confGet(string memory key) public view override returns(string memory) {
         return repo().stringGet(key);
     }
-
+    
     /// Generic Config Set Function
     function confSet(string memory key, string memory value) public override AdminOrOwner {
-        repo().stringSet(key, value);
+        _confSet(key, value);
     }
 
     //** Custom Rating Functions
