@@ -231,46 +231,26 @@ contract JurisdictionUpgradable is
 
     /// Request to Join
     function nominate(uint256 soulToken, string memory uri_) external override {
-        // uint256 soulToken = _getExtTokenId(_msgSender());
         emit Nominate(_msgSender(), soulToken, uri_);
     }
 
     /// Assign Someone Else to a Role
     function roleAssign(address account, string memory role) public override roleExists(role) AdminOrOwner {
-        //Validate Permissions
-        // require(owner() == _msgSender()      //Owner
-        //     || roleHas(_msgSender(), "admin")    //Admin Role
-        //     , "INVALID_PERMISSIONS");
-        //Add
         _roleAssign(account, role, 1);
     }
 
     /// Assign Tethered Token to a Role
     function roleAssignToToken(uint256 ownerToken, string memory role) public override roleExists(role) AdminOrOwner {
-        //Validate Permissions
-        // require(owner() == _msgSender()      //Owner
-        //     || roleHas(_msgSender(), "admin")    //Admin Role
-        //     , "INVALID_PERMISSIONS");
         _roleAssignToToken(ownerToken, role, 1);
     }
 
     /// Remove Someone Else from a Role
     function roleRemove(address account, string memory role) public override roleExists(role) AdminOrOwner {
-        //Validate Permissions
-        // require(owner() == _msgSender()      //Owner
-        //     || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Role
-        //     , "INVALID_PERMISSIONS");
-        //Remove
         _roleRemove(account, role, 1);
     }
 
     /// Remove Tethered Token from a Role
     function roleRemoveFromToken(uint256 ownerToken, string memory role) public override roleExists(role) AdminOrOwner {
-        //Validate Permissions
-        // require(owner() == _msgSender()      //Owner
-        //     || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Role
-        //     , "INVALID_PERMISSIONS");
-        //Remove
         _roleRemoveFromToken(ownerToken, role, 1);
     }
 
