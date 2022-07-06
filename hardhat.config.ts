@@ -54,12 +54,12 @@ const config = {
       // gasPrice: 10000000000,
     },
     goerli: {
-      url: process.env.ALCHEMY_GOERLI_URL || "",
+      url: process.env.GOERLI_RPC || "",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
 
     mumbai: {
-      url: process.env.ALCHEMY_MUMBAI_URL || "",
+      url: process.env.MUMBAI_RPC || "",
       // url: "https://rpc-mumbai.maticvigil.com",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
@@ -82,11 +82,11 @@ const config = {
     
     
     optimism: {
-      url: process.env.ALCHEMY_OP_URL || "",
+      url: process.env.OP_RPC || "",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     optimism_kovan: {
-      url: process.env.ALCHEMY_OP_TEST_URL || "",
+      url: process.env.OP_TEST_RPC || "",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
 
