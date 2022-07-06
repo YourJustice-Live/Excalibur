@@ -80,7 +80,6 @@ const config = {
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     
-    
     optimism: {
       url: process.env.OP_RPC || "",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
@@ -89,7 +88,6 @@ const config = {
       url: process.env.OP_TEST_RPC || "",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
-
 
   },
   gasReporter: {
