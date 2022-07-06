@@ -7,7 +7,7 @@ import "hardhat/console.sol";
 // import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";  //Track Token Supply & Check 
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "./interfaces/IJurisdiction.sol";
+import "./interfaces/IGame.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
 // import "./libraries/DataTypes.sol";
@@ -21,7 +21,7 @@ import "./abstract/Posts.sol";
 
 
 /**
- * @title Jurisdiction Contract
+ * @title Game Contract
  * @dev Retains Group Members in Roles
  * @dev Version 0.6.0
  * V1: Role NFTs
@@ -37,8 +37,8 @@ import "./abstract/Posts.sol";
  * V2:  
  * - [TODO] NFT Trackers - Assign Avatars instead of Accounts & Track the owner of the Avatar NFT
  */
-contract Jurisdiction is 
-        IJurisdiction, 
+contract Game is 
+        IGame, 
         ContractBase,
         CommonYJ, 
         Rules, 
@@ -73,7 +73,7 @@ contract Jurisdiction is
 
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IJurisdiction).interfaceId 
+        return interfaceId == type(IGame).interfaceId 
             || interfaceId == type(IRules).interfaceId 
             || super.supportsInterface(interfaceId);
     }
@@ -82,9 +82,9 @@ contract Jurisdiction is
         //Fetch & Set Current History Contract
         // _setActionsContract(_HUB.historyContract());
         // _setActionsContract(actionRepo); //CANCELLED
-        name = "Anti-Scam Jurisdiction";
+        name = "Anti-Scam Game";
         // symbol = "YJ_J1";
-        //Init Default Jurisdiction Roles
+        //Init Default Game Roles
         _roleCreate("admin"); 
         _roleCreate("member");
         _roleCreate("authority");
@@ -117,7 +117,7 @@ contract Jurisdiction is
         DataTypes.InputRole[] calldata assignRoles, 
         PostInput[] calldata posts
     ) public returns (address) {
-        //TODO: Validate Caller Permissions (Member of Jurisdiction)
+        //TODO: Validate Caller Permissions (Member of Game)
         // roleHas(_msgSender(), "admin")
         // roleHas(_msgSender(), "member")
 
@@ -165,12 +165,12 @@ contract Jurisdiction is
 
     //** Role Management
 
-    /// Join a role in current jurisdiction
+    /// Join a role in current game
     function join() external override {
         _GUIDAssign(_msgSender(), _stringToBytes32("member"));
     }
 
-    /// Leave Role in current jurisdiction
+    /// Leave Role in current game
     function leave() external override {
         _GUIDRemove(_msgSender(), _stringToBytes32("member"));
     }

@@ -15,7 +15,7 @@ describe("Protocol", function () {
   let hubContract: Contract;
   let avatarContract: Contract;
   let actionContract: Contract;
-  let jurisdictionContract: Contract;
+  let gameContract: Contract;
   let unOwnedTokenId: number;
 
   //Addresses
@@ -44,11 +44,11 @@ describe("Protocol", function () {
 
     //--- Deploy Case Implementation
     this.caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
-    //Jurisdiction Upgradable Implementation
-    this.jurisdictionUpContract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
+    //Game Upgradable Implementation
+    this.gameUpContract = await ethers.getContractFactory("GameUpgradable").then(res => res.deploy());
 
     //Deploy Hub
-    // hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.jurisdictionUpContract.address, this.caseContract.address));
+    // hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.gameUpContract.address, this.caseContract.address));
 
     //--- Deploy Hub Upgradable (UUDP)
     hubContract = await ethers.getContractFactory("HubUpgradable").then(Contract => 
@@ -56,7 +56,7 @@ describe("Protocol", function () {
         [
           this.openRepo.address,
           configContract.address, 
-          this.jurisdictionUpContract.address, 
+          this.gameUpContract.address, 
           this.caseContract.address
         ],{
         // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
@@ -119,7 +119,7 @@ describe("Protocol", function () {
   describe("OpenRepo", function () {
 
     it("Should Get Empty Value", async function () {
-      //Change to Closed Jurisdiction
+      //Change to Closed Game
       await this.openRepo.stringGet("TestKey");
       await this.openRepo.boolGet("TestKey");
       await this.openRepo.addressGet("TestKey");
@@ -300,9 +300,9 @@ describe("Protocol", function () {
   }); //Soul
 
   /**
-   * Jurisdiction Contract
+   * Game Contract
    */
-  describe("Jurisdiction", function () {
+  describe("Game", function () {
     
     before(async function () {
       //Mint Avatars for Participants
@@ -313,48 +313,48 @@ describe("Protocol", function () {
       await avatarContract.connect(tester5).mint(test_uri);
       await avatarContract.connect(authority).mint(test_uri);
 
-      //Simulate to Get New Jurisdiction Address
-      let JAddr = await hubContract.callStatic.jurisdictionMake("Test Jurisdiction", test_uri);
-      // let JAddr = await hubContract.connect(admin).callStatic.jurisdictionMake("Test Jurisdiction", test_uri);
+      //Simulate to Get New Game Address
+      let JAddr = await hubContract.callStatic.gameMake("Test Game", test_uri);
+      // let JAddr = await hubContract.connect(admin).callStatic.gameMake("Test Game", test_uri);
 
-      //Create New Jurisdiction
-      // let tx = await hubContract.connect(admin).jurisdictionMake("Test Jurisdiction", test_uri);
-      let tx = await hubContract.jurisdictionMake("Test Jurisdiction", test_uri);
+      //Create New Game
+      // let tx = await hubContract.connect(admin).gameMake("Test Game", test_uri);
+      let tx = await hubContract.gameMake("Test Game", test_uri);
       //Expect Valid Address
       expect(JAddr).to.be.properAddress;
       //Expect Case Created Event
-      await expect(tx).to.emit(hubContract, 'ContractCreated').withArgs("jurisdiction", JAddr);
-      //Init Jurisdiction Contract Object
-      jurisdictionContract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.attach(JAddr));
-      this.jurisdictionContract = jurisdictionContract;
+      await expect(tx).to.emit(hubContract, 'ContractCreated').withArgs("game", JAddr);
+      //Init Game Contract Object
+      gameContract = await ethers.getContractFactory("GameUpgradable").then(res => res.attach(JAddr));
+      this.gameContract = gameContract;
     });
 
     it("Should Update Contract URI", async function () {
       //Before
-      expect(await this.jurisdictionContract.contractURI()).to.equal(test_uri);
+      expect(await this.gameContract.contractURI()).to.equal(test_uri);
       //Change
-      await this.jurisdictionContract.setContractURI(test_uri2);
+      await this.gameContract.setContractURI(test_uri2);
       //After
-      expect(await this.jurisdictionContract.contractURI()).to.equal(test_uri2);
+      expect(await this.gameContract.contractURI()).to.equal(test_uri2);
     });
 
     it("Users can join as a member", async function () {
       //Check Before
-      expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(false);
-      //Join Jurisdiction
-      await this.jurisdictionContract.connect(tester).join();
+      expect(await this.gameContract.roleHas(this.testerAddr, "member")).to.equal(false);
+      //Join Game
+      await this.gameContract.connect(tester).join();
       //Check After
-      expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(true);
+      expect(await this.gameContract.roleHas(this.testerAddr, "member")).to.equal(true);
     });
 
     it("Role Should Track Avatar Owner", async function () {
       //Check Before
-      expect(await this.jurisdictionContract.roleHas(this.tester5Addr, "member")).to.equal(false);
-      // expect(await this.jurisdictionContract.roleHas(this.tester5Addr, "member")).to.equal(false);
-      //Join Jurisdiction
-      await this.jurisdictionContract.connect(tester5).join();
+      expect(await this.gameContract.roleHas(this.tester5Addr, "member")).to.equal(false);
+      // expect(await this.gameContract.roleHas(this.tester5Addr, "member")).to.equal(false);
+      //Join Game
+      await this.gameContract.connect(tester5).join();
       //Check
-      expect(await this.jurisdictionContract.roleHas(this.tester5Addr, "member")).to.equal(true);
+      expect(await this.gameContract.roleHas(this.tester5Addr, "member")).to.equal(true);
       //Get Tester5's Avatar TokenID
       let tokenId = await avatarContract.tokenByAddress(this.tester5Addr);
       // console.log("Tester5 Avatar Token ID: ", tokenId);
@@ -365,70 +365,70 @@ describe("Protocol", function () {
       //Expect Change of Ownership
       expect(await avatarContract.ownerOf(tokenId)).to.equal(this.tester3Addr);
       //Check Membership
-      expect(await this.jurisdictionContract.roleHas(this.tester3Addr, "member")).to.equal(true);
-      // expect(await this.jurisdictionContract.roleHas(this.tester5Addr, "member")).to.equal(false);
+      expect(await this.gameContract.roleHas(this.tester3Addr, "member")).to.equal(true);
+      // expect(await this.gameContract.roleHas(this.tester5Addr, "member")).to.equal(false);
       //Should Fail - No Avatar For Contract
       await expect(
-        this.jurisdictionContract.roleHas(this.tester5Addr, "member")
+        this.gameContract.roleHas(this.tester5Addr, "member")
       ).to.be.revertedWith("ERC1155Tracker: requested account not found on source contract");
     });
 
     it("Users can leave", async function () {
       //Check Before
-      expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(true);
-      //Join Jurisdiction
-      await this.jurisdictionContract.connect(tester).leave();
+      expect(await this.gameContract.roleHas(this.testerAddr, "member")).to.equal(true);
+      //Join Game
+      await this.gameContract.connect(tester).leave();
       //Check After
-      expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(false);
+      expect(await this.gameContract.roleHas(this.testerAddr, "member")).to.equal(false);
     });
 
     it("Owner can appoint Admin", async function () {
       //Check Before
-      expect(await this.jurisdictionContract.roleHas(this.adminAddr, "admin")).to.equal(false);
+      expect(await this.gameContract.roleHas(this.adminAddr, "admin")).to.equal(false);
       //Should Fail - Require Permissions
       await expect(
-        this.jurisdictionContract.connect(tester).roleAssign(this.adminAddr, "admin")
+        this.gameContract.connect(tester).roleAssign(this.adminAddr, "admin")
       ).to.be.revertedWith("INVALID_PERMISSIONS");
       //Assign Admin
-      await this.jurisdictionContract.roleAssign(this.adminAddr, "admin");
+      await this.gameContract.roleAssign(this.adminAddr, "admin");
       //Check After
-      expect(await this.jurisdictionContract.roleHas(this.adminAddr, "admin")).to.equal(true);
+      expect(await this.gameContract.roleHas(this.adminAddr, "admin")).to.equal(true);
     });
 
     it("Admin can appoint authority", async function () {
       //Check Before
-      expect(await this.jurisdictionContract.roleHas(this.authorityAddr, "authority")).to.equal(false);
+      expect(await this.gameContract.roleHas(this.authorityAddr, "authority")).to.equal(false);
       //Should Fail - Require Permissions
       await expect(
-        this.jurisdictionContract.connect(tester2).roleAssign(this.authorityAddr, "authority")
+        this.gameContract.connect(tester2).roleAssign(this.authorityAddr, "authority")
       ).to.be.revertedWith("INVALID_PERMISSIONS");
       //Assign Authority
-      await this.jurisdictionContract.connect(admin).roleAssign(this.authorityAddr, "authority");
+      await this.gameContract.connect(admin).roleAssign(this.authorityAddr, "authority");
       //Check After
-      expect(await this.jurisdictionContract.roleHas(this.authorityAddr, "authority")).to.equal(true);
+      expect(await this.gameContract.roleHas(this.authorityAddr, "authority")).to.equal(true);
     });
 
     it("Admin can Assign Roles to Lost-Souls", async function () {
       //Check Before
-      expect(await this.jurisdictionContract.roleHasByToken(unOwnedTokenId, "authority")).to.equal(false);
+      expect(await this.gameContract.roleHasByToken(unOwnedTokenId, "authority")).to.equal(false);
       //Assign Authority
-      await this.jurisdictionContract.connect(admin).roleAssignToToken(unOwnedTokenId, "authority")
+      await this.gameContract.connect(admin).roleAssignToToken(unOwnedTokenId, "authority")
       //Check After
-      expect(await this.jurisdictionContract.roleHasByToken(unOwnedTokenId, "authority")).to.equal(true);
+      expect(await this.gameContract.roleHasByToken(unOwnedTokenId, "authority")).to.equal(true);
     });
 
     it("Can change Roles (Promote / Demote)", async function () {
       //Check Before
-      expect(await this.jurisdictionContract.roleHas(this.tester4Addr, "admin")).to.equal(false);
-      //Join Jurisdiction
-      let tx = await this.jurisdictionContract.connect(tester4).join();
+      expect(await this.gameContract.roleHas(this.tester4Addr, "admin")).to.equal(false);
+      //Join Game
+      let tx = await this.gameContract.connect(tester4).join();
       await tx.wait();
       //Check Before
-      expect(await this.jurisdictionContract.roleHas(this.tester4Addr, "member")).to.equal(true);
+      expect(await this.gameContract.roleHas(this.tester4Addr, "member")).to.equal(true);
       //Upgrade to Admin
-      await this.jurisdictionContract.roleChange(this.tester4Addr, "member", "admin");
+      await this.gameContract.roleChange(this.tester4Addr, "member", "admin");
       //Check After
-      expect(await this.jurisdictionContract.roleHas(this.tester4Addr, "admin")).to.equal(true);
+      expect(await this.gameContract.roleHas(this.tester4Addr, "admin")).to.equal(true);
     });
     
     it("Should store Rules", async function () {
@@ -468,29 +468,29 @@ describe("Protocol", function () {
       ];
      
       //Add Rule
-      let tx = await jurisdictionContract.connect(admin).ruleAdd(rule, confirmation, effects1);
+      let tx = await gameContract.connect(admin).ruleAdd(rule, confirmation, effects1);
       // wait until the transaction is mined
       await tx.wait();
       // console.log("Rule Added", tx);
 
       //Expect Event
-      await expect(tx).to.emit(jurisdictionContract, 'Rule').withArgs(1, rule.about, rule.affected, rule.uri, rule.negation);
-      // await expect(tx).to.emit(jurisdictionContract, 'RuleEffects').withArgs(1, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
+      await expect(tx).to.emit(gameContract, 'Rule').withArgs(1, rule.about, rule.affected, rule.uri, rule.negation);
+      // await expect(tx).to.emit(gameContract, 'RuleEffects').withArgs(1, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
       for(let effect of effects1){
-        await expect(tx).to.emit(jurisdictionContract, 'RuleEffect').withArgs(1, effect.direction, effect.value, effect.name);
+        await expect(tx).to.emit(gameContract, 'RuleEffect').withArgs(1, effect.direction, effect.value, effect.name);
       }
-      await expect(tx).to.emit(jurisdictionContract, 'Confirmation').withArgs(1, confirmation.ruling, confirmation.evidence, confirmation.witness);
+      await expect(tx).to.emit(gameContract, 'Confirmation').withArgs(1, confirmation.ruling, confirmation.evidence, confirmation.witness);
 
       //Add Another Rule
-      let tx2 = await jurisdictionContract.connect(admin).ruleAdd(rule2, confirmation, effects2);
+      let tx2 = await gameContract.connect(admin).ruleAdd(rule2, confirmation, effects2);
             
       //Expect Event
-      await expect(tx2).to.emit(jurisdictionContract, 'Rule').withArgs(2, rule2.about, rule2.affected, rule2.uri, rule2.negation);
-      // await expect(tx2).to.emit(jurisdictionContract, 'RuleEffects').withArgs(2, rule2.effects.environmental, rule2.effects.personal, rule2.effects.social, rule2.effects.professional);
-      await expect(tx2).to.emit(jurisdictionContract, 'Confirmation').withArgs(2, confirmation.ruling, confirmation.evidence, confirmation.witness);
+      await expect(tx2).to.emit(gameContract, 'Rule').withArgs(2, rule2.about, rule2.affected, rule2.uri, rule2.negation);
+      // await expect(tx2).to.emit(gameContract, 'RuleEffects').withArgs(2, rule2.effects.environmental, rule2.effects.personal, rule2.effects.social, rule2.effects.professional);
+      await expect(tx2).to.emit(gameContract, 'Confirmation').withArgs(2, confirmation.ruling, confirmation.evidence, confirmation.witness);
 
-      // expect(await jurisdictionContract.ruleAdd(actionContract.address)).to.equal("Hello, world!");
-      // let ruleData = await jurisdictionContract.ruleGet(1);
+      // expect(await gameContract.ruleAdd(actionContract.address)).to.equal("Hello, world!");
+      // let ruleData = await gameContract.ruleGet(1);
       
       // console.log("Rule Getter:", typeof ruleData, ruleData);   //some kind of object array crossbread
       // console.log("Rule Getter Effs:", ruleData.effects);  //V
@@ -511,9 +511,9 @@ describe("Protocol", function () {
         {name:'environmental', value:1, direction:false},
         {name:'personal', value:1, direction:true},
       ];
-      let tx = await jurisdictionContract.connect(admin).ruleUpdate(2, rule, effects);
+      let tx = await gameContract.connect(admin).ruleUpdate(2, rule, effects);
 
-      // let curEffects = await jurisdictionContract.effectsGet(2);
+      // let curEffects = await gameContract.effectsGet(2);
       // console.log("Effects", curEffects);
       // expect(curEffects).to.include.members(Object.values(effects));    //Doesn't Work...
 
@@ -527,81 +527,81 @@ describe("Protocol", function () {
         uri:test_uri,
       };
 
-      //Join Jurisdiction
-      let tx1 = await this.jurisdictionContract.connect(tester).join();
+      //Join Game
+      let tx1 = await this.gameContract.connect(tester).join();
       await tx1.wait();
       //Make Sure Account Has Role
-      expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(true);
+      expect(await this.gameContract.roleHas(this.testerAddr, "member")).to.equal(true);
 
       //Validate Permissions
       await expect(
         //Failed Post
-        this.jurisdictionContract.connect(tester4).post(post.entRole, post.tokenId, post.uri)
+        this.gameContract.connect(tester4).post(post.entRole, post.tokenId, post.uri)
       ).to.be.revertedWith("SOUL:NOT_YOURS");
 
       //Successful Post
-      let tx2 = await this.jurisdictionContract.connect(tester).post(post.entRole, post.tokenId, post.uri);
+      let tx2 = await this.gameContract.connect(tester).post(post.entRole, post.tokenId, post.uri);
       await tx2.wait();  //wait until the transaction is mined
       //Expect Event
-      await expect(tx2).to.emit(this.jurisdictionContract, 'Post').withArgs(this.testerAddr, post.tokenId, post.entRole, post.uri);
+      await expect(tx2).to.emit(this.gameContract, 'Post').withArgs(this.testerAddr, post.tokenId, post.entRole, post.uri);
     });
     
     it("Should Update Membership Token URI", async function () {
       //Protected
       await expect(
-        jurisdictionContract.connect(tester3).setRoleURI("admin", test_uri)
+        gameContract.connect(tester3).setRoleURI("admin", test_uri)
       ).to.be.revertedWith("INVALID_PERMISSIONS");
       //Set Admin Token URI
-      await jurisdictionContract.connect(admin).setRoleURI("admin", test_uri);
+      await gameContract.connect(admin).setRoleURI("admin", test_uri);
       //Validate
-      expect(await jurisdictionContract.roleURI("admin")).to.equal(test_uri);
+      expect(await gameContract.roleURI("admin")).to.equal(test_uri);
     });
 
-    describe("Closed Jurisdiction", function () {
+    describe("Closed Game", function () {
 
-      it("Can Close Jurisdiction", async function () {
-        //Change to Closed Jurisdiction
-        let tx = await this.jurisdictionContract.connect(admin).confSet("isClosed", "true");
+      it("Can Close Game", async function () {
+        //Change to Closed Game
+        let tx = await this.gameContract.connect(admin).confSet("isClosed", "true");
         //Expect Case Created Event
-        await expect(tx).to.emit(this.openRepo, 'StringSet').withArgs(this.jurisdictionContract.address, "isClosed", "true");
+        await expect(tx).to.emit(this.openRepo, 'StringSet').withArgs(this.gameContract.address, "isClosed", "true");
         //Validate
-        expect(await this.jurisdictionContract.confGet("isClosed")).to.equal("true");
+        expect(await this.gameContract.confGet("isClosed")).to.equal("true");
       });
 
-      it("Should Fail to Join Jurisdiction", async function () {
+      it("Should Fail to Join Game", async function () {
         //Validate Permissions
         await expect(
-          jurisdictionContract.connect(tester4).join()
+          gameContract.connect(tester4).join()
         ).to.be.revertedWith("CLOSED_SPACE");
       });
       
       it("Can Apply to Join", async function () {
         //Get Tester's Avatar TokenID
         let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
-        //Apply to Join Jurisdiction
-        let tx = await this.jurisdictionContract.connect(tester).nominate(tokenId, test_uri);
+        //Apply to Join Game
+        let tx = await this.gameContract.connect(tester).nominate(tokenId, test_uri);
         await tx.wait();
         //Expect Event
-        await expect(tx).to.emit(jurisdictionContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
+        await expect(tx).to.emit(gameContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
       });
 
-      it("Can Re-Open Jurisdiction", async function () {
-        //Change to Closed Jurisdiction
-        await this.jurisdictionContract.connect(admin).confSet("isClosed", "false");
+      it("Can Re-Open Game", async function () {
+        //Change to Closed Game
+        await this.gameContract.connect(admin).confSet("isClosed", "false");
         //Validate
-        expect(await this.jurisdictionContract.confGet("isClosed")).to.equal("false");
+        expect(await this.gameContract.confGet("isClosed")).to.equal("false");
       });
       
     });
 
-  }); //Jurisdiction
+  }); //Game
 
   /**
    * Case Contract
    */
   describe("Case", function () {
 
-    it("Should be Created (by Jurisdiction)", async function () {
+    it("Should be Created (by Game)", async function () {
       //Soul Tokens
       let adminToken = await avatarContract.tokenByAddress(this.adminAddr);
       let tester2Token = await avatarContract.tokenByAddress(this.tester2Addr);
@@ -609,7 +609,7 @@ describe("Protocol", function () {
       let caseName = "Test Case #1";
       let ruleRefArr = [
         {
-          jurisdiction: jurisdictionContract.address, 
+          game: gameContract.address, 
           ruleId: 1,
         }
       ];
@@ -631,28 +631,28 @@ describe("Protocol", function () {
         }
       ];
 
-      //Join Jurisdiction (as member)
-      await jurisdictionContract.connect(admin).join();
+      //Join Game (as member)
+      await gameContract.connect(admin).join();
       //Assign Admin as Member
-      // await this.jurisdictionContract.roleAssign(this.adminAddr, "member");
+      // await this.gameContract.roleAssign(this.adminAddr, "member");
 
       //Simulate - Get New Case Address
-      let caseAddr = await jurisdictionContract.connect(admin).callStatic.caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
+      let caseAddr = await gameContract.connect(admin).callStatic.caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
       // console.log("New Case Address: ", caseAddr);
 
       //Create New Case
-      let tx = await jurisdictionContract.connect(admin).caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
+      let tx = await gameContract.connect(admin).caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
       //Expect Valid Address
       expect(caseAddr).to.be.properAddress;
       //Init Case Contract
       this.caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.attach(caseAddr));
       //Expect Case Created Event
-      await expect(tx).to.emit(jurisdictionContract, 'CaseCreated').withArgs(1, caseAddr);
+      await expect(tx).to.emit(gameContract, 'CaseCreated').withArgs(1, caseAddr);
       //Expect Post Event
       await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].uri);
     });
     
-    it("Should be Created & Opened (by Jurisdiction)", async function () {
+    it("Should be Created & Opened (by Game)", async function () {
       //Soul Tokens
       let adminToken = await avatarContract.tokenByAddress(this.adminAddr);
       let tester2Token = await avatarContract.tokenByAddress(this.tester2Addr);
@@ -661,7 +661,7 @@ describe("Protocol", function () {
       let caseName = "Test Case #1";
       let ruleRefArr = [
         {
-          jurisdiction: jurisdictionContract.address, 
+          game: gameContract.address, 
           ruleId: 1,
         }
       ];
@@ -683,15 +683,15 @@ describe("Protocol", function () {
         }
       ];
       //Simulate - Get New Case Address
-      let caseAddr = await jurisdictionContract.connect(admin).callStatic.caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
+      let caseAddr = await gameContract.connect(admin).callStatic.caseMake(caseName, test_uri, ruleRefArr, roleRefArr, posts);
       //Create New Case
-      let tx = await jurisdictionContract.connect(admin).caseMakeOpen(caseName, test_uri, ruleRefArr, roleRefArr, posts);
+      let tx = await gameContract.connect(admin).caseMakeOpen(caseName, test_uri, ruleRefArr, roleRefArr, posts);
       //Expect Valid Address
       expect(caseAddr).to.be.properAddress;
       //Init Case Contract
       let caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.attach(caseAddr));
       //Expect Case Created Event
-      await expect(tx).to.emit(jurisdictionContract, 'CaseCreated').withArgs(2, caseAddr);
+      await expect(tx).to.emit(gameContract, 'CaseCreated').withArgs(2, caseAddr);
       //Expect Post Event
       // await expect(tx).to.emit(caseContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].postRole, posts[0].uri);
       await expect(tx).to.emit(caseContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].uri);
@@ -721,7 +721,7 @@ describe("Protocol", function () {
     it("Users Can Apply to Join", async function () {
       //Get Tester's Avatar TokenID
       let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
-      //Apply to Join Jurisdiction
+      //Apply to Join Game
       let tx = await this.caseContract.connect(tester).nominate(tokenId, test_uri);
       await tx.wait();
       //Expect Event
@@ -737,12 +737,12 @@ describe("Protocol", function () {
 
     it("Should Add Rules", async function () {
       let ruleRef = {
-        jurisdiction: jurisdictionContract.address, 
+        game: gameContract.address, 
         id: 2, 
         // affected: "investor",
       };
-      // await this.caseContract.ruleAdd(ruleRef.jurisdiction,  ruleRef.id, ruleRef.affected);
-      await this.caseContract.connect(admin).ruleAdd(ruleRef.jurisdiction,  ruleRef.id);
+      // await this.caseContract.ruleAdd(ruleRef.game,  ruleRef.id, ruleRef.affected);
+      await this.caseContract.connect(admin).ruleAdd(ruleRef.game,  ruleRef.id);
     });
     
     it("Should Write a Post", async function () {
@@ -785,9 +785,9 @@ describe("Protocol", function () {
       expect(await this.caseContract.roleHas(this.tester3Addr, "witness")).to.equal(true);
     });
 
-    it("Jurisdiction Authoritys Can Assign Themselves to Case", async function () {
-      //Assign as Jurisdiction Authority
-      jurisdictionContract.connect(admin).roleAssign(this.tester4Addr, "authority")
+    it("Game Authoritys Can Assign Themselves to Case", async function () {
+      //Assign as Game Authority
+      gameContract.connect(admin).roleAssign(this.tester4Addr, "authority")
       //Assign Case Authority
       await this.caseContract.connect(tester4).roleAssign(this.tester4Addr, "authority");
       //Validate
@@ -805,26 +805,26 @@ describe("Protocol", function () {
       await expect(tx).to.emit(this.caseContract, 'Stage').withArgs(1);
     });
 
-    it("Should Validate Authority with parent jurisdiction", async function () {
+    it("Should Validate Authority with parent game", async function () {
       //Validate
       await expect(
         this.caseContract.connect(admin).roleAssign(this.tester3Addr, "authority")
-      ).to.be.revertedWith("User Required to hold same role in Jurisdiction");
+      ).to.be.revertedWith("User Required to hold same role in Game");
     });
 
     it("Anyonw Can Apply to Join", async function () {
       //Get Tester's Avatar TokenID
       let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
-      //Apply to Join Jurisdiction
+      //Apply to Join Game
       let tx = await this.caseContract.connect(tester).nominate(tokenId, test_uri);
       await tx.wait();
       //Expect Event
       await expect(tx).to.emit(this.caseContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
     });
 
-    it("Should Accept a Authority From the parent jurisdiction", async function () {
+    it("Should Accept a Authority From the parent game", async function () {
       //Check Before
-      // expect(await this.jurisdictionContract.roleHas(this.testerAddr, "authority")).to.equal(true);
+      // expect(await this.gameContract.roleHas(this.testerAddr, "authority")).to.equal(true);
       //Assign Authority
       await this.caseContract.connect(admin).roleAssign(this.authorityAddr, "authority");
       //Check After
@@ -860,7 +860,7 @@ describe("Protocol", function () {
 
       //TODO: Tests for Collect Rating
       // let repCall = { tokenId:?, domain:?, rating:?};
-      // let result = this.jurisdictionContract.getRepForDomain(avatarContract.address,repCall. tokenId, repCall.domain, repCall.rating);
+      // let result = this.gameContract.getRepForDomain(avatarContract.address,repCall. tokenId, repCall.domain, repCall.rating);
 
       // //Expect Event
       // await expect(tx).to.emit(avatarContract, 'ReputationChange').withArgs(repCall.tokenId, repCall.domain, repCall.rating, repCall.amount);

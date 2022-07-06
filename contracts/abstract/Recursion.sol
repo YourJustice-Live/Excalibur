@@ -12,7 +12,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /**
  * @title Core Contract Recursion Functionality
- * @dev Designed To Be Used by Jurisdictions
+ * @dev Designed To Be Used by Games
  */
 contract Recursion is IRecursion, Initializable {
 

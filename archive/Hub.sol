@@ -15,7 +15,7 @@ import "./interfaces/IAssoc.sol";
 import "./interfaces/IAssocRepo.sol";
 import "./interfaces/ICommonYJ.sol";
 import "./interfaces/IHub.sol";
-import "./interfaces/IJurisdictionUp.sol";
+import "./interfaces/IGameUp.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IAvatar.sol";
 import "./libraries/DataTypes.sol";
@@ -26,8 +26,8 @@ import "./abstract/Assoc.sol";
 /**
  * YJ Hub Contract
  * - Hold Known Contract Addresses (Avatar, History)
- * - Contract Factory (Jurisdictions & Cases)
- * - Remember Products (Jurisdictions & Cases)
+ * - Contract Factory (Games & Cases)
+ * - Remember Products (Games & Cases)
  */
 contract Hub is 
         IHub, 
@@ -40,7 +40,7 @@ contract Hub is
 
     //---Storage
     address public beaconCase;
-    address public beaconJurisdiction;  //TBD
+    address public beaconGame;  //TBD
 
     // mapping(string => address) internal _contracts;      // Mapping for Used Contracts
 
@@ -61,7 +61,7 @@ contract Hub is
     // address internal _CONFIG;    //Configuration Contract
     IConfig private _CONFIG;  //Configuration Contract       //DEPRECATE
 
-    mapping(address => bool) internal _jurisdictions; // Mapping for Active Jurisdictions   //[TBD]
+    mapping(address => bool) internal _games; // Mapping for Active Games   //[TBD]
     mapping(address => address) internal _cases;      // Mapping for Case Contracts  [C] => [J]
 
 
@@ -78,12 +78,12 @@ contract Hub is
             || super.supportsInterface(interfaceId);
     }
 
-    constructor(address config, address jurisdictionContract, address caseContract){
+    constructor(address config, address gameContract, address caseContract){
         //Set Protocol's Config Address
         _setConfig(config);
-        //Init Jurisdiction Contract Beacon
-        UpgradeableBeacon _beaconJ = new UpgradeableBeacon(jurisdictionContract);
-        beaconJurisdiction = address(_beaconJ);
+        //Init Game Contract Beacon
+        UpgradeableBeacon _beaconJ = new UpgradeableBeacon(gameContract);
+        beaconGame = address(_beaconJ);
         //Init Case Contract Beacon
         UpgradeableBeacon _beaconC = new UpgradeableBeacon(caseContract);
         beaconCase = address(_beaconC);
@@ -141,26 +141,26 @@ contract Hub is
 
     //--- Factory 
 
-    /// Make a new Jurisdiction
-    function jurisdictionMake(string calldata name_, string calldata uri_) external override returns (address) {
+    /// Make a new Game
+    function gameMake(string calldata name_, string calldata uri_) external override returns (address) {
         //Validate
-        // require(beaconJurisdiction != address(0), "Jurisdiction Beacon Missing");      //Redundant
+        // require(beaconGame != address(0), "Game Beacon Missing");      //Redundant
         //Deploy
-        BeaconProxy newJurisdictionProxy = new BeaconProxy(
-            beaconJurisdiction,
+        BeaconProxy newGameProxy = new BeaconProxy(
+            beaconGame,
             abi.encodeWithSelector(
-                IJurisdiction( payable(address(0)) ).initialize.selector,
+                IGame( payable(address(0)) ).initialize.selector,
                 address(this),   //Hub
                 name_,          //Name
                 uri_            //Contract URI
             )
         );
         //Event
-        emit ContractCreated("jurisdiction", address(newJurisdictionProxy));
+        emit ContractCreated("game", address(newGameProxy));
         //Remember
-        _jurisdictions[address(newJurisdictionProxy)] = true;
+        _games[address(newGameProxy)] = true;
         //Return
-        return address(newJurisdictionProxy);
+        return address(newGameProxy);
     }
 
     /// Make a new Case
@@ -170,8 +170,8 @@ contract Hub is
         DataTypes.RuleRef[] memory addRules,
         DataTypes.InputRoleToken[] memory assignRoles
     ) external override returns (address) {
-        //Validate Caller Permissions (A Jurisdiction)
-        require(_jurisdictions[_msgSender()], "UNAUTHORIZED: Valid Jurisdiction Only");
+        //Validate Caller Permissions (A Game)
+        require(_games[_msgSender()], "UNAUTHORIZED: Valid Game Only");
 
         //Validate
         // require(beaconCase != address(0), "Case Beacon Missing");    //Redundant
@@ -202,8 +202,8 @@ contract Hub is
     /// Add Reputation (Positive or Negative)       /// Opinion Updated
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) public override {
 
-        //TODO: Validate - Known Jurisdiction
-        // require(_jurisdictions[_msgSender()], "NOT A VALID JURISDICTION");
+        //TODO: Validate - Known Game
+        // require(_games[_msgSender()], "NOT A VALID JURISDICTION");
 
         // console.log("Hub: Add Reputation to Contract:", contractAddr, tokenId, amount);
         // console.log("Hub: Add Reputation in Domain:", domain);
@@ -243,15 +243,15 @@ contract Hub is
         emit UpdatedImplementation("case", newImplementation);
     }
 
-    /// Upgrade Jurisdiction Implementation [TBD]
-    function upgradeJurisdictionImplementation(address newImplementation) public onlyOwner {
+    /// Upgrade Game Implementation [TBD]
+    function upgradeGameImplementation(address newImplementation) public onlyOwner {
         //Validate Interface
         // require(IERC165(newImplementation).supportsInterface(type(ICase).interfaceId), "Implmementation Does Not Support Case Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
 
         //Upgrade Beacon
-        UpgradeableBeacon(beaconJurisdiction).upgradeTo(newImplementation);
+        UpgradeableBeacon(beaconGame).upgradeTo(newImplementation);
         //Upgrade Event
-        emit UpdatedImplementation("jurisdiction", newImplementation);
+        emit UpdatedImplementation("game", newImplementation);
     }
 
 }

@@ -11,7 +11,7 @@ import "../libraries/DataTypes.sol";
 
 /**
  * @title Rules Contract 
- * @dev To Extend or Be Used by Jurisdictions
+ * @dev To Extend or Be Used by Games
  * - Hold, Update, Delete & Serve Rules
  * [TODO] Rules should not be changed passed a certain point. (Maybe after they were used in cases / applied to Avatars)
  */

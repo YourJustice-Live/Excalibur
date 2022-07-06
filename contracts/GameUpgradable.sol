@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 // import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 // import "./libraries/DataTypes.sol";
-import "./interfaces/IJurisdictionUp.sol";
+import "./interfaces/IGameUp.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IActionRepo.sol";
@@ -22,7 +22,7 @@ import "./abstract/Posts.sol";
 // import "./public/interfaces/IOpenRepo.sol";
 
 /**
- * @title Jurisdiction Contract
+ * @title Game Contract
  * @dev Retains Group Members in Roles
  * @dev Version 2.2
  * V1: Using Role NFTs
@@ -39,8 +39,8 @@ import "./abstract/Posts.sol";
  * V3:
  * - [TODO] Unique Rule IDs (GUID)
  */
-contract JurisdictionUpgradable is 
-        IJurisdiction, 
+contract GameUpgradable is 
+        IGame, 
         Rules, 
         ContractBase,
         CommonYJUpgradable, 
@@ -84,7 +84,7 @@ contract JurisdictionUpgradable is
 
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IJurisdiction).interfaceId 
+        return interfaceId == type(IGame).interfaceId 
             || interfaceId == type(IRules).interfaceId 
             || super.supportsInterface(interfaceId);
     }
@@ -104,7 +104,7 @@ contract JurisdictionUpgradable is
         _setContractURI(uri_);
         //Identifiers
         name = name_;
-        //Init Default Jurisdiction Roles
+        //Init Default Game Roles
         _roleCreate("admin"); 
         _roleCreate("member");
         _roleCreate("authority");
@@ -128,7 +128,7 @@ contract JurisdictionUpgradable is
         DataTypes.InputRoleToken[] calldata assignRoles, 
         PostInput[] calldata posts
     ) public returns (address) {
-        //Validate Caller Permissions (Member of Jurisdiction)
+        //Validate Caller Permissions (Member of Game)
         require(roleHas(_msgSender(), "member"), "Members Only");
         //Assign Case ID
         _caseIds.increment(); //Start with 1
@@ -216,14 +216,14 @@ contract JurisdictionUpgradable is
 
     //** Role Management
 
-    /// Join a jurisdiction (as a regular 'member')
+    /// Join a game (as a regular 'member')
     function join() external override returns (uint256) {
         require (!_stringMatch(confGet("isClosed"), "true"), "CLOSED_SPACE");
         //Mint Member Token to Self
         return _GUIDAssign(_msgSender(), _stringToBytes32("member"), 1);
     }
 
-    /// Leave 'member' Role in jurisdiction
+    /// Leave 'member' Role in game
     function leave() external override returns (uint256) {
         return _GUIDRemove(_msgSender(), _stringToBytes32("member"), 1);
     }

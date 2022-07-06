@@ -41,8 +41,8 @@ describe("Hub", function () {
 
         //Deploy Case Implementation
         this.caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
-        //Jurisdiction Upgradable Implementation
-        this.jurisdictionUpContract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
+        //Game Upgradable Implementation
+        this.gameUpContract = await ethers.getContractFactory("GameUpgradable").then(res => res.deploy());
 
         //--- Deploy Hub Upgradable
         const HubUpgradable = await ethers.getContractFactory("HubUpgradable");
@@ -50,7 +50,7 @@ describe("Hub", function () {
             [
                 openRepoContract.address,
                 configContract1.address,
-                this.jurisdictionUpContract.address,
+                this.gameUpContract.address,
                 this.caseContract.address
             ],{
             // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
@@ -60,12 +60,12 @@ describe("Hub", function () {
         await hubContract.deployed();
 
         //Deploy Another Hub
-        // hubContract2 = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract2.address, this.jurisdictionUpContract.address, this.caseContract.address));
+        // hubContract2 = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract2.address, this.gameUpContract.address, this.caseContract.address));
         hubContract2 = await upgrades.deployProxy(HubUpgradable,
             [
                 openRepoContract.address,
                 configContract2.address,
-                this.jurisdictionUpContract.address,
+                this.gameUpContract.address,
                 this.caseContract.address
             ],{
             // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options

@@ -9,7 +9,7 @@ import "./interfaces/ICase.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/ISoul.sol";
 import "./interfaces/IERC1155RolesTracker.sol";
-import "./interfaces/IJurisdictionUp.sol";
+import "./interfaces/IGameUp.sol";
 import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/Posts.sol";
@@ -35,8 +35,8 @@ contract CaseUpgradable is
     // string public symbol;
     string public constant symbol = "EVENT";
 
-    //Jurisdiction
-    // address private _jurisdiction;
+    //Game
+    // address private _game;
     //Contract URI
     // string internal _contract_uri;
 
@@ -103,7 +103,7 @@ contract CaseUpgradable is
         }
         //Add Rules
         for (uint256 i = 0; i < addRules.length; ++i) {
-            _ruleAdd(addRules[i].jurisdiction, addRules[i].ruleId);
+            _ruleAdd(addRules[i].game, addRules[i].ruleId);
         }
     }
 
@@ -124,7 +124,7 @@ contract CaseUpgradable is
     function _setParentCTX(address container) internal {
         //Validate
         require(container != address(0), "Invalid Container Address");
-        require(IERC165(container).supportsInterface(type(IJurisdiction).interfaceId), "Implmementation Does Not Support Jurisdiction Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
+        require(IERC165(container).supportsInterface(type(IGame).interfaceId), "Implmementation Does Not Support Game Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
         //Set to OpenRepo
         repo().addressSet("container", container);
         // _setAssoc("container", container);
@@ -132,7 +132,7 @@ contract CaseUpgradable is
     
     /// Get Container Address
     function getContainerAddr() internal view returns(address){
-        // return _jurisdiction;
+        // return _game;
         return repo().addressGet("container");
     }
 
@@ -151,8 +151,8 @@ contract CaseUpgradable is
         //Special Validations for 'authority' role
         if (_stringMatch(role, "authority")){
             require(getContainerAddr() != address(0), "Unknown Parent Container");
-            //Validate: Must Hold same role in Containing Jurisdiction
-            require(IERC1155RolesTracker(getContainerAddr()).roleHas(account, role), "User Required to hold same role in Jurisdiction");
+            //Validate: Must Hold same role in Containing Game
+            require(IERC1155RolesTracker(getContainerAddr()).roleHas(account, role), "User Required to hold same role in Game");
         }
         else{
             //Validate Permissions
@@ -178,28 +178,28 @@ contract CaseUpgradable is
 
     /// Check if Reference ID exists
     function ruleRefExist(uint256 ruleRefId) internal view returns (bool){
-        return (_rules[ruleRefId].jurisdiction != address(0) && _rules[ruleRefId].ruleId != 0);
+        return (_rules[ruleRefId].game != address(0) && _rules[ruleRefId].ruleId != 0);
     }
 
     /// Fetch Rule By Reference ID
     function ruleGet(uint256 ruleRefId) public view returns (DataTypes.Rule memory){
         //Validate
         require (ruleRefExist(ruleRefId), "INEXISTENT_RULE_REF_ID");
-        return IRules(_rules[ruleRefId].jurisdiction).ruleGet(_rules[ruleRefId].ruleId);
+        return IRules(_rules[ruleRefId].game).ruleGet(_rules[ruleRefId].ruleId);
     }
 
     /// Get Rule's Confirmation Data
     function ruleGetConfirmation(uint256 ruleRefId) public view returns (DataTypes.Confirmation memory){
         //Validate
         require (ruleRefExist(ruleRefId), "INEXISTENT_RULE_REF_ID");
-        return IRules(_rules[ruleRefId].jurisdiction).confirmationGet(_rules[ruleRefId].ruleId);
+        return IRules(_rules[ruleRefId].game).confirmationGet(_rules[ruleRefId].ruleId);
     }
 
     /// Get Rule's Effects
     function ruleGetEffects(uint256 ruleRefId) public view returns (DataTypes.Effect[] memory){
         //Validate
         require (ruleRefExist(ruleRefId), "INEXISTENT_RULE_REF_ID");
-        return IRules(_rules[ruleRefId].jurisdiction).effectsGet(_rules[ruleRefId].ruleId);
+        return IRules(_rules[ruleRefId].game).effectsGet(_rules[ruleRefId].ruleId);
     }
 
     // function post(string entRole, string uri) 
@@ -229,24 +229,24 @@ contract CaseUpgradable is
     //--- Rule Reference 
 
     /// Add Rule Reference
-    function ruleAdd(address jurisdiction_, uint256 ruleId_) external {
+    function ruleAdd(address game_, uint256 ruleId_) external {
         //Validate Jurisdiciton implements IRules (ERC165)
-        require(IERC165(jurisdiction_).supportsInterface(type(IRules).interfaceId), "Implmementation Does Not Support Rules Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
+        require(IERC165(game_).supportsInterface(type(IRules).interfaceId), "Implmementation Does Not Support Rules Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
         //Validate Sender
         require (_msgSender() == address(_HUB) 
             || roleHas(_msgSender(), "admin") 
             || owner() == _msgSender(), "EXPECTED HUB OR ADMIN");
         //Run
-        _ruleAdd(jurisdiction_, ruleId_);
+        _ruleAdd(game_, ruleId_);
     }
 
     /// Add Relevant Rule Reference 
-    function _ruleAdd(address jurisdiction_, uint256 ruleId_) internal {
+    function _ruleAdd(address game_, uint256 ruleId_) internal {
         //Assign Rule Reference ID
         _ruleIds.increment(); //Start with 1
         uint256 ruleId = _ruleIds.current();
         //New Rule
-        _rules[ruleId].jurisdiction = jurisdiction_;
+        _rules[ruleId].game = game_;
         _rules[ruleId].ruleId = ruleId_;
         //Get Rule, Get Affected & Add as new Role if Doesn't Exist
         DataTypes.Rule memory rule = ruleGet(ruleId);
@@ -257,7 +257,7 @@ contract CaseUpgradable is
             _roleCreate(rule.affected);
         }
         //Event: Rule Reference Added 
-        emit RuleAdded(jurisdiction_, ruleId_);
+        emit RuleAdded(game_, ruleId_);
     }
     
     //--- State Changers
@@ -360,8 +360,8 @@ contract CaseUpgradable is
                 for (uint256 j = 0; j < effects.length; ++j) {
                     DataTypes.Effect memory effect = effects[j];
                     bool direction = effect.direction;
-                    //Register Rep in Jurisdiction      //{name:'professional', value:5, direction:false}
-                    IJurisdiction(getContainerAddr()).repAdd(address(avatarContract), tokenId, effect.name, direction, effect.value);
+                    //Register Rep in Game      //{name:'professional', value:5, direction:false}
+                    IGame(getContainerAddr()).repAdd(address(avatarContract), tokenId, effect.name, direction, effect.value);
                 }
             }
 

@@ -9,7 +9,7 @@ const {  upgrades } = require("hardhat");
 // let test_uri = "ipfs://QmQxkoWcpFgMa7bCzxaANWtSt43J1iMgksjNnT4vM1Apd7"; //"TEST_URI";
 
 describe("Deployment", function () {
-    let jurisdictionContract: Contract;
+    let gameContract: Contract;
     let caseContract: Contract;
     let hubContract: Contract;
     let configContract: Contract;
@@ -36,9 +36,9 @@ describe("Deployment", function () {
         configContract = await ethers.getContractFactory("Config").then(res => res.deploy());
         await configContract.deployed();
 
-        //--- Jurisdiction Implementation
-        jurisdictionContract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
-        await jurisdictionContract.deployed();
+        //--- Game Implementation
+        gameContract = await ethers.getContractFactory("GameUpgradable").then(res => res.deploy());
+        await gameContract.deployed();
 
         //--- Case Implementation
         caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
@@ -54,7 +54,7 @@ describe("Deployment", function () {
             [
                 openRepoContract.address,
                 configContract.address, 
-                jurisdictionContract.address,
+                gameContract.address,
                 caseContract.address,
             ],{
             // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
@@ -78,7 +78,7 @@ describe("Deployment", function () {
            [
                openRepoContract.address,
                configContract.address, 
-               jurisdictionContract.address,
+               gameContract.address,
                caseContract.address,
            ],{
            // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
@@ -174,7 +174,7 @@ describe("Deployment", function () {
             let mockHub = await ethers.getContractFactory("HubMock").then(res => res.deploy(
                 openRepoContract.address,
                 configContract.address, 
-                jurisdictionContract.address,
+                gameContract.address,
                 caseContract.address
             ));
             await mockHub.deployed();

@@ -443,7 +443,7 @@
             "src": "contracts\\HubUpgradable.sol:69"
           },
           {
-            "label": "_jurisdictions",
+            "label": "_games",
             "offset": 0,
             "slot": "256",
             "type": "t_mapping(t_address,t_bool)",
@@ -618,7 +618,7 @@
             "src": "contracts\\HubUpgradable.sol:69"
           },
           {
-            "label": "_jurisdictions",
+            "label": "_games",
             "offset": 0,
             "slot": "256",
             "type": "t_mapping(t_address,t_bool)",
@@ -793,7 +793,7 @@
             "src": "contracts\\HubUpgradable.sol:67"
           },
           {
-            "label": "_jurisdictions",
+            "label": "_games",
             "offset": 0,
             "slot": "256",
             "type": "t_mapping(t_address,t_bool)",
@@ -1659,7 +1659,7 @@
             "src": "contracts\\HubUpgradable.sol:68"
           },
           {
-            "label": "_jurisdictions",
+            "label": "_games",
             "offset": 0,
             "slot": "256",
             "type": "t_mapping(t_address,t_bool)",

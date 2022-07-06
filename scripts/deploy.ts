@@ -31,16 +31,16 @@ async function main() {
     console.log("Deployed Config Contract to " + contractAddr.config);
   }
 
-  //--- Jurisdiction Implementation
-  if(!contractAddr.jurisdiction){
-    //Deploy Jurisdiction
-    let contract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
+  //--- Game Implementation
+  if(!contractAddr.game){
+    //Deploy Game
+    let contract = await ethers.getContractFactory("GameUpgradable").then(res => res.deploy());
     await contract.deployed();
     //Set Address
-    contractAddr.jurisdiction = contract.address;
+    contractAddr.game = contract.address;
     //Log
-    console.log("Deployed Jurisdiction Contract to " + contractAddr.jurisdiction);
-    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.jurisdiction);
+    console.log("Deployed Game Contract to " + contractAddr.game);
+    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.game);
   }
 
   //--- Case Implementation
@@ -63,7 +63,7 @@ async function main() {
         [
           publicAddr.openRepo,
           contractAddr.config, 
-          contractAddr.jurisdiction,
+          contractAddr.game,
           contractAddr.case,
         ],{
         kind: "uups",
@@ -89,8 +89,8 @@ async function main() {
     }
 
     //Log
-    console.log("Deployed Hub Upgradable Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " jurisdiction: "+contractAddr.jurisdiction+ " Case: "+ contractAddr.case);
-    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.hub+" "+publicAddr.openRepo+" "+ contractAddr.config+" "+contractAddr.jurisdiction+ " "+contractAddr.case);
+    console.log("Deployed Hub Upgradable Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " game: "+contractAddr.game+ " Case: "+ contractAddr.case);
+    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.hub+" "+publicAddr.openRepo+" "+ contractAddr.config+" "+contractAddr.game+ " "+contractAddr.case);
   }
 
   //--- Avatar Upgradable

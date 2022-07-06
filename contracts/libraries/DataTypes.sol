@@ -89,7 +89,7 @@ library DataTypes {
 
     //Rule Reference
     struct RuleRef {
-        address jurisdiction;
+        address game;
         uint256 ruleId;
     }
     
