@@ -34,10 +34,10 @@ contract CaseUpgradable is
     string public name;
     // Contract symbol
     // string public symbol;
-    string public constant symbol = "YJ_CASE";
+    string public constant symbol = "EVENT";
 
     //Jurisdiction
-    address private _jurisdiction;
+    // address private _jurisdiction;
     //Contract URI
     // string internal _contract_uri;
 
@@ -77,12 +77,12 @@ contract CaseUpgradable is
         DataTypes.InputRoleToken[] memory assignRoles, 
         address container
     ) public override initializer {
-        //Set Parent Container
-        _setParentCTX(container);
         //Initializers
         __CommonYJ_init(hub);
         // __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
         __setTargetContract(getSoulAddr());
+        //Set Parent Container
+        _setParentCTX(container);
         
         //Set Contract URI
         _setContractURI(uri_);
@@ -114,20 +114,14 @@ contract CaseUpgradable is
         //Validate
         require(container != address(0), "Invalid Container Address");
         require(IERC165(container).supportsInterface(type(IJurisdiction).interfaceId), "Implmementation Does Not Support Jurisdiction Interface");  //Might Cause Problems on Interface Update. Keep disabled for now.
-        //Set        
-        _jurisdiction = container;
-
-        
-        //TODO: Set to OpenRepo
-        // console.log("Set Container Address: ", container);
-        // repo().addressSet("container", container);
-
+        //Set to OpenRepo
+        repo().addressSet("container", container);
     }
     
     /// Get Container Address
     function getContainerAddr() internal view returns(address){
-        return _jurisdiction;
-        // return repo().addressGet("container");
+        // return _jurisdiction;
+        return repo().addressGet("container");
     }
 
     /// Get Soul Contract Address
