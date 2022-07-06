@@ -61,12 +61,15 @@ const config = {
 
     mumbai: {
       url: process.env.ALCHEMY_MUMBAI_URL || "",
+      // url: "https://rpc-mumbai.maticvigil.com",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     polygon: {
-      url: "https://rpc-mumbai.maticvigil.com",
-      // accounts: [process.env.PRIVATE_KEY]
+      url: "https://rpc-mainnet.maticvigil.com/",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      // chainId: 137,
+      // gasPrice: 1000000000,
+      // accounts: [process.env.PRIVATE_KEY]
     },
 
     aurora:{
