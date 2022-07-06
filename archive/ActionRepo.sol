@@ -49,7 +49,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     /// Register New Action
     function actionAdd(DataTypes.SVO memory svo, string memory uri) public override returns (bytes32) {
-        //TODO: Validate
+        //Validate
         // require(!_msgSender().isContract(), "No-Bots");
 
         //Store Additional Details

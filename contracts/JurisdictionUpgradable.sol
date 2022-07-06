@@ -376,20 +376,11 @@ contract JurisdictionUpgradable is
 
     /// Set Metadata URI For Role
     function setRoleURI(string memory role, string memory _tokenURI) external override AdminOrOwner {
-        //Validate Permissions
-        // require(owner() == _msgSender()      //Owner
-        //     || roleHas(_msgSender(), "admin")    //Admin Role
-        //     , "INVALID_PERMISSIONS");
         _setRoleURI(role, _tokenURI);
     }
     
     /// Set Contract URI
     function setContractURI(string calldata contract_uri) external override AdminOrOwner {
-        //Validate Permissions
-        // require( owner() == _msgSender()      //Owner
-        //     || roleHas(_msgSender(), "admin")    //Admin Role
-        //     , "INVALID_PERMISSIONS");
-        //Set
         _setContractURI(contract_uri);
     }
     
