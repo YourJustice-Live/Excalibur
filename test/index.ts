@@ -441,7 +441,7 @@ describe("Protocol", function () {
       let rule = {
         // uint256 about;    //About What (Token URI +? Contract Address)
         about: actionGUID, //"0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2",
-        affected: "investor",  //Plaintiff / Beneficiary
+        affected: "investor",  //Beneficiary
         // string uri;     //Text, Conditions & additional data
         uri: "ADDITIONAL_DATA_URI",
         // bool negation;  //false - Commision  true - Omission
@@ -455,7 +455,7 @@ describe("Protocol", function () {
       let rule2 = {
         // uint256 about;    //About What (Token URI +? Contract Address)
         about: actionGUID, //"0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2",
-        affected: "god",  //Plaintiff / Beneficiary
+        affected: "god",  //Beneficiary
         // string uri;     //Text, Conditions & additional data
         uri: "ADDITIONAL_DATA_URI",
         // bool negation;  //false - Commision  true - Omission
@@ -503,7 +503,7 @@ describe("Protocol", function () {
       let actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2';
       let rule = {
         about: actionGUID, //"0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2",
-        affected: "god",  //Plaintiff / Beneficiary
+        affected: "god",  //Beneficiary
         uri: "ADDITIONAL_DATA_URI",
         negation: false,
       };
@@ -794,11 +794,11 @@ describe("Protocol", function () {
       expect(await this.caseContract.roleHas(this.tester4Addr, "authority")).to.equal(true);
     });
 
-    it("Plaintiff Can Open Case", async function () {
+    it("User Can Open Case", async function () {
       //Validate
       await expect(
         this.caseContract.connect(tester2).stageFile()
-      ).to.be.revertedWith("ROLE:PLAINTIFF_OR_ADMIN");
+      ).to.be.revertedWith("ROLE:CREATOR_OR_ADMIN");
       //File Case
       let tx = await this.caseContract.connect(admin).stageFile();
       //Expect State Event
@@ -843,7 +843,7 @@ describe("Protocol", function () {
       //File Case -- Expect Failure
       await expect(
         this.caseContract.connect(tester2).stageVerdict(verdict, test_uri)
-      ).to.be.revertedWith("ROLE:JUDGE_ONLY");
+      ).to.be.revertedWith("ROLE:AUTHORITY_ONLY");
     });
 
     it("Should Accept Verdict URI & Close Case", async function () {

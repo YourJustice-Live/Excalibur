@@ -54,9 +54,6 @@ library DataTypes {
         string verb;
         string object;
         string tool; //[TBD]
-        //     //Describe an event
-        //     affected: "investors",  //Plaintiff Role (Filing the case)
-        // string affected;    //[PONDER] Doest this really belong here? Is that part of the unique combination, or should this be an array, or an eadge?      //MOVED TO Rule
     }
 
     //--- Rules
@@ -64,7 +61,7 @@ library DataTypes {
     // Rule Object
     struct Rule {
         bytes32 about;      //About What (Action's GUID)      //TODO: Maybe Call This 'actionGUID'? 
-        string affected;    // affected: "investors",  //Plaintiff Role (Filing the case)
+        string affected;    //Affected Role. E.g. "investors"
         bool negation;      //0 - Commision  1 - Omission
         string uri;         //Test & Conditions
         bool disabled;      //1 - Rule Disabled
