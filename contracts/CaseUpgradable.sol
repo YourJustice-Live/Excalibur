@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "./libraries/DataTypes.sol";
@@ -82,7 +82,7 @@ contract CaseUpgradable is
         //Initializers
         __CommonYJ_init(hub);
         // __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
-        __setTargetContract(repo().addressGetOf(address(_HUB), "avatar"));
+        __setTargetContract(getSoulAddr());
         
         //Set Contract URI
         _setContractURI(uri_);
@@ -117,8 +117,22 @@ contract CaseUpgradable is
         //Set        
         _jurisdiction = container;
 
-        //TODO: Use OpenRepo
+        
+        //TODO: Set to OpenRepo
+        // console.log("Set Container Address: ", container);
+        // repo().addressSet("container", container);
 
+    }
+    
+    /// Get Container Address
+    function getContainerAddr() internal view returns(address){
+        return _jurisdiction;
+        // return repo().addressGet("container");
+    }
+
+    /// Get Soul Contract Address
+    function getSoulAddr() internal view returns(address){
+        return repo().addressGetOf(address(_HUB), "avatar");
     }
 
     /// Apply to join a jurisdiction
@@ -132,9 +146,9 @@ contract CaseUpgradable is
     function roleAssign(address account, string memory role) public override roleExists(role) {
         //Special Validations for 'judge' role
         if (keccak256(abi.encodePacked(role)) == keccak256(abi.encodePacked("judge"))){
-            require(_jurisdiction != address(0), "Unknown Parent Container");
+            require(getContainerAddr() != address(0), "Unknown Parent Container");
             //Validate: Must Hold same role in Containing Jurisdiction
-            require(IERC1155RolesTracker(_jurisdiction).roleHas(account, role), "User Required to hold same role in Jurisdiction");
+            require(IERC1155RolesTracker(getContainerAddr()).roleHas(account, role), "User Required to hold same role in Jurisdiction");
         }
         else{
             //Validate Permissions
@@ -166,12 +180,6 @@ contract CaseUpgradable is
         //Remove
         _roleRemoveFromToken(ownerToken, role, 1);
     }
-
-    // roleRequest() => Event [Communication]
-
-    // roleOffer() (Upon Reception)
-
-    // roleAccept()
 
     /// Check if Reference ID exists
     function ruleRefExist(uint256 ruleRefId) internal view returns (bool){
@@ -213,7 +221,7 @@ contract CaseUpgradable is
         //Validate that User Controls The Token
         // require(_hasTokenControl(tokenId), "SOUL:NOT_YOURS");
         // require(ISoul( IAssoc(address(_HUB)).getAssoc("avatar") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
-        require(ISoul( repo().addressGetOf(address(_HUB), "avatar") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        require(ISoul( getSoulAddr() ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
         //Validate: Soul Assigned to the Role 
         // require(roleHas(tx.origin, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
         require(roleHasByToken(tokenId, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
@@ -336,7 +344,7 @@ contract CaseUpgradable is
         //Get Avatar Contract
         // ISoul avatarContract = ISoul(_HUB.getAssoc("avatar"));
         // ISoul avatarContract = ISoul(IAssoc(address(_HUB)).getAssoc("avatar"));
-        ISoul avatarContract = ISoul(repo().addressGetOf(address(_HUB), "avatar"));
+        ISoul avatarContract = ISoul( getSoulAddr() );
         
 
         /* REMOVED for backward compatibility while in dev mode.
@@ -358,7 +366,7 @@ contract CaseUpgradable is
                     DataTypes.Effect memory effect = effects[j];
                     bool direction = effect.direction;
                     //Register Rep in Jurisdiction      //{name:'professional', value:5, direction:false}
-                    IJurisdiction(_jurisdiction).repAdd(address(avatarContract), tokenId, effect.name, direction, effect.value);
+                    IJurisdiction(getContainerAddr()).repAdd(address(avatarContract), tokenId, effect.name, direction, effect.value);
                 }
             }
 
@@ -375,20 +383,11 @@ contract CaseUpgradable is
     
     /// Set Metadata URI For Role
     function setRoleURI(string memory role, string memory _tokenURI) external override AdminOrOwner {
-        //Validate Permissions
-        // require(owner() == _msgSender()      //Owner
-        //     || roleHas(_msgSender(), "admin")    //Admin Role
-        //     , "INVALID_PERMISSIONS");
         _setRoleURI(role, _tokenURI);
     }
    
     /// Set Contract URI
     function setContractURI(string calldata contract_uri) external override AdminOrOwner {
-        //Validate Permissions
-        // require( owner() == _msgSender()      //Owner
-        //     || roleHas(_msgSender(), "admin")    //Admin Role
-        //     , "INVALID_PERMISSIONS");
-        //Set
         _setContractURI(contract_uri);
     }
 
