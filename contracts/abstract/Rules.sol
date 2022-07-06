@@ -13,7 +13,7 @@ import "../libraries/DataTypes.sol";
  * @title Rules Contract 
  * @dev To Extend or Be Used by Jurisdictions
  * - Hold, Update, Delete & Serve Rules
- * [TODO] Rules should not be changed passed a certain point. (Maybe after they were used/applied to Avatars)
+ * [TODO] Rules should not be changed passed a certain point. (Maybe after they were used in cases / applied to Avatars)
  */
 abstract contract Rules is IRules {
     
