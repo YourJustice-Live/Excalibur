@@ -778,11 +778,18 @@ describe("Protocol", function () {
       expect(await this.caseContract.roleURI("admin")).to.equal(test_uri);
     });
 
-    it("Should Assign Witness", async function () {
+    it("Should Assign Witness As Admin", async function () {
       //Assign Admin
       await this.caseContract.connect(admin).roleAssign(this.tester3Addr, "witness");
       //Validate
       expect(await this.caseContract.roleHas(this.tester3Addr, "witness")).to.equal(true);
+    });
+
+    it("Should Assign Witness As Subject", async function () {
+      //Assign Admin
+      await this.caseContract.connect(tester2).roleAssign(this.tester4Addr, "witness");
+      //Validate
+      expect(await this.caseContract.roleHas(this.tester4Addr, "witness")).to.equal(true);
     });
 
     it("Jurisdiction Judges Can Assign Themselves to Case", async function () {

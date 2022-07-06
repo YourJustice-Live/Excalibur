@@ -141,6 +141,7 @@ contract CaseUpgradable is
             require(
                 owner() == _msgSender()      //Owner
                 || roleHas(_msgSender(), "admin")    //Admin Role
+                || (roleHas(_msgSender(), "subject") && keccak256(abi.encodePacked(role)) == keccak256(abi.encodePacked("witness")))    //Subject Role
                 // || msg.sender == address(_HUB)   //Through the Hub
                 , "INVALID_PERMISSIONS");
         }
@@ -153,6 +154,7 @@ contract CaseUpgradable is
         //Validate Permissions
         require(owner() == _msgSender()      //Owner
             || roleHas(_msgSender(), "admin")    //Admin Role
+            || (roleHas(_msgSender(), "subject") && keccak256(abi.encodePacked(role)) == keccak256(abi.encodePacked("witness")))    //Subject Role
             , "INVALID_PERMISSIONS");
         _roleAssignToToken(ownerToken, role, 1);
     }
