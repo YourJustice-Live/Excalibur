@@ -101,7 +101,12 @@ abstract contract ERC1155RolesTrackerUp is
     }
 
     /// Assign Someone Else to a Role
-    function _roleAssign(address account, string memory role, uint256 amount) internal roleExists(role) {
+    // function _roleAssign(address account, string memory role, uint256 amount) internal roleExists(role) {
+    function _roleAssign(address account, string memory role, uint256 amount) internal {
+        //Create Role if does not Exist
+        if(!roleExist(role)){
+            _roleCreate(role);
+        }
         //Validate Account Has Token
         require(_getExtTokenId(account) != 0, "ERC1155RolesTracker: account must own a token on source contract");
         //Assign
@@ -110,7 +115,12 @@ abstract contract ERC1155RolesTrackerUp is
     }
     
     /// Assign Tethered Token to a Role
-    function _roleAssignToToken(uint256 ownerToken, string memory role, uint256 amount) internal roleExists(role) {
+    // function _roleAssignToToken(uint256 ownerToken, string memory role, uint256 amount) internal roleExists(role) {
+    function _roleAssignToToken(uint256 ownerToken, string memory role, uint256 amount) internal {
+        //Create Role if does not Exist
+        if(!roleExist(role)){
+            _roleCreate(role);
+        }
         //Assign
         _GUIDAssignToToken(ownerToken, _stringToBytes32(role), amount);
         //TODO: Role Assigned Event?
