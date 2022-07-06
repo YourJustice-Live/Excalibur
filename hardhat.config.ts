@@ -52,7 +52,6 @@ const config = {
       gas: 2100000,
       gasPrice: 8000000000
       // gasPrice: 10000000000,
-      
     },
     goerli: {
       url: process.env.ALCHEMY_GOERLI_URL || "",
