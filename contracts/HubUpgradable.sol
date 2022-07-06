@@ -88,7 +88,6 @@ contract HubUpgradable is
     ) public initializer {
         //Set Data Repo Address
         _setRepo(openRepo);
-
         //Initializers
         __UUPSUpgradeable_init();
         //Set Protocol's Config Address
@@ -158,9 +157,6 @@ contract HubUpgradable is
 
     /// Get Contract Association
     function getAssoc(string memory key) public view override returns(address) {
-        //If string match "repo" return the repo address
-        // if(keccak256(abi.encodePacked("repo")) == keccak256(abi.encodePacked(key))) return address(repo());
-        
         //Return address from the Repo
         return repo().addressGet(key);
     }
@@ -174,8 +170,6 @@ contract HubUpgradable is
 
     /// Make a new Jurisdiction
     function jurisdictionMake(string calldata name_, string calldata uri_) external override returns (address) {
-        //Validate
-        // require(beaconJurisdiction != address(0), "Jurisdiction Beacon Missing");      //Redundant
         //Deploy
         BeaconProxy newJurisdictionProxy = new BeaconProxy(
             beaconJurisdiction,
@@ -203,10 +197,6 @@ contract HubUpgradable is
     ) external override returns (address) {
         //Validate Caller Permissions (A Jurisdiction)
         require(_jurisdictions[_msgSender()], "UNAUTHORIZED: Valid Jurisdiction Only");
-
-        //Validate
-        // require(beaconCase != address(0), "Case Beacon Missing");    //Redundant
-
         //Deploy
         BeaconProxy newCaseProxy = new BeaconProxy(
             beaconCase,
@@ -232,11 +222,10 @@ contract HubUpgradable is
 
     /// Add Reputation (Positive or Negative)       /// Opinion Updated
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) public override {
-        //TODO: Validate - Known Jurisdiction
-        // require(_jurisdictions[_msgSender()], "NOT A VALID JURISDICTION");
-
-        address avatarContract = repo().addressGet("avatar");
+        //Validate - Known & Active Jurisdiction 
+        require(_jurisdictions[_msgSender()], "UNAUTHORIZED: Valid Jurisdiction Only");
         //Update Avatar's Reputation    //TODO: Just Check if Contract Implements IRating
+        address avatarContract = repo().addressGet("avatar");
         if(avatarContract != address(0) && avatarContract == contractAddr){
             _repAddAvatar(tokenId, domain, rating, amount);
         }
