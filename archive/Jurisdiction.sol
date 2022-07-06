@@ -87,7 +87,7 @@ contract Jurisdiction is
         //Init Default Jurisdiction Roles
         _roleCreate("admin"); 
         _roleCreate("member");
-        _roleCreate("judge");
+        _roleCreate("authority");
         //Assign Creator as First Admin
         _roleAssign(tx.origin, "admin");
     }

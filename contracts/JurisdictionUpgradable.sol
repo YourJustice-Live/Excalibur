@@ -107,11 +107,11 @@ contract JurisdictionUpgradable is
         //Init Default Jurisdiction Roles
         _roleCreate("admin"); 
         _roleCreate("member");
-        _roleCreate("judge");
+        _roleCreate("authority");
         //Default Token URIs
         _setRoleURI("admin", "https://ipfs.io/ipfs/QmQcahBAJkXzSgwQn2zZ9D1m7friRCuW7rVia5KWNpWK7x");
         _setRoleURI("member", "https://ipfs.io/ipfs/QmbXVfwyTAfoYcThK7LZ2FAADoZPjbfbPJDcXWcwf79ssY");
-        _setRoleURI("judge", "https://ipfs.io/ipfs/QmRVXii7PRTtaYRt5mD1yrAqy623itttjQX3hsnikYpi1x");
+        _setRoleURI("authority", "https://ipfs.io/ipfs/QmRVXii7PRTtaYRt5mD1yrAqy623itttjQX3hsnikYpi1x");
         //Assign Creator as Admin & Member
         _roleAssign(tx.origin, "admin", 1);
         _roleAssign(tx.origin, "member", 1);

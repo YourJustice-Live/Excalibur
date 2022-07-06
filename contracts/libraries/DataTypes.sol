@@ -30,7 +30,7 @@ library DataTypes {
     enum CaseStage {
         Draft,
         Open,           // Filed -- Confirmation/Discussion (Evidence, Witnesses, etc’)
-        Verdict,        // Awaiting Decision (Judge, Jury, vote, etc’)
+        Verdict,        // Awaiting Decision (Authority, Jury, vote, etc’)
         Action,         // Remedy - Reward / Punishment / Compensation
         Appeal,
         Enforcement,
@@ -81,7 +81,7 @@ library DataTypes {
     //Rule Confirmation Method
     struct Confirmation {
         string ruling;
-        // ruling: "judge"|"jury"|"democracy",  //Decision Maker
+        // ruling: "authority"|"jury"|"democracy",  //Decision Maker
         bool evidence;
         // evidence: true, //Require Evidence
         uint witness;

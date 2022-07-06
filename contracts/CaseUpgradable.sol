@@ -92,7 +92,7 @@ contract CaseUpgradable is
         _roleCreate("admin");
         _roleCreate("subject");     //Filing against
         _roleCreate("plaintiff");   //Filing the case
-        _roleCreate("judge");       //Deciding authority
+        _roleCreate("authority");       //Deciding authority
         _roleCreate("witness");     //Witnesses
         _roleCreate("affected");    //Affected Party [?]
         //Auto-Set Creator Wallet as Admin
@@ -136,8 +136,8 @@ contract CaseUpgradable is
 
     /// Assign to a Role
     function roleAssign(address account, string memory role) public override roleExists(role) {
-        //Special Validations for 'judge' role
-        if (keccak256(abi.encodePacked(role)) == keccak256(abi.encodePacked("judge"))){
+        //Special Validations for 'authority' role
+        if (keccak256(abi.encodePacked(role)) == keccak256(abi.encodePacked("authority"))){
             require(getContainerAddr() != address(0), "Unknown Parent Container");
             //Validate: Must Hold same role in Containing Jurisdiction
             require(IERC1155RolesTracker(getContainerAddr()).roleHas(account, role), "User Required to hold same role in Jurisdiction");
@@ -278,7 +278,7 @@ contract CaseUpgradable is
         //Validate Stage
         require(stage == DataTypes.CaseStage.Open, "STAGE:OPEN_ONLY");
         //Validate Caller
-        require(roleHas(_msgSender(), "judge") || roleHas(_msgSender(), "admin") , "ROLE:JUDGE_OR_ADMIN");
+        require(roleHas(_msgSender(), "authority") || roleHas(_msgSender(), "admin") , "ROLE:JUDGE_OR_ADMIN");
         //Case is now Waiting for Verdict
         _setStage(DataTypes.CaseStage.Verdict);
     }   
@@ -286,7 +286,7 @@ contract CaseUpgradable is
     /// Case Stage: Place Verdict  --> Closed
     // function stageVerdict(string calldata uri) public override {
     function stageVerdict(DataTypes.InputDecision[] calldata verdict, string calldata uri_) public override {
-        require(roleHas(_msgSender(), "judge") , "ROLE:JUDGE_ONLY");
+        require(roleHas(_msgSender(), "authority") , "ROLE:JUDGE_ONLY");
         require(stage == DataTypes.CaseStage.Verdict, "STAGE:VERDICT_ONLY");
 
         //Process Verdict
@@ -306,7 +306,7 @@ contract CaseUpgradable is
 
     /// Case Stage: Reject Case --> Cancelled
     function stageCancel(string calldata uri_) public override {
-        require(roleHas(_msgSender(), "judge") , "ROLE:JUDGE_ONLY");
+        require(roleHas(_msgSender(), "authority") , "ROLE:JUDGE_ONLY");
         require(stage == DataTypes.CaseStage.Verdict, "STAGE:VERDICT_ONLY");
         //Case is now Closed
         _setStage(DataTypes.CaseStage.Cancelled);
