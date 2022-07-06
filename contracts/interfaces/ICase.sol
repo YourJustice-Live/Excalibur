@@ -14,8 +14,8 @@ interface ICase {
     /// Set Contract URI
     function setContractURI(string calldata contract_uri) external;
 
-    /// Apply to join a jurisdiction
-    function applyTojoin(string memory uri) external;
+    /// Request to Join
+    function nominate(uint256 soulToken, string memory uri) external;
 
     /// Assign Someone to a Role
     function roleAssign(address account, string calldata role) external;
@@ -25,14 +25,6 @@ interface ICase {
         
     /// Remove Tethered Token from a Role
     function roleRemoveFromToken(uint256 ownerToken, string memory role) external;
-
-    // RoleRequest()
-
-    // RoleOffered()
-
-    // RoleAccepted()
-
-    // RoleAssigned()
 
     /// File the Case (Validate & Open Discussion)  --> Open
     function stageFile() external;
@@ -73,7 +65,7 @@ interface ICase {
     //Rule Denied (Changed from Confirmed)
     // event RuleDenied(uint256 ruleId);
     
-    /// Applied to Join the Case
-    event Application(uint256 indexed id, address account, string uri);
+    /// Nominate
+    event Nominate(address account, uint256 indexed id, string uri);
 
 }

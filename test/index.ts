@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { Contract, ContractReceipt, Signer } from "ethers";
+import { Contract, Signer } from "ethers";
 import { ethers } from "hardhat";
-const {  upgrades } = require("hardhat");
+const { upgrades } = require("hardhat");
 
 //Test Data
 const ZERO_ADDR = '0x0000000000000000000000000000000000000000';
@@ -98,6 +98,7 @@ describe("Protocol", function () {
     //Populate Accounts
     [owner, admin, tester, tester2, tester3, tester4, tester5, judge, ...addrs] = await ethers.getSigners();
     //Addresses
+    this.ownerAddr = await owner.getAddress();
     this.adminAddr = await admin.getAddress();
     this.testerAddr = await tester.getAddress();
     this.tester2Addr = await tester2.getAddress();
@@ -115,7 +116,57 @@ describe("Protocol", function () {
 
   });
 
-  describe("Avatar", function () {
+  describe("OpenRepo", function () {
+
+    it("Should Get Empty Value", async function () {
+      //Change to Closed Jurisdiction
+      await this.openRepo.stringGet("TestKey");
+      await this.openRepo.boolGet("TestKey");
+      await this.openRepo.addressGet("TestKey");
+    });
+
+  });
+
+  /**
+   * Action Repository
+   */
+   describe("Action Repository", function () {
+  
+    it("Should store Actions", async function () {
+      let action = {
+        subject: "founder",     //Accused Role
+        verb: "breach",
+        object: "contract",
+        tool: "",
+      };
+
+      // actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2'; //Wrong GUID
+      actionGUID = await actionContract.actionHash(action); //Gets hash if exists or not
+      // console.log("actionGUID:", actionGUID);
+      let tx = await actionContract.actionAdd(action, test_uri);
+      await tx.wait();
+      //Expect Added Event
+      await expect(tx).to.emit(actionContract, 'ActionAdded').withArgs(1, actionGUID, action.subject, action.verb, action.object, action.tool);
+      // await expect(tx).to.emit(actionContract, 'URI').withArgs(actionGUID, test_uri);
+
+      //Fetch Action's Struct
+      let actionRet = await actionContract.actionGet(actionGUID);
+      
+      // console.log("actionGet:", actionRet);
+      // expect(Object.values(actionRet)).to.eql(Object.values(action));
+      expect(actionRet).to.include.members(Object.values(action));
+      // expect(actionRet).to.eql(action);  //Fails
+      // expect(actionRet).to.include(action); //Fails
+      // expect(actionRet).to.own.include(action); //Fails
+
+      //Additional Rule Data
+      expect(await actionContract.actionGetURI(actionGUID)).to.equal(test_uri);
+      // expect(await actionContract.actionGetConfirmation(actionGUID)).to.include.members(["judge", true]);    //TODO: Find a better way to check this
+    });
+
+  }); //Action Repository
+
+  describe("Soul", function () {
 
     it("Should inherit protocol owner", async function () {
       expect(await avatarContract.owner()).to.equal(await owner.getAddress());
@@ -181,6 +232,45 @@ describe("Protocol", function () {
       expect(await avatarContract.tokenURI(3)).to.equal(test_uri);
     });
 
+    it("Should Post as Owned-Soul", async function () {
+      let testerToken = await avatarContract.tokenByAddress(this.testerAddr);
+      let post = {
+        tokenId: testerToken,
+        uri:test_uri,
+      };
+
+      //Validate Permissions
+      await expect(
+        //Failed Post
+        avatarContract.connect(tester4).post(post.tokenId, post.uri)
+      ).to.be.revertedWith("SOUL:NOT_YOURS");
+
+      //Successful Post
+      let tx = await avatarContract.connect(tester).post(post.tokenId, post.uri);
+      await tx.wait();  //wait until the transaction is mined
+      //Expect Event
+      await expect(tx).to.emit(avatarContract, 'Post').withArgs(this.testerAddr, post.tokenId, post.uri);
+    });
+
+    it("Should Post as a Lost-Soul", async function () {
+      let post = {
+        tokenId: unOwnedTokenId,
+        uri: test_uri,
+      };
+
+      //Validate Permissions
+      await expect(
+        //Failed Post
+        avatarContract.connect(tester4).post(post.tokenId, post.uri)
+      ).to.be.revertedWith("SOUL:NOT_YOURS");
+
+      //Successful Post
+      let tx = await avatarContract.post(post.tokenId, post.uri);
+      await tx.wait();  //wait until the transaction is mined
+      //Expect Event
+      await expect(tx).to.emit(avatarContract, 'Post').withArgs(this.ownerAddr, post.tokenId, post.uri);
+    });
+    
     it("Should NOT be transferable", async function () {
       //Should Fail to transfer -- "Sorry, Assets are non-transferable"
       let fromAddr = await tester.getAddress();
@@ -207,46 +297,7 @@ describe("Protocol", function () {
       ).to.be.revertedWith("UNAUTHORIZED_ACCESS");
     });
 
-  }); //Avatar
-
-  /**
-   * Action Repository
-   */
-  describe("Action Repository", function () {
-  
-    it("Should store Actions", async function () {
-      let action = {
-        subject: "founder",     //Accused Role
-        verb: "breach",
-        object: "contract",
-        tool: "",
-      };
-
-      // actionGUID = '0xa7440c99ff5cd38fc9e0bff1d6dbf583cc757a83a3424bdc4f5fd6021a2e90e2'; //Wrong GUID
-      actionGUID = await actionContract.actionHash(action); //Gets hash if exists or not
-      // console.log("actionGUID:", actionGUID);
-      let tx = await actionContract.actionAdd(action, test_uri);
-      await tx.wait();
-      //Expect Added Event
-      await expect(tx).to.emit(actionContract, 'ActionAdded').withArgs(1, actionGUID, action.subject, action.verb, action.object, action.tool);
-      // await expect(tx).to.emit(actionContract, 'URI').withArgs(actionGUID, test_uri);
-
-      //Fetch Action's Struct
-      let actionRet = await actionContract.actionGet(actionGUID);
-      
-      // console.log("actionGet:", actionRet);
-      // expect(Object.values(actionRet)).to.eql(Object.values(action));
-      expect(actionRet).to.include.members(Object.values(action));
-      // expect(actionRet).to.eql(action);  //Fails
-      // expect(actionRet).to.include(action); //Fails
-      // expect(actionRet).to.own.include(action); //Fails
-
-      //Additional Rule Data
-      expect(await actionContract.actionGetURI(actionGUID)).to.equal(test_uri);
-      // expect(await actionContract.actionGetConfirmation(actionGUID)).to.include.members(["judge", true]);    //TODO: Find a better way to check this
-    });
-
-  }); //Action Repository
+  }); //Soul
 
   /**
    * Jurisdiction Contract
@@ -468,7 +519,34 @@ describe("Protocol", function () {
 
     });
 
-    it("Should Update Token URI", async function () {
+    it("Should Write a Post", async function () {
+      let testerToken = await avatarContract.tokenByAddress(this.testerAddr);
+      let post = {
+        entRole:"member",
+        tokenId: testerToken,
+        uri:test_uri,
+      };
+
+      //Join Jurisdiction
+      let tx1 = await this.jurisdictionContract.connect(tester).join();
+      await tx1.wait();
+      //Make Sure Account Has Role
+      expect(await this.jurisdictionContract.roleHas(this.testerAddr, "member")).to.equal(true);
+
+      //Validate Permissions
+      await expect(
+        //Failed Post
+        this.jurisdictionContract.connect(tester4).post(post.entRole, post.tokenId, post.uri)
+      ).to.be.revertedWith("SOUL:NOT_YOURS");
+
+      //Successful Post
+      let tx2 = await this.jurisdictionContract.connect(tester).post(post.entRole, post.tokenId, post.uri);
+      await tx2.wait();  //wait until the transaction is mined
+      //Expect Event
+      await expect(tx2).to.emit(this.jurisdictionContract, 'Post').withArgs(this.testerAddr, post.tokenId, post.entRole, post.uri);
+    });
+    
+    it("Should Update Membership Token URI", async function () {
       //Protected
       await expect(
         jurisdictionContract.connect(tester3).setRoleURI("admin", test_uri)
@@ -480,9 +558,12 @@ describe("Protocol", function () {
     });
 
     describe("Closed Jurisdiction", function () {
+
       it("Can Close Jurisdiction", async function () {
         //Change to Closed Jurisdiction
-        await this.jurisdictionContract.connect(admin).confSet("isClosed", "true");
+        let tx = await this.jurisdictionContract.connect(admin).confSet("isClosed", "true");
+        //Expect Case Created Event
+        await expect(tx).to.emit(this.openRepo, 'StringSet').withArgs(this.jurisdictionContract.address, "isClosed", "true");
         //Validate
         expect(await this.jurisdictionContract.confGet("isClosed")).to.equal("true");
       });
@@ -493,15 +574,15 @@ describe("Protocol", function () {
           jurisdictionContract.connect(tester4).join()
         ).to.be.revertedWith("CLOSED_SPACE");
       });
-        
+      
       it("Can Apply to Join", async function () {
-        //Apply to Join Jurisdiction
-        let tx = await this.jurisdictionContract.connect(tester).applyTojoin(test_uri);
-        await tx.wait();
         //Get Tester's Avatar TokenID
         let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
+        //Apply to Join Jurisdiction
+        let tx = await this.jurisdictionContract.connect(tester).nominate(tokenId, test_uri);
+        await tx.wait();
         //Expect Event
-        await expect(tx).to.emit(jurisdictionContract, 'Application').withArgs(tokenId, this.testerAddr, test_uri);
+        await expect(tx).to.emit(jurisdictionContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
       });
 
       it("Can Re-Open Jurisdiction", async function () {
@@ -510,7 +591,7 @@ describe("Protocol", function () {
         //Validate
         expect(await this.jurisdictionContract.confGet("isClosed")).to.equal("false");
       });
-
+      
     });
 
   }); //Jurisdiction
@@ -637,6 +718,16 @@ describe("Protocol", function () {
       ).to.equal(true);
     });
 
+    it("Users Can Apply to Join", async function () {
+      //Get Tester's Avatar TokenID
+      let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
+      //Apply to Join Jurisdiction
+      let tx = await this.caseContract.connect(tester).nominate(tokenId, test_uri);
+      await tx.wait();
+      //Expect Event
+      await expect(tx).to.emit(this.caseContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
+    });
+
     it("Should Update", async function () {
       let testCaseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
       await testCaseContract.deployed();
@@ -660,7 +751,7 @@ describe("Protocol", function () {
         tokenId: tester2Token,
         entRole:"subject",
         uri:test_uri,
-      }
+      };
 
       //Validate Permissions
       await expect(
@@ -673,7 +764,7 @@ describe("Protocol", function () {
       // wait until the transaction is mined
       await tx.wait();
       //Expect Event
-      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, tester2Token, post.entRole, post.uri);
+      await expect(tx).to.emit(this.caseContract, 'Post').withArgs(this.tester2Addr, post.tokenId, post.entRole, post.uri);
     });
 
     it("Should Update Token URI", async function () {
@@ -746,13 +837,13 @@ describe("Protocol", function () {
     });
     
     it("Anyonw Can Apply to Join", async function () {
-      //Apply to Join Jurisdiction
-      let tx = await this.caseContract.connect(tester).applyTojoin(test_uri);
-      await tx.wait();
       //Get Tester's Avatar TokenID
       let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
+      //Apply to Join Jurisdiction
+      let tx = await this.caseContract.connect(tester).nominate(tokenId, test_uri);
+      await tx.wait();
       //Expect Event
-      await expect(tx).to.emit(this.caseContract, 'Application').withArgs(tokenId, this.testerAddr, test_uri);
+      await expect(tx).to.emit(this.caseContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
     });
 
     it("Should Accept Verdict URI & Close Case", async function () {
@@ -766,7 +857,7 @@ describe("Protocol", function () {
     });
 
     
-    it("[TODO] Can Change Rating", async function () {
+    // it("[TODO] Can Change Rating", async function () {
 
       //TODO: Tests for Collect Rating
       // let repCall = { tokenId:?, domain:?, rating:?};
@@ -784,7 +875,7 @@ describe("Protocol", function () {
       // //Other Domain Rep - Should be 0
       // expect(await avatarContract.getRepForDomain(repCall.tokenId, repCall.domain + 1, repCall.rating)).to.equal(0);
 
-    });
+    // });
 
   }); //Case
     

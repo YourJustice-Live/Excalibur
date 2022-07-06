@@ -4,10 +4,9 @@ pragma solidity 0.8.4;
 // import "hardhat/console.sol";
 
 import "../interfaces/IRecursion.sol";
-import "../interfaces/IAssoc.sol";
 import "../libraries/DataTypes.sol";
 import "../libraries/AddressArray.sol";
-// import "../abstract/AssocExt.sol";
+// import "../interfaces/IAssoc.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 
@@ -22,16 +21,6 @@ contract Recursion is IRecursion, Initializable {
     //Parent Addresses
     using AddressArray for address[];
     address[] _parentAddrs;
-
-    /* DEPRECATE - Get Directly from Hub 
-    /// Initializer
-    function __Recursion_init(address hub) internal onlyInitializing {
-    //Fetch Repo From Hub
-        address openRepo = IAssoc(hub).getAssoc("repo");
-        //Set Repo
-        _setRepo(openRepo);
-    }
-    */
 
     /// Check if a Contract Address is a an Immediate Parent of Current Contract
     function isParent(address contractAddr) public view override returns (bool) {
@@ -75,24 +64,5 @@ contract Recursion is IRecursion, Initializable {
         //Parent Removed Event
         emit ParentRemoved(contractAddr);
     }
-
-
-/* MOVED TO AddressArray LIBRARY
-    /// Remove Address From Array
-    function _arrRemove(uint index) internal {
-        require(index < _parentAddrs.length, "Recursion:INDEX_OUT_OF_BOUNDS");
-        _parentAddrs[index] = _parentAddrs[_parentAddrs.length-1];
-        _parentAddrs.pop();
-    }
-
-    /// Find Address Index in Array
-    function _arrFind(address value) internal view returns (uint256) {
-        for (uint256 i = 0; i < _parentAddrs.length; ++i) {
-            if(_parentAddrs[i] != value) return i;
-        }
-        revert("Recursion:ITEM_NOT_IN_ARRAY");
-    }
-*/
-
 
 }

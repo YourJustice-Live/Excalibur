@@ -4,11 +4,11 @@ coverage
 coverage.json
 package-lock.json
 
-
-#Hardhat files
+# Hardhat files
 cache
 artifacts
 
+# Typechain
 typechain-types
 typechain-types/
 typechain-types/AvatarNFT.ts

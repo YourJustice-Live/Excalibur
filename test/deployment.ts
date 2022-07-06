@@ -14,7 +14,6 @@ describe("Deployment", function () {
     let hubContract: Contract;
     let configContract: Contract;
     let actionRepoContract: Contract;
-    let assocRepoContract: Contract;
     let openRepoContract: Contract;
     let SoulUpgradable: Contract;
     // let actionContract: Contract;
@@ -29,10 +28,6 @@ describe("Deployment", function () {
         //Populate Accounts
         [account1, account2] = await ethers.getSigners();
 
-        //--- AssocRepo
-        // assocRepoContract = await ethers.getContractFactory("AssocRepo").then(res => res.deploy());
-        // await assocRepoContract.deployed();
-       
         //--- OpenRepo (UUDP)
         openRepoContract = await ethers.getContractFactory("OpenRepoUpgradable")
             .then(Contract => upgrades.deployProxy(Contract, [],{kind: "uups", timeout: 120000}));
@@ -57,7 +52,6 @@ describe("Deployment", function () {
         // deploying new proxy
         const proxyHub = await upgrades.deployProxy(HubUpgradable,
             [
-                // assocRepoContract.address, 
                 openRepoContract.address,
                 configContract.address, 
                 jurisdictionContract.address,
@@ -82,7 +76,6 @@ describe("Deployment", function () {
        const HubUpgradable = await ethers.getContractFactory("HubUpgradable");
        const proxyHub2 = await upgrades.deployProxy(HubUpgradable,
            [
-               // assocRepoContract.address, 
                openRepoContract.address,
                configContract.address, 
                jurisdictionContract.address,
@@ -179,7 +172,6 @@ describe("Deployment", function () {
         it("Should Deploy Mock Hub Contract", async function () {
             //--- Mock Hub
             let mockHub = await ethers.getContractFactory("HubMock").then(res => res.deploy(
-                // assocRepoContract.address, 
                 openRepoContract.address,
                 configContract.address, 
                 jurisdictionContract.address,

@@ -5,7 +5,7 @@ pragma solidity 0.8.4;
 import "@openzeppelin/contracts/access/Ownable.sol";
 // import "./interfaces/IConfig.sol";
 
-/**
+/** DEPRECATE
  * Global Configuration Contract
  * - He who owns the config owns the protocol
  */

@@ -14,7 +14,7 @@ import "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeabl
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 import "../interfaces/IERC1155Tracker.sol";
-import "../interfaces/IAvatar.sol";
+import "../interfaces/ISoul.sol";
 import "../libraries/AddressArray.sol";
 import "../libraries/UintArray.sol";
 
@@ -53,7 +53,7 @@ abstract contract ERC1155TrackerUpgradable is
     function __setTargetContract(address targetContract) internal virtual {
         //Validate IERC721
         // require(IERC165(targetContract).supportsInterface(type(IERC721).interfaceId), "Target Expected to Support IERC721");
-        require(IERC165(targetContract).supportsInterface(type(IAvatar).interfaceId), "Target contract expected to support IAvatar");
+        require(IERC165(targetContract).supportsInterface(type(ISoul).interfaceId), "Target contract expected to support ISoul");
         _targetContract = targetContract;
         // _targetContract = IERC721(targetContract);
     }
@@ -75,8 +75,8 @@ abstract contract ERC1155TrackerUpgradable is
         // require(account != address(0), "ERC1155Tracker: address zero is not a valid account");       //Redundant 
         require(account != _targetContract, "ERC1155Tracker: source contract address is not a valid account");
         //Run function on destination contract
-        // return IAvatar(_targetContract).tokenByAddress(account);
-        uint256 ownerToken = IAvatar(_targetContract).tokenByAddress(account);
+        // return ISoul(_targetContract).tokenByAddress(account);
+        uint256 ownerToken = ISoul(_targetContract).tokenByAddress(account);
         //Validate
         // require(ownerToken != 0, "ERC1155Tracker: account not found on source contract");
         //Return

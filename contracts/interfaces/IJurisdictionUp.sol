@@ -17,6 +17,9 @@ interface IJurisdiction {
     /// Symbol As Arbitrary contract designation signature
     function symbol() external view returns (string memory);
 
+    /// Add Post 
+    function post(string calldata entRole, uint256 tokenId, string calldata uri) external;
+
     /// Disable Case
     function caseDisable(address caseContract) external;
 
@@ -29,8 +32,8 @@ interface IJurisdiction {
     /// Leave member role in current jurisdiction
     function leave() external returns (uint256);
 
-    /// Apply to join a jurisdiction
-    function applyTojoin(string memory uri) external;
+    /// Request to Join
+    function nominate(uint256 soulToken, string memory uri) external;
 
     /// Assign Someone to a Role
     function roleAssign(address account, string calldata role) external;
@@ -72,11 +75,9 @@ interface IJurisdiction {
     //-- Rule Func.
 
     /// Create New Rule
-    // function ruleAdd(DataTypes.Rule memory rule, DataTypes.Confirmation memory confirmation) external returns (uint256);
     function ruleAdd(DataTypes.Rule memory rule, DataTypes.Confirmation memory confirmation, DataTypes.Effect[] memory effects) external returns (uint256);
 
     /// Update Rule
-    // function ruleUpdate(uint256 id, DataTypes.Rule memory rule) external;
     function ruleUpdate(uint256 id, DataTypes.Rule memory rule, DataTypes.Effect[] memory effects) external;
     
     /// Update Rule's Confirmation Data
@@ -96,8 +97,7 @@ interface IJurisdiction {
     /// New Case Created
     event CaseCreated(uint256 indexed id, address contractAddress);    
 
-    /// Applied to Join Jurisdiction
-    event Application(uint256 indexed id, address account, string uri);
-
+    /// Nominate
+    event Nominate(address account, uint256 indexed id, string uri);
 
 }

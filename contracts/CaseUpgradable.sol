@@ -1,20 +1,17 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "./libraries/DataTypes.sol";
 import "./interfaces/ICase.sol";
 import "./interfaces/IRules.sol";
-import "./interfaces/IAvatar.sol";
+import "./interfaces/ISoul.sol";
 import "./interfaces/IERC1155RolesTracker.sol";
 import "./interfaces/IJurisdictionUp.sol";
-// import "./interfaces/IJurisdiction.sol";
-import "./interfaces/IAssoc.sol";
-// import "./abstract/ContractBase.sol";
+// import "./interfaces/IAssoc.sol";
 import "./abstract/CommonYJUpgradable.sol";
-// import "./abstract/ERC1155RolesUpgradable.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/Posts.sol";
 
@@ -25,7 +22,6 @@ import "./abstract/Posts.sol";
 contract CaseUpgradable is 
     ICase, 
     Posts, 
-    // ContractBase,    //Redundant
     CommonYJUpgradable, 
     ERC1155RolesTrackerUp {
     // ERC1155RolesUpgradable {
@@ -54,13 +50,21 @@ contract CaseUpgradable is
     
     //--- Modifiers
 
+    /// Check if GUID Exists
+    modifier AdminOrOwner() {
+       //Validate Permissions
+        require(owner() == _msgSender()      //Owner
+            || roleHas(_msgSender(), "admin")    //Admin Role
+            , "INVALID_PERMISSIONS");
+        _;
+    }
+
     //--- Functions
     
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return interfaceId == type(ICase).interfaceId 
             || interfaceId == type(IRules).interfaceId 
-            || interfaceId == type(IAssoc).interfaceId 
             || super.supportsInterface(interfaceId);
     }
 
@@ -77,8 +81,9 @@ contract CaseUpgradable is
         _setParentCTX(container);
         //Initializers
         __CommonYJ_init(hub);
-        // __setTargetContract(_HUB.getAssoc("avatar"));
-        __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
+        // __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
+        __setTargetContract(getSoulAddr());
+        
         //Set Contract URI
         _setContractURI(uri_);
         //Identifiers
@@ -112,24 +117,38 @@ contract CaseUpgradable is
         //Set        
         _jurisdiction = container;
 
-        //TODO: Use OpenRepo
+        
+        //TODO: Set to OpenRepo
+        // console.log("Set Container Address: ", container);
+        // repo().addressSet("container", container);
 
     }
+    
+    /// Get Container Address
+    function getContainerAddr() internal view returns(address){
+        return _jurisdiction;
+        // return repo().addressGet("container");
+    }
 
-    /// Apply to join a jurisdiction
-    function applyTojoin(string memory uri_) external override {
+    /// Get Soul Contract Address
+    function getSoulAddr() internal view returns(address){
+        return repo().addressGetOf(address(_HUB), "avatar");
+    }
+
+    /// Request to Join
+    function nominate(uint256 soulToken, string memory uri_) external override {
         // uint256 soulToken = _getExtTokenId(_msgSender());
-        uint256 soulToken = _getExtTokenId(msg.sender); //May be a contract
-        emit Application(soulToken, _msgSender(), uri_);
+        // uint256 soulToken = _getExtTokenId(msg.sender); //May be a contract
+        emit Nominate(_msgSender(), soulToken, uri_);
     }
 
     /// Assign to a Role
     function roleAssign(address account, string memory role) public override roleExists(role) {
         //Special Validations for 'judge' role
         if (keccak256(abi.encodePacked(role)) == keccak256(abi.encodePacked("judge"))){
-            require(_jurisdiction != address(0), "Unknown Parent Container");
+            require(getContainerAddr() != address(0), "Unknown Parent Container");
             //Validate: Must Hold same role in Containing Jurisdiction
-            require(IERC1155RolesTracker(_jurisdiction).roleHas(account, role), "User Required to hold same role in Jurisdiction");
+            require(IERC1155RolesTracker(getContainerAddr()).roleHas(account, role), "User Required to hold same role in Jurisdiction");
         }
         else{
             //Validate Permissions
@@ -161,12 +180,6 @@ contract CaseUpgradable is
         //Remove
         _roleRemoveFromToken(ownerToken, role, 1);
     }
-
-    // roleRequest() => Event [Communication]
-
-    // roleOffer() (Upon Reception)
-
-    // roleAccept()
 
     /// Check if Reference ID exists
     function ruleRefExist(uint256 ruleRefId) internal view returns (bool){
@@ -200,31 +213,21 @@ contract CaseUpgradable is
     // function post(uint256 token_id, string entRole, string uri) 
     //- Post by Entity (Token ID or a token identifier struct)
     
-    /// Check if the Current Account has Control over a Token
-    function _hasTokenControl(uint256 tokenId) internal view returns (bool){
-        address ownerAccount = _getAccount(tokenId);
-        return (
-            // ownerAccount == _msgSender()    //Token Owner
-            ownerAccount == tx.origin    //Token Owner (Allows it to go therough the hub)
-            || (ownerAccount == _targetContract && owner() == _msgSender()) //Unclaimed Token Controlled by Contract Owner/DAO
-        );
-    }
-    
     /// Add Post 
     /// @param entRole  posting as entitiy in role (posting entity must be assigned to role)
-    function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {     //postRole in the URI
+    /// @param tokenId  Acting SBT Token ID
+    /// @param uri_     post URI
+    function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {
         //Validate that User Controls The Token
-        require(_hasTokenControl(tokenId), "SOUL:NOT_YOURS");
-        //Validate: Sender Holds The Entity-Role 
-        // require(roleHas(_msgSender(), entRole), "ROLE:INVALID_PERMISSION");
-        require(roleHas(tx.origin, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
+        // require(_hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        // require(ISoul( IAssoc(address(_HUB)).getAssoc("avatar") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        require(ISoul( getSoulAddr() ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        //Validate: Soul Assigned to the Role 
+        // require(roleHas(tx.origin, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
+        require(roleHasByToken(tokenId, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
         //Validate Stage
         require(stage < DataTypes.CaseStage.Closed, "STAGE:CASE_CLOSED");
-
         //Post Event
-        // emit Post(_msgSender(), entRole, postRole, uri_);
-        // emit Post(tx.origin, entRole, postRole, uri_);
-        // emit Post(tx.origin, entRole, uri_);
         _post(tx.origin, tokenId, entRole, uri_);
     }
 
@@ -339,12 +342,14 @@ contract CaseUpgradable is
     /// Rule (Action) Confirmed (Currently Only Judging Avatars)
     function _ruleConfirmed(uint256 ruleId) internal {
         //Get Avatar Contract
-        // IAvatar avatarContract = IAvatar(_HUB.getAssoc("avatar"));
-        IAvatar avatarContract = IAvatar(IAssoc(address(_HUB)).getAssoc("avatar"));
+        // ISoul avatarContract = ISoul(_HUB.getAssoc("avatar"));
+        // ISoul avatarContract = ISoul(IAssoc(address(_HUB)).getAssoc("avatar"));
+        ISoul avatarContract = ISoul( getSoulAddr() );
+        
 
         /* REMOVED for backward compatibility while in dev mode.
         //Validate Avatar Contract Interface
-        require(IERC165(address(avatarContract)).supportsInterface(type(IAvatar).interfaceId), "Invalid Avatar Contract");
+        require(IERC165(address(avatarContract)).supportsInterface(type(ISoul).interfaceId), "Invalid Avatar Contract");
         */
 
         //Fetch Case's Subject(s)
@@ -361,7 +366,7 @@ contract CaseUpgradable is
                     DataTypes.Effect memory effect = effects[j];
                     bool direction = effect.direction;
                     //Register Rep in Jurisdiction      //{name:'professional', value:5, direction:false}
-                    IJurisdiction(_jurisdiction).repAdd(address(avatarContract), tokenId, effect.name, direction, effect.value);
+                    IJurisdiction(getContainerAddr()).repAdd(address(avatarContract), tokenId, effect.name, direction, effect.value);
                 }
             }
 
@@ -377,21 +382,12 @@ contract CaseUpgradable is
     }
     
     /// Set Metadata URI For Role
-    function setRoleURI(string memory role, string memory _tokenURI) external override {
-        //Validate Permissions
-        require(owner() == _msgSender()      //Owner
-            || roleHas(_msgSender(), "admin")    //Admin Role
-            , "INVALID_PERMISSIONS");
+    function setRoleURI(string memory role, string memory _tokenURI) external override AdminOrOwner {
         _setRoleURI(role, _tokenURI);
     }
    
     /// Set Contract URI
-    function setContractURI(string calldata contract_uri) external override {
-        //Validate Permissions
-        require( owner() == _msgSender()      //Owner
-            || roleHas(_msgSender(), "admin")    //Admin Role
-            , "INVALID_PERMISSIONS");
-        //Set
+    function setContractURI(string calldata contract_uri) external override AdminOrOwner {
         _setContractURI(contract_uri);
     }
 

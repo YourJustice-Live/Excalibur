@@ -9,7 +9,7 @@ import "../interfaces/ICommonYJ.sol";
 import "../interfaces/IHub.sol";
 import "../libraries/DataTypes.sol";
 import "../abstract/ContractBase.sol";
-
+import "../public/interfaces/IOpenRepo.sol";
 /**
  * Common Protocol Functions
  */
@@ -66,4 +66,16 @@ abstract contract CommonYJUpgradable is
         return (keccak256(abi.encodePacked(str1)) == keccak256(abi.encodePacked(str2)));
     }
 
+    //** Data Repository 
+    
+    //Get Data Repo Address (From Hub)
+    function repoAddr() public view returns (address) {
+        return _HUB.repoAddr();
+    }
+
+    //Get Assoc Repo
+    function repo() internal view returns (IOpenRepo) {
+        return IOpenRepo(repoAddr());
+    }
+    
 }

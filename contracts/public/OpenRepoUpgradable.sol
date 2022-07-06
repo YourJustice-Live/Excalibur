@@ -17,7 +17,7 @@ import "../libraries/StringArray.sol";
 /**
  * @title Generic Data Repository
  * @dev Retains Data for Other Contracts
- * Version 2.1.0
+ * Version 2.1.1
  * - Save & Return Associations
  * - Owned by Requesting Address/Booleans/Strings
  * - Support Multiple Similar Items
@@ -83,7 +83,9 @@ contract OpenRepoUpgradable is
     /// Get Address By Origin Owner Node
     function addressGetOf(address originContract, string memory key) public view override returns(address) {
         //Validate
-        require(_addressesMulti[originContract][key][0] != address(0) , string(abi.encodePacked("Faild to Find Address: ", key)));
+        if(_addressesMulti[originContract][key].length == 0) return address(0);
+        // require(_addressesMulti[originContract][key][0] != address(0) , string(abi.encodePacked("Faild to Find Address: ", key)));
+        //Return
         return _addressesMulti[originContract][key][0];
     }
 
@@ -141,6 +143,8 @@ contract OpenRepoUpgradable is
 
     /// Get Boolean By Origin Owner Node
     function boolGetOf(address originContract, string memory key) public view override returns(bool) {
+        //Validate
+        if(_RepoBool[originContract][key].length == 0) return false;
         //Return Item
         return _RepoBool[originContract][key][0];
     }

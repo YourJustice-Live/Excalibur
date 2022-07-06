@@ -13,13 +13,13 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "./interfaces/IConfig.sol";
-import "./interfaces/IAssoc.sol";
+// import "./interfaces/IAssoc.sol";
 import "./public/interfaces/IOpenRepo.sol";
 import "./interfaces/ICommonYJ.sol";
 import "./interfaces/IHub.sol";
 import "./interfaces/IJurisdictionUp.sol";
 import "./interfaces/ICase.sol";
-import "./interfaces/IAvatar.sol";
+import "./interfaces/ISoul.sol";
 import "./libraries/DataTypes.sol";
 import "./abstract/ContractBase.sol";
 // import "./abstract/Assoc.sol";
@@ -34,7 +34,7 @@ import "./abstract/AssocExt.sol";
  */
 contract HubUpgradable is 
         IHub 
-        , IAssoc
+        // , IAssoc
         , Initializable
         , ContractBase
         , OwnableUpgradeable 
@@ -75,7 +75,7 @@ contract HubUpgradable is
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return interfaceId == type(IHub).interfaceId 
-            || interfaceId == type(IAssoc).interfaceId 
+            // || interfaceId == type(IAssoc).interfaceId 
             || super.supportsInterface(interfaceId);
     }
 
@@ -86,7 +86,7 @@ contract HubUpgradable is
         address jurisdictionContract, 
         address caseContract
     ) public initializer {
-        //Set Association Repo Address
+        //Set Data Repo Address
         _setRepo(openRepo);
 
         //Initializers
@@ -245,7 +245,7 @@ contract HubUpgradable is
     /// Add Repuation to Avatar
     function _repAddAvatar(uint256 tokenId, string calldata domain, bool rating, uint8 amount) internal {
         address avatarContract = repo().addressGet("avatar");
-        try IAvatar(avatarContract).repAdd(tokenId, domain, rating, amount) {}   //Failure should not be fatal
+        try ISoul(avatarContract).repAdd(tokenId, domain, rating, amount) {}   //Failure should not be fatal
         catch Error(string memory /*reason*/) {}
     }
 

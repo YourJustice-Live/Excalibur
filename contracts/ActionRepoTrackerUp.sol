@@ -6,7 +6,7 @@ pragma solidity 0.8.4;
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "./interfaces/IAssoc.sol";
+// import "./interfaces/IAssoc.sol";
 import "./interfaces/IActionRepo.sol";
 import "./abstract/CommonYJUpgradable.sol";
 import "./abstract/ERC1155GUIDTrackerUp.sol";
@@ -44,7 +44,7 @@ contract ActionRepoTrackerUp is
         //Initializers
         __UUPSUpgradeable_init();
         __CommonYJ_init(hub);
-        __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
+        __setTargetContract( repo().addressGetOf(address(_HUB), "avatar") );
         //Set Contract URI
         // _setContractURI(uri_);
     }
