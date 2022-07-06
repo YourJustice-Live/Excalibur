@@ -135,11 +135,11 @@ contract CaseUpgradable is
         return repo().addressGetOf(address(_HUB), "avatar");
     }
 
-    /// Apply to join a jurisdiction
-    function applyTojoin(string memory uri_) external override {
+    /// Request to Join
+    function nominate(uint256 soulToken, string memory uri_) external override {
         // uint256 soulToken = _getExtTokenId(_msgSender());
-        uint256 soulToken = _getExtTokenId(msg.sender); //May be a contract
-        emit Application(soulToken, _msgSender(), uri_);
+        // uint256 soulToken = _getExtTokenId(msg.sender); //May be a contract
+        emit Nominate(_msgSender(), soulToken, uri_);
     }
 
     /// Assign to a Role

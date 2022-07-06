@@ -77,5 +77,5 @@ abstract contract CommonYJUpgradable is
     function repo() internal view returns (IOpenRepo) {
         return IOpenRepo(repoAddr());
     }
-
+    
 }

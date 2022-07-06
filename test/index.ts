@@ -576,13 +576,13 @@ describe("Protocol", function () {
       });
       
       it("Can Apply to Join", async function () {
-        //Apply to Join Jurisdiction
-        let tx = await this.jurisdictionContract.connect(tester).applyTojoin(test_uri);
-        await tx.wait();
         //Get Tester's Avatar TokenID
         let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
+        //Apply to Join Jurisdiction
+        let tx = await this.jurisdictionContract.connect(tester).nominate(tokenId, test_uri);
+        await tx.wait();
         //Expect Event
-        await expect(tx).to.emit(jurisdictionContract, 'Application').withArgs(tokenId, this.testerAddr, test_uri);
+        await expect(tx).to.emit(jurisdictionContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
       });
 
       it("Can Re-Open Jurisdiction", async function () {
@@ -719,13 +719,13 @@ describe("Protocol", function () {
     });
 
     it("Users Can Apply to Join", async function () {
-      //Apply to Join Jurisdiction
-      let tx = await this.caseContract.connect(tester).applyTojoin(test_uri);
-      await tx.wait();
       //Get Tester's Avatar TokenID
       let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
+      //Apply to Join Jurisdiction
+      let tx = await this.caseContract.connect(tester).nominate(tokenId, test_uri);
+      await tx.wait();
       //Expect Event
-      await expect(tx).to.emit(this.caseContract, 'Application').withArgs(tokenId, this.testerAddr, test_uri);
+      await expect(tx).to.emit(this.caseContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
     });
 
     it("Should Update", async function () {
@@ -837,13 +837,13 @@ describe("Protocol", function () {
     });
     
     it("Anyonw Can Apply to Join", async function () {
-      //Apply to Join Jurisdiction
-      let tx = await this.caseContract.connect(tester).applyTojoin(test_uri);
-      await tx.wait();
       //Get Tester's Avatar TokenID
       let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
+      //Apply to Join Jurisdiction
+      let tx = await this.caseContract.connect(tester).nominate(tokenId, test_uri);
+      await tx.wait();
       //Expect Event
-      await expect(tx).to.emit(this.caseContract, 'Application').withArgs(tokenId, this.testerAddr, test_uri);
+      await expect(tx).to.emit(this.caseContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
     });
 
     it("Should Accept Verdict URI & Close Case", async function () {
