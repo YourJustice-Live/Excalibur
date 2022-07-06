@@ -88,9 +88,9 @@ contract CaseUpgradable is
         name = name_;
         //Init Default Case Roles
         _roleCreate("admin");
-        _roleCreate("subject");     //Filing against
-        _roleCreate("creator");   //Filing the case
-        _roleCreate("authority");       //Deciding authority
+        _roleCreate("creator");     //Filing the case
+        _roleCreate("subject");     //Acting Agent
+        _roleCreate("authority");   //Deciding authority
         _roleCreate("witness");     //Witnesses
         _roleCreate("affected");    //Affected Party [?]
         //Auto-Set Creator Wallet as Admin
