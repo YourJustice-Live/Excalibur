@@ -17,5 +17,9 @@ contract Dummy {
         return "Hello World";
     }
 
+    // function debugFunc2() public pure returns(string memory){
+    //     return _implementation();
+        // return uri(1);
+    // }
 
 }
