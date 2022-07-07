@@ -150,15 +150,25 @@ contract HubUpgradable is
 
     //-- Assoc
 
-    /// Set Association
-    function setAssoc(string memory key, address contractAddr) external onlyOwner {
-        repo().addressSet(key, contractAddr);
-    }
-
     /// Get Contract Association
     function getAssoc(string memory key) public view override returns(address) {
         //Return address from the Repo
         return repo().addressGet(key);
+    }
+
+    /// Set Association
+    function setAssoc(string memory key, address contractAddr) external onlyOwner {
+        repo().addressSet(key, contractAddr);
+    }
+    
+    /// Add Association
+    function assocAdd(string memory key, address contractAddr) external onlyOwner {
+        repo().addressAdd(key, contractAddr);
+    }
+
+    /// Remove Association
+    function assocRemove(string memory key, address contractAddr) external onlyOwner {
+        repo().addressRemove(key, contractAddr);
     }
 
     //Repo Address
