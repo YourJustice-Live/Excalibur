@@ -6,6 +6,7 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 // import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
+
 // import "./libraries/DataTypes.sol";
 import "./interfaces/IGameUp.sol";
 import "./interfaces/IRules.sol";
@@ -52,7 +53,7 @@ contract GameUpgradable is
         // ERC1155RolesUpgradable {
 
     //--- Storage
-    string public constant override symbol = "JURISDICTION";
+    string public constant override symbol = "GAME";
     using Strings for uint256;
 
     using CountersUpgradeable for CountersUpgradeable.Counter;
@@ -216,7 +217,7 @@ contract GameUpgradable is
         require(implementationAddresses.length > 0, "NO_FALLBACK_CONTRACT");
         return implementationAddresses;
     }
-    
+
     //** Custom Rating Functions
     
     /// Add Reputation (Positive or Negative)

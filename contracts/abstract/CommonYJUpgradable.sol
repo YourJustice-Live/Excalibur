@@ -56,7 +56,7 @@ abstract contract CommonYJUpgradable is
     /// Set Hub Contract
     function _setHub(address hubAddr) internal {
         //Validate Contract's Designation
-        require(keccak256(abi.encodePacked(IHub(hubAddr).role())) == keccak256(abi.encodePacked("YJHub")), "Invalid Hub Contract");
+        require(keccak256(abi.encodePacked(IHub(hubAddr).role())) == keccak256(abi.encodePacked("Hub")), "Invalid Hub Contract");
         //Set
         _HUB = IHub(hubAddr);
     }

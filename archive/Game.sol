@@ -48,7 +48,7 @@ contract Game is
         ERC1155Roles {
 
     //--- Storage
-    string public constant override symbol = "JURISDICTION";
+    string public constant override symbol = "GAME";
     using Strings for uint256;
 
     using Counters for Counters.Counter;
@@ -83,7 +83,6 @@ contract Game is
         // _setActionsContract(_HUB.historyContract());
         // _setActionsContract(actionRepo); //CANCELLED
         name = "Anti-Scam Game";
-        // symbol = "YJ_J1";
         //Init Default Game Roles
         _roleCreate("admin"); 
         _roleCreate("member");

@@ -54,8 +54,8 @@ contract Hub is
     // Counters.Counter internal _incidentIds;  //Track Last Incident ID
 
     // Arbitrary contract designation signature
-    string public constant override role = "YJHub";
-    string public constant override symbol = "YJHUB";
+    string public constant override role = "Hub";
+    string public constant override symbol = "HUB";
 
     //--- Storage
     // address internal _CONFIG;    //Configuration Contract
@@ -110,7 +110,7 @@ contract Hub is
     /// Set Configurations Contract Address
     function _setConfig(address config) internal {
         //Validate Contract's Designation
-        require(keccak256(abi.encodePacked(IConfig(config).symbol())) == keccak256(abi.encodePacked("YJConfig")), "Invalid Config Contract");
+        require(keccak256(abi.encodePacked(IConfig(config).symbol())) == keccak256(abi.encodePacked("Config")), "Invalid Config Contract");
         //Set
         // _CONFIG = IConfig(config);
         _setAssoc("config", config);

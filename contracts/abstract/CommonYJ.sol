@@ -50,8 +50,8 @@ abstract contract CommonYJ is ICommonYJ, Ownable {
     /// Set Hub Contract
     function _setHub(address hubAddr) internal {
         //Validate Contract's Designation
-        require(keccak256(abi.encodePacked(IHub(hubAddr).role())) == keccak256(abi.encodePacked("YJHub")), "Invalid Hub Contract");
-        // require(keccak256(abi.encodePacked(IHub(hubAddr).symbol())) == keccak256(abi.encodePacked("YJHUB")), "Invalid Hub Contract");
+        require(keccak256(abi.encodePacked(IHub(hubAddr).role())) == keccak256(abi.encodePacked("Hub")), "Invalid Hub Contract");
+        // require(keccak256(abi.encodePacked(IHub(hubAddr).symbol())) == keccak256(abi.encodePacked("HUB")), "Invalid Hub Contract");
         //Set
         _HUB = IHub(hubAddr);
     }
