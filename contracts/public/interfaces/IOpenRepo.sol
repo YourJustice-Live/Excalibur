@@ -19,6 +19,12 @@ interface IOpenRepo {
     /// Get First Address in Index
     function addressGetIndex(string memory key, uint256 index) external view returns(address);
 
+    /// Get All Address in Slot
+    function addressGetAllOf(address originContract, string memory key) external view returns(address[] memory);
+    
+    /// Get All Address in Slot
+    function addressGetAll(string memory key) external view returns(address[] memory);
+
     /// Set  Association
     function addressSet(string memory key, address value) external;
 

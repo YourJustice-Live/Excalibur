@@ -110,10 +110,14 @@ contract OpenRepoUpgradable is
     }
     
     /// Get All Address in Slot
-    function addressGetAll(string memory key) external view returns(address[] memory) {
-        address originContract = _msgSender();
-        //Validate
+    function addressGetAllOf(address originContract, string memory key) public view override returns(address[] memory) {
         return _addressesMulti[originContract][key];
+    }
+
+    /// Get All Address in Slot
+    function addressGetAll(string memory key) external view override returns(address[] memory) {
+        address originContract = _msgSender();
+        return addressGetAllOf(originContract, key);
     }
 
     /// Set Address
