@@ -155,7 +155,7 @@ contract Game is
     // function repAdd(address contractAddr, uint256 tokenId, string calldata domain, DataTypes.Rating rating, uint8 amount) external override {
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external override {
         //Validate - Called by Child Incident
-        require(incidentHas(_msgSender()), "NOT A VALID CASE");
+        require(incidentHas(_msgSender()), "NOT A VALID INCIDENT");
         //Run
         _repAdd(contractAddr, tokenId, domain, rating, amount);
         //Update Hub
