@@ -594,7 +594,6 @@ describe("Protocol", function () {
       
     });
 
-
     describe("Game Extensions", function () {
 
       it("Should Set DAO Extension Contract", async function () {
@@ -625,8 +624,6 @@ describe("Protocol", function () {
       });
 
     });
-
-
 
   }); //Game
 
