@@ -20,6 +20,7 @@ import "./abstract/Posts.sol";
 // import "./abstract/ERC1155RolesUpgradable.sol";
 // import "./abstract/Recursion.sol";
 // import "./public/interfaces/IOpenRepo.sol";
+import "./abstract/ProxyMulti.sol";
 
 /**
  * @title Game Contract
@@ -46,6 +47,7 @@ contract GameUpgradable is
         CommonYJUpgradable, 
         Opinions, 
         Posts,
+        ProxyMulti,
         ERC1155RolesTrackerUp {
         // ERC1155RolesUpgradable {
 
@@ -78,6 +80,20 @@ contract GameUpgradable is
             || roleHas(_msgSender(), "admin")    //Admin Role
             , "INVALID_PERMISSIONS");
         _;
+    }
+
+
+    //---Proxy
+
+    /// Fallback Implementations
+    function _implementations() internal view virtual override returns (address[] memory){
+        require (!_stringMatch(confGet("type"), ""), "NO_GAME_TYPE");
+        //UID
+        string memory gameType = string(abi.encodePacked("GAME_", confGet("type")));
+        //Fetch Implementations
+        address[] memory implementationAddresses = repo().addressGetAllOf(address(_HUB), gameType);
+        require(implementationAddresses.length > 0, "NO_FALLBACK_CONTRACT");
+        return implementationAddresses;
     }
 
     //--- Functions
