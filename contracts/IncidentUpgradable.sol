@@ -220,7 +220,7 @@ contract IncidentUpgradable is
         // require(roleHas(tx.origin, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
         require(roleHasByToken(tokenId, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
         //Validate Stage
-        require(stage < DataTypes.IncidentStage.Closed, "STAGE:CASE_CLOSED");
+        require(stage < DataTypes.IncidentStage.Closed, "STAGE:CLOSED");
         //Post Event
         _post(tx.origin, tokenId, entRole, uri_);
     }

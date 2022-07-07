@@ -203,7 +203,7 @@ contract Hub is
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) public override {
 
         //TODO: Validate - Known Game
-        // require(_games[_msgSender()], "NOT A VALID JURISDICTION");
+        // require(_games[_msgSender()], "NOT A VALID GAME");
 
         // console.log("Hub: Add Reputation to Contract:", contractAddr, tokenId, amount);
         // console.log("Hub: Add Reputation in Domain:", domain);

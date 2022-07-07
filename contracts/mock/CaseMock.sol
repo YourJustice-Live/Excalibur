@@ -26,7 +26,7 @@ contract IncidentMock is IncidentUpgradable {
         // initialize(
         //     hub, 
         //     "Mock Incident", 
-        //     "MOCKCASE_URI", 
+        //     "MOCK_URI", 
         //     addRules,
         //     assignRoles,
         //     container
