@@ -82,31 +82,25 @@ contract OpenRepoUpgradable is
 
     /// Get Address By Origin Owner Node
     function addressGetOf(address originContract, string memory key) public view override returns(address) {
-        //Validate
+        //Handle Missing Values
         if(_addressesMulti[originContract][key].length == 0) return address(0);
-        // require(_addressesMulti[originContract][key][0] != address(0) , string(abi.encodePacked("Faild to Find Address: ", key)));
         //Return
         return _addressesMulti[originContract][key][0];
     }
 
     /// Get First Address in Slot
     function addressGet(string memory key) external view override returns(address) {
-        address originContract = _msgSender();
-        //Validate
-        return addressGetOf(originContract, key);
+        return addressGetOf(_msgSender(), key);
     }
     
     /// Get First Address by Index
     function addressGetIndexOf(address originContract, string memory key, uint256 index) public view override returns(address) {
-        //Fetch
         return _addressesMulti[originContract][key][index];
     }
 
     /// Get First Address in Index
     function addressGetIndex(string memory key, uint256 index) external view override returns(address) {
-        address originContract = _msgSender();
-        //Fetch
-        return addressGetIndexOf(originContract, key, index);
+        return addressGetIndexOf(_msgSender(), key, index);
     }
     
     /// Get All Address in Slot
@@ -155,29 +149,22 @@ contract OpenRepoUpgradable is
 
     /// Get First Boolean in Slot
     function boolGet(string memory key) external view override returns(bool) {
-        address originContract = _msgSender();
-        //Validate
-        return boolGetOf(originContract, key);
+        return boolGetOf(_msgSender(), key);
     }
     
     /// Get First Boolean by Index
     function boolGetIndexOf(address originContract, string memory key, uint256 index) public view override returns(bool) {
-        //Fetch
         return _RepoBool[originContract][key][index];
     }
 
     /// Get First Boolean in Index
     function boolGetIndex(string memory key, uint256 index) external view override returns(bool) {
-        address originContract = _msgSender();
-        //Fetch
-        return boolGetIndexOf(originContract, key, index);
+        return boolGetIndexOf(_msgSender(), key, index);
     }
     
     /// Get All Boolean in Slot
     function boolGetAll(string memory key) external view returns(bool[] memory) {
-        address originContract = _msgSender();
-        //Validate
-        return _RepoBool[originContract][key];
+        return _RepoBool[_msgSender()][key];
     }
 
     /// Set Boolean
@@ -219,22 +206,17 @@ contract OpenRepoUpgradable is
     
     /// Get First Boolean by Index
     function stringGetIndexOf(address originContract, string memory key, uint256 index) public view override returns(string memory) {
-        //Fetch
         return _RepoString[originContract][key][index];
     }
 
     /// Get First Boolean in Index
     function stringGetIndex(string memory key, uint256 index) external view override returns(string memory) {
-        address originContract = _msgSender();
-        //Fetch
-        return stringGetIndexOf(originContract, key, index);
+        return stringGetIndexOf(_msgSender(), key, index);
     }
     
     /// Get All Boolean in Slot
     function stringGetAll(string memory key) external view returns(string[] memory) {
-        address originContract = _msgSender();
-        //Validate
-        return _RepoString[originContract][key];
+        return _RepoString[_msgSender()][key];
     }
 
     /// Set Boolean
