@@ -9,12 +9,12 @@ const contractAddr: any = {
       history:"0xD7ab715a2C1e5b450b54B1E3cE5136D755c715B8", //D4.4 (Proxy)
   },
   mumbai:{
-    config: "0x1F2c31D5034F27A4352Bc6ca0fc72cdC32809808", // D2.1
-    jurisdiction: "0x57d1469c53Bb259Dc876A274ADd329Eb703Ab286", // D2.91
-    case: "0xED7621062a097f95183edC753e185B4f75d4B637", // D2.8
-    hub: "0x47307dEBB584C680E51dAFb167622ce9633c2Acf", // D4.6 (Proxy)
-    avatar: "0xFe61dc25C3B8c3F990bCea5bb901704B2a8b9Bd2", // D2.8 (Proxy)
-    history: "0x95BD98a656C907fC037aF87Ea740fD94188Cd65f", // D4.4 (Proxy)
+    config: "0x247967678388Aea4A66eb48D6B3d3AeaB7e0C0fB",
+    jurisdiction: "0xAFe7aDB87E780CfB8720cc043e76672d91c40782",
+    case: "0x43Cebbd6eE560C987c857D6Bf9D010f9144204f8",
+    hub: "0x0197249adA3c806E7c0029651e10defD2572C8cc",
+    avatar: "0xcfF117d5b357FC3a9f2E6d9A78eDE094c51bB017",
+    history: "0x5dD311d5b77bc198b023B3AEbe81c3E6Fb38ee25",
   },
   optimism:{
   },

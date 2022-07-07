@@ -5,7 +5,7 @@ const publicAddr: any = {
       openRepo: "0x7b0AA37bCf5D231C13C920E0e372027919510fF9", //V2.0 (UUDP)
   },
   mumbai:{
-    openRepo: "0x539dA825856778B593a55aC4E8A0Ec1441f18e78", // V2.0 (UUDP)
+    openRepo: "0x1837767da1E99e3ebd321282f281A9C6B0eEeDbB",
   },
   optimism:{
       openRepo: "",
