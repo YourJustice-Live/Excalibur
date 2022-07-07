@@ -69,7 +69,7 @@ abstract contract CommonYJUpgradable is
     //** Data Repository 
     
     //Get Data Repo Address (From Hub)
-    function repoAddr() public view returns (address) {
+    function repoAddr() public view override returns (address) {
         return _HUB.repoAddr();
     }
 
