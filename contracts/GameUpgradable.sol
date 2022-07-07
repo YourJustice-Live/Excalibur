@@ -83,19 +83,6 @@ contract GameUpgradable is
     }
 
 
-    //---Proxy
-
-    /// Fallback Implementations
-    function _implementations() internal view virtual override returns (address[] memory){
-        require (!_stringMatch(confGet("type"), ""), "NO_GAME_TYPE");
-        //UID
-        string memory gameType = string(abi.encodePacked("GAME_", confGet("type")));
-        //Fetch Implementations
-        address[] memory implementationAddresses = repo().addressGetAllOf(address(_HUB), gameType);
-        require(implementationAddresses.length > 0, "NO_FALLBACK_CONTRACT");
-        return implementationAddresses;
-    }
-
     //--- Functions
 
     /// ERC165 - Supported Interfaces
@@ -217,6 +204,19 @@ contract GameUpgradable is
         _confSet(key, value);
     }
 
+    //** Multi Proxy
+
+    /// Fallback Implementations
+    function _implementations() internal view virtual override returns (address[] memory){
+        require (!_stringMatch(confGet("type"), ""), "NO_GAME_TYPE");
+        //UID
+        string memory gameType = string(abi.encodePacked("GAME_", confGet("type")));
+        //Fetch Implementations
+        address[] memory implementationAddresses = repo().addressGetAllOf(address(_HUB), gameType);
+        require(implementationAddresses.length > 0, "NO_FALLBACK_CONTRACT");
+        return implementationAddresses;
+    }
+    
     //** Custom Rating Functions
     
     /// Add Reputation (Positive or Negative)
