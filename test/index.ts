@@ -594,6 +594,40 @@ describe("Protocol", function () {
       
     });
 
+
+    describe("Game Extensions", function () {
+
+      it("Should Set DAO Extension Contract", async function () {
+        //Deploy Extensions
+        let dummyContract1 = await ethers.getContractFactory("Dummy").then(res => res.deploy());
+        let dummyContract2 = await ethers.getContractFactory("Dummy2").then(res => res.deploy());
+        //Set DAO Extension Contract
+        hubContract.assocAdd("GAME_DAO", dummyContract1.address);
+        hubContract.assocAdd("GAME_DAO", dummyContract2.address);
+      });
+
+      it("Should Set Game Type", async function () {
+        //Change Game Type
+        await this.gameContract.connect(admin).confSet("type", "DAO");
+        //Validate
+        expect(await this.gameContract.confGet("type")).to.equal("DAO");
+      });
+
+      it("Should Fallback to Extension Function", async function () {
+        this.daoContract = await ethers.getContractFactory("Dummy2").then(res => res.attach(this.gameContract.address));
+        this.daoContract2 = await ethers.getContractFactory("Dummy2").then(res => res.attach(this.gameContract.address));
+        //First Dummy        
+        expect(await await this.daoContract.debugFunc()).to.equal("Hello World Dummy");
+        //Second Dummy
+        expect(await await this.daoContract2.debugFunc2()).to.equal("Hello World Dummy 2");
+        //Second Dummy Extracts Data from Main Game Contract
+        expect(await await this.daoContract2.useSelf()).to.equal("Game Type: DAO");
+      });
+
+    });
+
+
+
   }); //Game
 
   /**

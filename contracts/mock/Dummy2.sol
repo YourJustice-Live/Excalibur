@@ -26,7 +26,7 @@ contract Dummy2 is GameExtension {
     }
 
     function debugFunc2() public pure returns(string memory){
-        return "Hello World 2.2";
+        return "Hello World Dummy 2";
     }
 
     /// Try to Use Self (Main Contract's Functions)

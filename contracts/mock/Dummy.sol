@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 
 
 /**
- * @title Dummy Contract
+ * @title Dummy Contract - Empty Game Extension
  */
 contract Dummy {
 
@@ -12,14 +12,8 @@ contract Dummy {
 
     }
 
-
     function debugFunc() public pure returns(string memory){
-        return "Hello World";
+        return "Hello World Dummy";
     }
-
-    // function debugFunc2() public pure returns(string memory){
-    //     return _implementation();
-        // return uri(1);
-    // }
 
 }
