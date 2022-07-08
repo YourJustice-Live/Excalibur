@@ -30,7 +30,7 @@ contract Dummy2 is GameExtension {
 
     /// Try to Use Self (Main Contract's Functions)
     function useSelf() public view returns(string memory){
-        string memory gameType = _game().confGet("type");
+        string memory gameType = game().confGet("type");
         return string(abi.encodePacked("Game Type: ", gameType));
     }
 
