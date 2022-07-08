@@ -1,6 +1,11 @@
-import { run } from "hardhat"
+import { run } from "hardhat";
+// import { ethers } from "hardhat";
+// const { upgrades } = require("hardhat");
+// import { deployments, ethers } from "hardhat"
+// export const deployRepoRules = async (contractAddress: string, args: any[]) => {
+// }
 
-const verify = async (contractAddress: string, args: any[]) => {
+export const verify = async (contractAddress: string, args: any[]) => {
   console.log("Verifying contract...")
   try {
     await run("verify:verify", {
@@ -16,4 +21,5 @@ const verify = async (contractAddress: string, args: any[]) => {
   }
 }
 
-export default verify
+
+
