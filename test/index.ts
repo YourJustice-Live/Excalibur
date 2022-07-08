@@ -32,11 +32,9 @@ describe("Protocol", function () {
 
   before(async function () {
     //Deploy Config
-    const ConfigContract = await ethers.getContractFactory("Config");
-    configContract = await ConfigContract.deploy();
-
-    //--- Deploy Assoc Repo
-    // this.assocRepo = await ethers.getContractFactory("AssocRepo").then(res => res.deploy());
+    // const ConfigContract = await ethers.getContractFactory("Config");
+    // configContract = await ConfigContract.deploy();
+    configContract = await ethers.getContractFactory("Config").then(res => res.deploy());
 
     //--- Deploy OpenRepo Upgradable (UUDP)
     this.openRepo = await ethers.getContractFactory("OpenRepoUpgradable")
@@ -44,7 +42,8 @@ describe("Protocol", function () {
 
     //--- Deploy Incident Implementation
     this.incidentContract = await ethers.getContractFactory("IncidentUpgradable").then(res => res.deploy());
-    //Game Upgradable Implementation
+
+    //--- Deploy Game Implementation
     this.gameUpContract = await ethers.getContractFactory("GameUpgradable").then(res => res.deploy());
 
     //Deploy Hub
@@ -65,6 +64,13 @@ describe("Protocol", function () {
       })
     );
     // await hubContract.deployed();
+
+
+    //--- Rule Repository
+    //Deploy
+    this.ruleRepo = await ethers.getContractFactory("RuleRepo").then(res => res.deploy());
+    //Set to Hub
+    hubContract.assocAdd("RULE_REPO", this.ruleRepo.address);
 
     //--- Deploy Soul Upgradable (UUDP)
     avatarContract = await ethers.getContractFactory("SoulUpgradable").then(Contract => 
@@ -469,25 +475,32 @@ describe("Protocol", function () {
      
       //Add Rule
       let tx = await gameContract.connect(admin).ruleAdd(rule, confirmation, effects1);
+      // const gameRules = await ethers.getContractAt("IRules", this.gameContract.address);
+      // let tx = await gameRules.connect(admin).ruleAdd(rule, confirmation, effects1);
+      
       // wait until the transaction is mined
       await tx.wait();
-      // console.log("Rule Added", tx);
+      // const receipt = await tx.wait()
+      // console.log("Rule Added", receipt.logs);
+      // console.log("Rule Added Events: ", receipt.events);
 
       //Expect Event
-      await expect(tx).to.emit(gameContract, 'Rule').withArgs(1, rule.about, rule.affected, rule.uri, rule.negation);
-      // await expect(tx).to.emit(gameContract, 'RuleEffects').withArgs(1, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
+      await expect(tx).to.emit(this.ruleRepo, 'Rule').withArgs(1, rule.about, rule.affected, rule.uri, rule.negation);
+      
+      // await expect(tx).to.emit(this.ruleRepo, 'RuleEffects').withArgs(1, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
       for(let effect of effects1){
-        await expect(tx).to.emit(gameContract, 'RuleEffect').withArgs(1, effect.direction, effect.value, effect.name);
+        await expect(tx).to.emit(this.ruleRepo, 'RuleEffect').withArgs(1, effect.direction, effect.value, effect.name);
       }
-      await expect(tx).to.emit(gameContract, 'Confirmation').withArgs(1, confirmation.ruling, confirmation.evidence, confirmation.witness);
+      await expect(tx).to.emit(this.ruleRepo, 'Confirmation').withArgs(1, confirmation.ruling, confirmation.evidence, confirmation.witness);
 
       //Add Another Rule
       let tx2 = await gameContract.connect(admin).ruleAdd(rule2, confirmation, effects2);
+      
             
       //Expect Event
-      await expect(tx2).to.emit(gameContract, 'Rule').withArgs(2, rule2.about, rule2.affected, rule2.uri, rule2.negation);
-      // await expect(tx2).to.emit(gameContract, 'RuleEffects').withArgs(2, rule2.effects.environmental, rule2.effects.personal, rule2.effects.social, rule2.effects.professional);
-      await expect(tx2).to.emit(gameContract, 'Confirmation').withArgs(2, confirmation.ruling, confirmation.evidence, confirmation.witness);
+      await expect(tx2).to.emit(this.ruleRepo, 'Rule').withArgs(2, rule2.about, rule2.affected, rule2.uri, rule2.negation);
+      // await expect(tx2).to.emit(this.ruleRepo, 'RuleEffects').withArgs(2, rule2.effects.environmental, rule2.effects.personal, rule2.effects.social, rule2.effects.professional);
+      await expect(tx2).to.emit(this.ruleRepo, 'Confirmation').withArgs(2, confirmation.ruling, confirmation.evidence, confirmation.witness);
 
       // expect(await gameContract.ruleAdd(actionContract.address)).to.equal("Hello, world!");
       // let ruleData = await gameContract.ruleGet(1);
@@ -603,6 +616,8 @@ describe("Protocol", function () {
         //Set DAO Extension Contract
         hubContract.assocAdd("GAME_DAO", dummyContract1.address);
         hubContract.assocAdd("GAME_DAO", dummyContract2.address);
+        // console.log("Setting GAME_DAO Extension: ", dummyContract1.address);
+        // console.log("Setting GAME_DAO Extension: ", dummyContract2.address);
       });
 
       it("Should Set Game Type", async function () {

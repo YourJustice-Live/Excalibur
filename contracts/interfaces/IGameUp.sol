@@ -17,6 +17,12 @@ interface IGame {
     /// Symbol As Arbitrary contract designation signature
     function symbol() external view returns (string memory);
 
+    /// Generic Config Get Function
+    function confGet(string memory key) external view returns(string memory);
+
+    /// Generic Config Set Function
+    function confSet(string memory key, string memory value) external;
+
     /// Add Post 
     function post(string calldata entRole, uint256 tokenId, string calldata uri) external;
 
@@ -53,9 +59,16 @@ interface IGame {
     /// Create a new Role
     // function roleCreate(address account, string calldata role) external;
 
+    /// Set Metadata URI For Role
+    function setRoleURI(string memory role, string memory _tokenURI) external;
+
+
     /// Add Reputation (Positive or Negative)
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external;
 
+
+
+    /* MOVED TO IRules
     //-- Rule Func.
 
     /// Create New Rule
@@ -66,15 +79,11 @@ interface IGame {
     
     /// Update Rule's Confirmation Data
     function ruleConfirmationUpdate(uint256 id, DataTypes.Confirmation memory confirmation) external;
-        
-    /// Set Metadata URI For Role
-    function setRoleURI(string memory role, string memory _tokenURI) external;
 
-    /// Generic Config Get Function
-    function confGet(string memory key) external view returns(string memory);
+    */
 
-    /// Generic Config Set Function
-    function confSet(string memory key, string memory value) external;
+    
+
 
     //--- Events
 
