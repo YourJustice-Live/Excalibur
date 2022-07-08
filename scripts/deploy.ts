@@ -16,6 +16,9 @@ const publicAddr = publicAddrs[chain];
 
 async function main() {
 
+  //Validate Foundation
+  if(!publicAddr.openRepo || publicAddr.ruleRepo) throw "Must First Deploy Foundation Contracts on Chain:'"+chain+"'";
+
   console.log("Running on Chain: ", chain);
 
   let hubContract;
@@ -70,8 +73,10 @@ async function main() {
         timeout: 120000
       })
     );
-
     await hubContract.deployed();
+
+    //Set RuleRepo to Hub
+    hubContract.assocAdd("RULE_REPO", publicAddr.ruleRepo.address);
 
     //Set Address
     contractAddr.hub = hubContract.address;
