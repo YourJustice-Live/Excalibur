@@ -6,6 +6,11 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 // import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
+// import "@openzeppelin/contracts/governance/utils/Votes.sol";
+// import "./abstract/Votes.sol";
+// import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/draft-ERC721VotesUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/governance/utils/VotesUpgradeable.sol";
+
 
 // import "./libraries/DataTypes.sol";
 import "./interfaces/IGameUp.sol";
@@ -14,11 +19,10 @@ import "./interfaces/IIncident.sol";
 import "./interfaces/IActionRepo.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/CommonYJUpgradable.sol";
-import "./abstract/Rules.sol";
 import "./abstract/ContractBase.sol";
 import "./abstract/Opinions.sol";
 import "./abstract/Posts.sol";
-// import "./abstract/ERC1155RolesUpgradable.sol";
+// import "./abstract/Rules.sol";
 // import "./abstract/Recursion.sol";
 // import "./public/interfaces/IOpenRepo.sol";
 import "./abstract/ProxyMulti.sol";
@@ -43,12 +47,14 @@ import "./abstract/ProxyMulti.sol";
  */
 contract GameUpgradable is 
         IGame, 
-        Rules, 
+        IRules,
+        // Rules, 
         ContractBase,
         CommonYJUpgradable, 
         Opinions, 
         Posts,
         ProxyMulti,
+        // VotesUpgradeable,
         ERC1155RolesTrackerUp {
         // ERC1155RolesUpgradable {
 
@@ -85,6 +91,23 @@ contract GameUpgradable is
 
 
     //--- Functions
+
+
+    /** For VotesUpgradeable
+     * @dev Returns the balance of `account`.
+     * /
+    function _getVotingUnits(address account) internal view virtual override returns (uint256) {
+        return balanceOf(account, _roleToId("member"));
+    }
+    */
+
+
+
+    //Get Rules Repo
+    function _ruleRepo() internal view returns (IRules) {
+        address ruleRepoAddr = repo().addressGetOf(address(_HUB), "RULE_REPO");
+        return IRules(ruleRepoAddr);
+    }
 
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
@@ -207,21 +230,53 @@ contract GameUpgradable is
 
     //** Multi Proxy
 
-    /// Fallback Implementations
+    /// Proxy Fallback Implementations
     function _implementations() internal view virtual override returns (address[] memory){
+        // string memory gameType = confGet("type");
         require (!_stringMatch(confGet("type"), ""), "NO_GAME_TYPE");
         //UID
         string memory gameType = string(abi.encodePacked("GAME_", confGet("type")));
         //Fetch Implementations
-        address[] memory implementationAddresses = repo().addressGetAllOf(address(_HUB), gameType);
+        address[] memory implementationAddresses = repo().addressGetAllOf(address(_HUB), gameType); //Specific
         require(implementationAddresses.length > 0, "NO_FALLBACK_CONTRACT");
         return implementationAddresses;
     }
 
+    /* Support for Global Extension
+    /// Proxy Fallback Implementations
+    function _implementations() internal view virtual override returns (address[] memory){
+        //UID
+        string memory gameType = string(abi.encodePacked("GAME_", confGet("type")));
+        //Fetch Implementations
+        address[] memory implementationAddresses = repo().addressGetAllOf(address(_HUB), gameType); //Specific
+        address[] memory implementationAddressesAll = repo().addressGetAllOf(address(_HUB), "GAME_ALL"); //General
+        return arrayConcat(implementationAddressesAll, implementationAddresses);
+    }
+    
+    /// Concatenate Arrays (A Suboptimal Solution -- ~800Bytes)      //TODO: Maybe move to an external library?
+    function arrayConcat(address[] memory Accounts, address[] memory Accounts2) private pure returns(address[] memory) {
+        //Create a new container array
+        address[] memory returnArr = new address[](Accounts.length + Accounts2.length);
+        uint i=0;
+        if(Accounts.length > 0){
+            for (; i < Accounts.length; i++) {
+                returnArr[i] = Accounts[i];
+            }
+        }
+        uint j=0;
+        if(Accounts2.length > 0){
+            while (j < Accounts.length) {
+                returnArr[i++] = Accounts2[j++];
+            }
+        }
+        return returnArr;
+    } 
+    */
+
+
     //** Custom Rating Functions
     
     /// Add Reputation (Positive or Negative)
-    // function repAdd(address contractAddr, uint256 tokenId, string calldata domain, DataTypes.Rating rating, uint8 amount) external override {
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external override {
         //Validate - Called by Child Incident
         require(incidentHas(_msgSender()), "NOT A VALID INCIDENT");
@@ -301,6 +356,62 @@ contract GameUpgradable is
         }
     }
 
+
+
+
+
+
+ //** Rule Management
+    
+    //-- Getters
+
+    /// Get Rule
+    function ruleGet(uint256 id) public view override returns (DataTypes.Rule memory) {
+        return _ruleRepo().ruleGet(id);
+    }
+
+    /// Get Rule's Effects
+    function effectsGet(uint256 id) public view override returns (DataTypes.Effect[] memory){
+        return _ruleRepo().effectsGet(id);
+    }
+
+    /// Get Rule's Confirmation Method
+    function confirmationGet(uint256 id) public view override returns (DataTypes.Confirmation memory){
+        return _ruleRepo().confirmationGet(id);
+    }
+
+    //-- Setters
+
+    /// Create New Rule
+    function ruleAdd(
+        DataTypes.Rule memory rule, 
+        DataTypes.Confirmation memory confirmation, 
+        DataTypes.Effect[] memory effects
+    ) public override returns (uint256) {
+        return _ruleRepo().ruleAdd(rule, confirmation, effects);
+    }
+
+    /// Update Rule
+    function ruleUpdate(
+        uint256 id, 
+        DataTypes.Rule memory rule, 
+        DataTypes.Effect[] memory effects
+    ) external override {
+        _ruleRepo().ruleUpdate(id, rule, effects);
+    }
+
+    /// Set Disable Status for Rule
+    function ruleDisable(uint256 id, bool disabled) external override {
+        _ruleRepo().ruleDisable(id, disabled);
+    }
+
+    /// Update Rule's Confirmation Data
+    function ruleConfirmationUpdate(uint256 id, DataTypes.Confirmation memory confirmation) external override {
+        _ruleRepo().ruleConfirmationUpdate(id, confirmation);
+    }
+
+
+/* MOVED OUT TO RuleRepo
     //** Rule Management
 
     /// Create New Rule
@@ -311,12 +422,9 @@ contract GameUpgradable is
     ) public override returns (uint256) {
         //Validate Caller's Permissions
         require(roleHas(_msgSender(), "admin"), "Admin Only");
-
         //Validate rule.about -- actionGUID Exists
-        // address actionRepo = IAssoc(address(_HUB)).getAssoc("history");
         address actionRepo = repo().addressGetOf(address(_HUB), "history");
         IActionRepo(actionRepo).actionGet(rule.about);  //Revetrs if does not exist
-
         //Add Rule
         uint256 id = _ruleAdd(rule, effects);
         //Set Confirmations
@@ -351,7 +459,7 @@ contract GameUpgradable is
         //Set Confirmations
         _confirmationSet(id, confirmation);
     }
-
+    */
     /*
     /// TODO: Update Rule's Effects
     function ruleEffectsUpdate(uint256 id, DataTypes.Effect[] memory effects) external override {
@@ -361,6 +469,11 @@ contract GameUpgradable is
         
     }
     */
+
+
+
+
+
 
     /// Get Token URI by Token ID
     // function tokenURI(uint256 token_id) public view returns (string memory) {
