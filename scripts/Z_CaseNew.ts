@@ -5,7 +5,7 @@
 // Runtime Environment's members available in the global scope.
 
 import { ethers } from "hardhat";
-const {  upgrades } = require("hardhat");
+const { upgrades } = require("hardhat");
 
 /**
  * Create a new Game Script
