@@ -47,16 +47,16 @@ async function main() {
     console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.game);
   }
 
-  //--- Incident Implementation
-  if(!contractAddr.incident){
-    //Deploy Incident
-    let contract = await ethers.getContractFactory("IncidentUpgradable").then(res => res.deploy());
+  //--- Reaction Implementation
+  if(!contractAddr.reaction){
+    //Deploy Reaction
+    let contract = await ethers.getContractFactory("ReactionUpgradable").then(res => res.deploy());
     await contract.deployed();
     //Set Address
-    contractAddr.incident = contract.address;
+    contractAddr.reaction = contract.address;
     //Log
-    console.log("Deployed Incident Contract to " + contractAddr.incident);
-    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.incident);
+    console.log("Deployed Reaction Contract to " + contractAddr.reaction);
+    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.reaction);
   }
 
   //--- TEST: Upgradable Hub
@@ -68,7 +68,7 @@ async function main() {
     //       publicAddr.openRepo,
     //       contractAddr.config, 
     //       contractAddr.game,
-    //       contractAddr.incident,
+    //       contractAddr.reaction,
     //     ],{
     //     kind: "uups",
     //     timeout: 120000
@@ -79,8 +79,9 @@ async function main() {
         publicAddr.openRepo,
         contractAddr.config, 
         contractAddr.game,
-        contractAddr.incident,
+        contractAddr.reaction,
       ]);
+
     await hubContract.deployed();
 
     //Set RuleRepo to Hub
@@ -102,8 +103,8 @@ async function main() {
     }
 
     //Log
-    console.log("Deployed Hub Upgradable Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " game: "+contractAddr.game+ " Incident: "+ contractAddr.incident);
-    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.hub+" "+publicAddr.openRepo+" "+ contractAddr.config+" "+contractAddr.game+ " "+contractAddr.incident);
+    console.log("Deployed Hub Upgradable Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " game: "+contractAddr.game+ " Reaction: "+ contractAddr.reaction);
+    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.hub+" "+publicAddr.openRepo+" "+ contractAddr.config+" "+contractAddr.game+ " "+contractAddr.reaction);
   }
 
   //--- Soul Upgradable

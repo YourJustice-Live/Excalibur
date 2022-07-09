@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./interfaces/IGame.sol";
 import "./interfaces/IRules.sol";
-import "./interfaces/IIncident.sol";
+import "./interfaces/IReaction.sol";
 // import "./libraries/DataTypes.sol";
 import "./abstract/ERC1155Roles.sol";
 import "./abstract/ProtocolEntity.sol";
@@ -28,7 +28,7 @@ import "./abstract/Posts.sol";
  * - One for each
  * - All members are the same
  * - Rules
- * - Creates new Incidents
+ * - Creates new Reactions
  * - Contract URI
  * - [TODO] Validation: Make Sure Account has an Avatar NFT
  * - [TODO] Token URIs for Roles
@@ -51,7 +51,7 @@ contract Game is
 
     using Counters for Counters.Counter;
     // Counters.Counter internal _tokenIds; //Track Last Token ID
-    Counters.Counter internal _incidentIds;  //Track Last Incident ID
+    Counters.Counter internal _reactionIds;  //Track Last Reaction ID
     
     // Contract name
     string public name;
@@ -61,8 +61,8 @@ contract Game is
     // string internal _contract_uri;
 
     // mapping(string => uint256) internal _roles;    //NFTs as Roles
-    // mapping(uint256 => address) internal _incidents;   // Mapping for Incident Contracts      //DEPRECATED - No need for Incident IDs, Use Hash
-    mapping(address => bool) internal _active;        // Mapping for Incident Contracts
+    // mapping(uint256 => address) internal _reactions;   // Mapping for Reaction Contracts      //DEPRECATED - No need for Reaction IDs, Use Hash
+    mapping(address => bool) internal _active;        // Mapping for Reaction Contracts
 
     // mapping(uint256 => string) internal _rulesURI; // Mapping Metadata URIs for Individual Role 
     // mapping(uint256 => string) internal _uri;
@@ -89,26 +89,26 @@ contract Game is
         _roleAssign(tx.origin, "admin");
     }
 
-    //** Incident Functions
+    //** Reaction Functions
 
-    /// Make a new Incident & File it
-    function incidentMakeOpen(
+    /// Make a new Reaction & File it
+    function reactionMakeOpen(
         string calldata name_, 
         DataTypes.RuleRef[] calldata addRules, 
         DataTypes.InputRole[] calldata assignRoles, 
         PostInput[] calldata posts
     // ) public returns (uint256, address) {
     ) public returns (address) {
-        //Make Incident
-        address incidentContract = incidentMake(name_, addRules, assignRoles, posts);
-        //File Incident
-        IIncident(incidentContract).stageFile();
+        //Make Reaction
+        address reactionContract = reactionMake(name_, addRules, assignRoles, posts);
+        //File Reaction
+        IReaction(reactionContract).stageFile();
         //Return
-        return incidentContract;
+        return reactionContract;
     }
 
-    /// Make a new Incident
-    function incidentMake(
+    /// Make a new Reaction
+    function reactionMake(
         string calldata name_, 
         DataTypes.RuleRef[] calldata addRules, 
         DataTypes.InputRole[] calldata assignRoles, 
@@ -118,33 +118,33 @@ contract Game is
         // roleHas(_msgSender(), "admin")
         // roleHas(_msgSender(), "member")
 
-        //Assign Incident ID
-        _incidentIds.increment(); //Start with 1
-        uint256 incidentId = _incidentIds.current();
-        //Create new Incident
-        address incidentContract = _HUB.incidentMake(name_, addRules, assignRoles);
+        //Assign Reaction ID
+        _reactionIds.increment(); //Start with 1
+        uint256 reactionId = _reactionIds.current();
+        //Create new Reaction
+        address reactionContract = _HUB.reactionMake(name_, addRules, assignRoles);
         //Remember Address
-        // _incidents[incidentId] = incidentContract;
-        _active[incidentContract] = true;
-        //New Incident Created Event
-        emit IncidentCreated(incidentId, incidentContract);
+        // _reactions[reactionId] = reactionContract;
+        _active[reactionContract] = true;
+        //New Reaction Created Event
+        emit ReactionCreated(reactionId, reactionContract);
         //Posts
         for (uint256 i = 0; i < posts.length; ++i) {
-            IIncident(incidentContract).post(posts[i].entRole, posts[i].tokenId, posts[i].uri);
+            IReaction(reactionContract).post(posts[i].entRole, posts[i].tokenId, posts[i].uri);
         }
-        return incidentContract;
+        return reactionContract;
     }
     
-    /// Disable Incident
-    function incidentDisable(address incidentContract) public override onlyOwner {
+    /// Disable Reaction
+    function reactionDisable(address reactionContract) public override onlyOwner {
         //Validate
-        require(_active[incidentContract], "Incident Not Active");
-        _active[incidentContract] = false;
+        require(_active[reactionContract], "Reaction Not Active");
+        _active[reactionContract] = false;
     }
 
-    /// Check if Incident is Owned by This Contract (& Active)
-    function incidentHas(address incidentContract) public view override returns (bool){
-        return _active[incidentContract];
+    /// Check if Reaction is Owned by This Contract (& Active)
+    function reactionHas(address reactionContract) public view override returns (bool){
+        return _active[reactionContract];
     }
 
     //** Custom Rating Functions
@@ -152,8 +152,8 @@ contract Game is
     /// Add Reputation (Positive or Negative)
     // function repAdd(address contractAddr, uint256 tokenId, string calldata domain, DataTypes.Rating rating, uint8 amount) external override {
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external override {
-        //Validate - Called by Child Incident
-        require(incidentHas(_msgSender()), "NOT A VALID INCIDENT");
+        //Validate - Called by Child Reaction
+        require(reactionHas(_msgSender()), "NOT A VALID INCIDENT");
         //Run
         _repAdd(contractAddr, tokenId, domain, rating, amount);
         //Update Hub

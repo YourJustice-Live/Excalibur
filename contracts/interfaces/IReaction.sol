@@ -4,7 +4,7 @@ pragma solidity 0.8.4;
 
 import "../libraries/DataTypes.sol";
 
-interface IIncident {
+interface IReaction {
     
     //-- Functions
 
@@ -26,17 +26,17 @@ interface IIncident {
     /// Remove Tethered Token from a Role
     function roleRemoveFromToken(uint256 ownerToken, string memory role) external;
 
-    /// File the Incident (Validate & Open Discussion)  --> Open
+    /// File the Reaction (Validate & Open Discussion)  --> Open
     function stageFile() external;
 
-    /// Incident Wait For Verdict  --> Pending
+    /// Reaction Wait For Verdict  --> Pending
     function stageWaitForVerdict() external;
 
-    /// Incident Stage: Place Verdict  --> Closed
+    /// Reaction Stage: Place Verdict  --> Closed
     // function stageVerdict(string calldata uri) external;
     function stageVerdict(DataTypes.InputDecision[] calldata verdict, string calldata uri) external;
 
-    /// Incident Stage: Reject Incident --> Cancelled
+    /// Reaction Stage: Reject Reaction --> Cancelled
     function stageCancel(string calldata uri) external;
 
     /// Add Post 
@@ -50,13 +50,13 @@ interface IIncident {
 
     //--- Events
 
-    /// Incident Stage Change
-    event Stage(DataTypes.IncidentStage stage);
+    /// Reaction Stage Change
+    event Stage(DataTypes.ReactionStage stage);
 
     /// Post Verdict
     event Verdict(string uri, address account);
 
-    /// Incident Cancelation Data
+    /// Reaction Cancelation Data
     event Cancelled(string uri, address account);
 
     /// Rule Reference Added

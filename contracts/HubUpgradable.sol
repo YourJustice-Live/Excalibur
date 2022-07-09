@@ -18,7 +18,7 @@ import "./public/interfaces/IOpenRepo.sol";
 import "./interfaces/IProtocolEntity.sol";
 import "./interfaces/IHub.sol";
 import "./interfaces/IGameUp.sol";
-import "./interfaces/IIncident.sol";
+import "./interfaces/IReaction.sol";
 import "./interfaces/ISoul.sol";
 import "./libraries/DataTypes.sol";
 import "./abstract/ContractBase.sol";
@@ -29,8 +29,8 @@ import "./abstract/AssocExt.sol";
 /**
  * YJ Hub Contract
  * - Hold Known Contract Addresses (Avatar, History)
- * - Contract Factory (Games & Incidents)
- * - Remember Products (Games & Incidents)
+ * - Contract Factory (Games & Reactions)
+ * - Remember Products (Games & Reactions)
  */
 contract HubUpgradable is 
         IHub 
@@ -44,7 +44,7 @@ contract HubUpgradable is
     {
 
     //---Storage
-    address public beaconIncident;
+    address public beaconReaction;
     address public beaconGame;  //TBD
 
     // mapping(string => address) internal _contracts;      // Mapping for Used Contracts
@@ -56,7 +56,7 @@ contract HubUpgradable is
 
     // using Counters for Counters.Counter;
     // Counters.Counter internal _tokenIds; //Track Last Token ID
-    // Counters.Counter internal _incidentIds;  //Track Last Incident ID
+    // Counters.Counter internal _reactionIds;  //Track Last Reaction ID
 
     // Arbitrary contract designation signature
     string public constant override role = "Hub";
@@ -67,7 +67,7 @@ contract HubUpgradable is
     IConfig private _CONFIG;  //Configuration Contract       //DEPRECATE
 
     mapping(address => bool) internal _games; // Mapping for Active Games   //[TBD]
-    mapping(address => address) internal _incidents;      // Mapping for Incident Contracts  [C] => [J]
+    mapping(address => address) internal _reactions;      // Mapping for Reaction Contracts  [C] => [J]
 
 
     //--- Functions
@@ -84,7 +84,7 @@ contract HubUpgradable is
         address openRepo,
         address config, 
         address gameContract, 
-        address incidentContract
+        address reactionContract
     ) public initializer {
         //Set Data Repo Address
         _setRepo(openRepo);
@@ -97,9 +97,9 @@ contract HubUpgradable is
         //Init Game Contract Beacon
         UpgradeableBeacon _beaconJ = new UpgradeableBeacon(gameContract);
         beaconGame = address(_beaconJ);
-        //Init Incident Contract Beacon
-        UpgradeableBeacon _beaconC = new UpgradeableBeacon(incidentContract);
-        beaconIncident = address(_beaconC);
+        //Init Reaction Contract Beacon
+        UpgradeableBeacon _beaconC = new UpgradeableBeacon(reactionContract);
+        beaconReaction = address(_beaconC);
     }
 
     /// Upgrade Permissions
@@ -198,8 +198,8 @@ contract HubUpgradable is
         return address(newGameProxy);
     }
 
-    /// Make a new Incident
-    function incidentMake(
+    /// Make a new Reaction
+    function reactionMake(
         string calldata name_, 
         string calldata uri_,
         DataTypes.RuleRef[] memory addRules,
@@ -208,10 +208,10 @@ contract HubUpgradable is
         //Validate Caller Permissions (A Game)
         require(_games[_msgSender()], "UNAUTHORIZED: Valid Game Only");
         //Deploy
-        BeaconProxy newIncidentProxy = new BeaconProxy(
-            beaconIncident,
+        BeaconProxy newReactionProxy = new BeaconProxy(
+            beaconReaction,
             abi.encodeWithSelector(
-                IIncident( payable(address(0)) ).initialize.selector,
+                IReaction( payable(address(0)) ).initialize.selector,
                 address(this),   //Hub
                 name_,          //Name
                 uri_,
@@ -221,11 +221,11 @@ contract HubUpgradable is
             )
         );
         //Event
-        emit ContractCreated("incident", address(newIncidentProxy));
+        emit ContractCreated("reaction", address(newReactionProxy));
         //Remember
-        _incidents[address(newIncidentProxy)] = _msgSender();
+        _reactions[address(newReactionProxy)] = _msgSender();
         //Return
-        return address(newIncidentProxy);
+        return address(newReactionProxy);
     }
 
     //--- Reputation
@@ -250,21 +250,21 @@ contract HubUpgradable is
 
     //-- Upgrades
 
-    /// Upgrade Incident Implementation
-    function upgradeIncidentImplementation(address newImplementation) public onlyOwner {
+    /// Upgrade Reaction Implementation
+    function upgradeReactionImplementation(address newImplementation) public onlyOwner {
         //Validate Interface
-        // require(IERC165(newImplementation).supportsInterface(type(IIncident).interfaceId), "Implmementation Does Not Support Incident Interface");  //Would Cause Problems on Interface Update. Keep disabled for now.
+        // require(IERC165(newImplementation).supportsInterface(type(IReaction).interfaceId), "Implmementation Does Not Support Reaction Interface");  //Would Cause Problems on Interface Update. Keep disabled for now.
 
         //Upgrade Beacon
-        UpgradeableBeacon(beaconIncident).upgradeTo(newImplementation);
+        UpgradeableBeacon(beaconReaction).upgradeTo(newImplementation);
         //Upgrade Event
-        emit UpdatedImplementation("incident", newImplementation);
+        emit UpdatedImplementation("reaction", newImplementation);
     }
 
     /// Upgrade Game Implementation [TBD]
     function upgradeGameImplementation(address newImplementation) public onlyOwner {
         //Validate Interface
-        // require(IERC165(newImplementation).supportsInterface(type(IIncident).interfaceId), "Implmementation Does Not Support Incident Interface");  //Would Cause Problems on Interface Update. Keep disabled for now.
+        // require(IERC165(newImplementation).supportsInterface(type(IReaction).interfaceId), "Implmementation Does Not Support Reaction Interface");  //Would Cause Problems on Interface Update. Keep disabled for now.
 
         //Upgrade Beacon
         UpgradeableBeacon(beaconGame).upgradeTo(newImplementation);

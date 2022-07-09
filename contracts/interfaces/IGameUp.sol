@@ -26,11 +26,11 @@ interface IGame {
     /// Add Post 
     function post(string calldata entRole, uint256 tokenId, string calldata uri) external;
 
-    /// Disable Incident
-    function incidentDisable(address incidentContract) external;
+    /// Disable Reaction
+    function reactionDisable(address reactionContract) external;
 
-    /// Check if Incident is Owned by This Contract (& Active)
-    function incidentHas(address incidentContract) external view returns (bool);
+    /// Check if Reaction is Owned by This Contract (& Active)
+    function reactionHas(address reactionContract) external view returns (bool);
 
     /// Join game as member
     function join() external returns (uint256);
@@ -87,8 +87,8 @@ interface IGame {
 
     //--- Events
 
-    /// New Incident Created
-    event IncidentCreated(uint256 indexed id, address contractAddress);    
+    /// New Reaction Created
+    event ReactionCreated(uint256 indexed id, address contractAddress);    
 
     /// Nominate
     event Nominate(address account, uint256 indexed id, string uri);

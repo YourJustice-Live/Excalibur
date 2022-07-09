@@ -12,7 +12,7 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/governance/utils/VotesUpgradeable.sol"; //Adds 3.486Kb
 import "./interfaces/IGameUp.sol";
 import "./interfaces/IRules.sol";
-import "./interfaces/IIncident.sol";
+import "./interfaces/IReaction.sol";
 import "./interfaces/IActionRepo.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/ProtocolEntityUpgradable.sol";
@@ -36,7 +36,7 @@ import "./libraries/Utils.sol";
  * - One for each
  * - All members are the same
  * - Rules
- * - Creates new Incidents
+ * - Creates new Reactions
  * - Contract URI
  * - Token URIs for Roles
  * - Owner account must have an Avatar NFT
@@ -67,11 +67,11 @@ contract GameUpgradable is
 
     using CountersUpgradeable for CountersUpgradeable.Counter;
     // CountersUpgradeable.Counter internal _tokenIds; //Track Last Token ID
-    CountersUpgradeable.Counter internal _incidentIds;  //Track Last Incident ID
+    CountersUpgradeable.Counter internal _reactionIds;  //Track Last Reaction ID
     
     // Contract name
     string public name;
-    // Mapping for Incident Contracts
+    // Mapping for Reaction Contracts
     mapping(address => bool) internal _active;
 
     //Post Input Struct
@@ -147,11 +147,11 @@ contract GameUpgradable is
         _roleAssign(tx.origin, "member", 1);
     }
 
-    //** Incident Functions
+    //** Reaction Functions
 
-    /// Make a new Incident
+    /// Make a new Reaction
     /// @dev a wrapper function for creation, adding rules, assigning roles & posting
-    function incidentMake(
+    function reactionMake(
         string calldata name_, 
         string calldata uri_, 
         DataTypes.RuleRef[] calldata addRules, 
@@ -160,49 +160,49 @@ contract GameUpgradable is
     ) public returns (address) {
         //Validate Caller Permissions (Member of Game)
         require(roleHas(_msgSender(), "member"), "Members Only");
-        //Assign Incident ID
-        _incidentIds.increment(); //Start with 1
-        uint256 incidentId = _incidentIds.current();
-        //Create new Incident
-        address incidentContract = _HUB.incidentMake(name_, uri_, addRules, assignRoles);
+        //Assign Reaction ID
+        _reactionIds.increment(); //Start with 1
+        uint256 reactionId = _reactionIds.current();
+        //Create new Reaction
+        address reactionContract = _HUB.reactionMake(name_, uri_, addRules, assignRoles);
         //Remember Address
-        _active[incidentContract] = true;
-        //New Incident Created Event
-        emit IncidentCreated(incidentId, incidentContract);
+        _active[reactionContract] = true;
+        //New Reaction Created Event
+        emit ReactionCreated(reactionId, reactionContract);
         //Posts
         for (uint256 i = 0; i < posts.length; ++i) {
-            IIncident(incidentContract).post(posts[i].entRole, posts[i].tokenId, posts[i].uri);
+            IReaction(reactionContract).post(posts[i].entRole, posts[i].tokenId, posts[i].uri);
         }
-        return incidentContract;
+        return reactionContract;
     }
     
-    /// Make a new Incident & File it
-    /// @dev a wrapper function for creation, adding rules, assigning roles, posting & filing a incident
-    function incidentMakeOpen(
+    /// Make a new Reaction & File it
+    /// @dev a wrapper function for creation, adding rules, assigning roles, posting & filing a reaction
+    function reactionMakeOpen(
         string calldata name_, 
         string calldata uri_, 
         DataTypes.RuleRef[] calldata addRules, 
         DataTypes.InputRoleToken[] calldata assignRoles, 
         PostInput[] calldata posts
     ) public returns (address) {
-        //Make Incident
-        address incidentContract = incidentMake(name_, uri_, addRules, assignRoles, posts);
-        //File Incident
-        IIncident(incidentContract).stageFile();
+        //Make Reaction
+        address reactionContract = reactionMake(name_, uri_, addRules, assignRoles, posts);
+        //File Reaction
+        IReaction(reactionContract).stageFile();
         //Return
-        return incidentContract;
+        return reactionContract;
     }
 
-    /// Disable Incident
-    function incidentDisable(address incidentContract) public override onlyOwner {
+    /// Disable Reaction
+    function reactionDisable(address reactionContract) public override onlyOwner {
         //Validate
-        require(_active[incidentContract], "Incident Not Active");
-        _active[incidentContract] = false;
+        require(_active[reactionContract], "Reaction Not Active");
+        _active[reactionContract] = false;
     }
 
-    /// Check if Incident is Owned by This Contract (& Active)
-    function incidentHas(address incidentContract) public view override returns (bool){
-        return _active[incidentContract];
+    /// Check if Reaction is Owned by This Contract (& Active)
+    function reactionHas(address reactionContract) public view override returns (bool){
+        return _active[reactionContract];
     }
 
     /// Add Post 
@@ -299,8 +299,8 @@ contract GameUpgradable is
     
     /// Add Reputation (Positive or Negative)
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external override {
-        //Validate - Called by Child Incident
-        require(incidentHas(_msgSender()), "NOT A VALID INCIDENT");
+        //Validate - Called by Child Reaction
+        require(reactionHas(_msgSender()), "NOT A VALID INCIDENT");
         //Run on Self
         _repAdd(contractAddr, tokenId, domain, rating, amount);
         //Update Hub

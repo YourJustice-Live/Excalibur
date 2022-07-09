@@ -42,23 +42,23 @@ describe("Protocol", function () {
     //   .then(Contract => upgrades.deployProxy(Contract, [],{kind: "uups", timeout: 120000}));
     this.openRepo = await deployUUPS("OpenRepoUpgradable", []);
 
-    //--- Deploy Incident Implementation
-    this.incidentContract = await ethers.getContractFactory("IncidentUpgradable").then(res => res.deploy());
-
-    //--- Deploy Game Implementation
+    //--- Deploy Reaction Implementation
+    this.reactionContract = await ethers.getContractFactory("ReactionUpgradable").then(res => res.deploy());
+    
+    //Game Upgradable Implementation
     this.gameUpContract = await ethers.getContractFactory("GameUpgradable").then(res => res.deploy());
 
     //Deploy Hub
-    // hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.gameUpContract.address, this.incidentContract.address));
+    // hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.gameUpContract.address, this.reactionContract.address));
 
     //--- Deploy Hub Upgradable (UUPS)
-    hubContract = await deployUUPS("HubUpgradable", 
-      [
+    hubContract = await deployUUPS("HubUpgradable", [
         this.openRepo.address,
         configContract.address, 
         this.gameUpContract.address, 
-        this.incidentContract.address
+        this.reactionContract.address
       ]);
+
     // await hubContract.deployed();
 
 
@@ -317,7 +317,7 @@ describe("Protocol", function () {
       let tx = await hubContract.gameMake("Test Game", test_uri);
       //Expect Valid Address
       expect(JAddr).to.be.properAddress;
-      //Expect Incident Created Event
+      //Expect Reaction Created Event
       await expect(tx).to.emit(hubContract, 'ContractCreated').withArgs("game", JAddr);
       //Init Game Contract Object
       gameContract = await ethers.getContractFactory("GameUpgradable").then(res => res.attach(JAddr));
@@ -564,7 +564,7 @@ describe("Protocol", function () {
       it("Can Close Game", async function () {
         //Change to Closed Game
         let tx = await this.gameContract.connect(admin).confSet("isClosed", "true");
-        //Expect Incident Created Event
+        //Expect Reaction Created Event
         await expect(tx).to.emit(this.openRepo, 'StringSet').withArgs(this.gameContract.address, "isClosed", "true");
         //Validate
         expect(await this.gameContract.confGet("isClosed")).to.equal("true");
@@ -632,16 +632,16 @@ describe("Protocol", function () {
   }); //Game
 
   /**
-   * Incident Contract
+   * Reaction Contract
    */
-  describe("Incident", function () {
+  describe("Reaction", function () {
 
     it("Should be Created (by Game)", async function () {
       //Soul Tokens
       let adminToken = await avatarContract.tokenByAddress(this.adminAddr);
       let tester2Token = await avatarContract.tokenByAddress(this.tester2Addr);
     
-      let incidentName = "Test Incident #1";
+      let reactionName = "Test Reaction #1";
       let ruleRefArr = [
         {
           game: gameContract.address, 
@@ -671,20 +671,20 @@ describe("Protocol", function () {
       //Assign Admin as Member
       // await this.gameContract.roleAssign(this.adminAddr, "member");
 
-      //Simulate - Get New Incident Address
-      let incidentAddr = await gameContract.connect(admin).callStatic.incidentMake(incidentName, test_uri, ruleRefArr, roleRefArr, posts);
-      // console.log("New Incident Address: ", incidentAddr);
+      //Simulate - Get New Reaction Address
+      let reactionAddr = await gameContract.connect(admin).callStatic.reactionMake(reactionName, test_uri, ruleRefArr, roleRefArr, posts);
+      // console.log("New Reaction Address: ", reactionAddr);
 
-      //Create New Incident
-      let tx = await gameContract.connect(admin).incidentMake(incidentName, test_uri, ruleRefArr, roleRefArr, posts);
+      //Create New Reaction
+      let tx = await gameContract.connect(admin).reactionMake(reactionName, test_uri, ruleRefArr, roleRefArr, posts);
       //Expect Valid Address
-      expect(incidentAddr).to.be.properAddress;
-      //Init Incident Contract
-      this.incidentContract = await ethers.getContractFactory("IncidentUpgradable").then(res => res.attach(incidentAddr));
-      //Expect Incident Created Event
-      await expect(tx).to.emit(gameContract, 'IncidentCreated').withArgs(1, incidentAddr);
+      expect(reactionAddr).to.be.properAddress;
+      //Init Reaction Contract
+      this.reactionContract = await ethers.getContractFactory("ReactionUpgradable").then(res => res.attach(reactionAddr));
+      //Expect Reaction Created Event
+      await expect(tx).to.emit(gameContract, 'ReactionCreated').withArgs(1, reactionAddr);
       //Expect Post Event
-      await expect(tx).to.emit(this.incidentContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].uri);
+      await expect(tx).to.emit(this.reactionContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].uri);
     });
     
     it("Should be Created & Opened (by Game)", async function () {
@@ -693,7 +693,7 @@ describe("Protocol", function () {
       let tester2Token = await avatarContract.tokenByAddress(this.tester2Addr);
       let tester3Token = await avatarContract.tokenByAddress(this.tester3Addr);
 
-      let incidentName = "Test Incident #1";
+      let reactionName = "Test Reaction #1";
       let ruleRefArr = [
         {
           game: gameContract.address, 
@@ -717,39 +717,39 @@ describe("Protocol", function () {
           uri: test_uri,
         }
       ];
-      //Simulate - Get New Incident Address
-      let incidentAddr = await gameContract.connect(admin).callStatic.incidentMake(incidentName, test_uri, ruleRefArr, roleRefArr, posts);
-      //Create New Incident
-      let tx = await gameContract.connect(admin).incidentMakeOpen(incidentName, test_uri, ruleRefArr, roleRefArr, posts);
+      //Simulate - Get New Reaction Address
+      let reactionAddr = await gameContract.connect(admin).callStatic.reactionMake(reactionName, test_uri, ruleRefArr, roleRefArr, posts);
+      //Create New Reaction
+      let tx = await gameContract.connect(admin).reactionMakeOpen(reactionName, test_uri, ruleRefArr, roleRefArr, posts);
       //Expect Valid Address
-      expect(incidentAddr).to.be.properAddress;
-      //Init Incident Contract
-      let incidentContract = await ethers.getContractFactory("IncidentUpgradable").then(res => res.attach(incidentAddr));
-      //Expect Incident Created Event
-      await expect(tx).to.emit(gameContract, 'IncidentCreated').withArgs(2, incidentAddr);
+      expect(reactionAddr).to.be.properAddress;
+      //Init Reaction Contract
+      let reactionContract = await ethers.getContractFactory("ReactionUpgradable").then(res => res.attach(reactionAddr));
+      //Expect Reaction Created Event
+      await expect(tx).to.emit(gameContract, 'ReactionCreated').withArgs(2, reactionAddr);
       //Expect Post Event
-      // await expect(tx).to.emit(incidentContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].postRole, posts[0].uri);
-      await expect(tx).to.emit(incidentContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].uri);
+      // await expect(tx).to.emit(reactionContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].postRole, posts[0].uri);
+      await expect(tx).to.emit(reactionContract, 'Post').withArgs(this.adminAddr, posts[0].tokenId, posts[0].entRole, posts[0].uri);
     });
 
-    it("Should Update Incident Contract URI", async function () {
+    it("Should Update Reaction Contract URI", async function () {
       //Before
-      expect(await this.incidentContract.contractURI()).to.equal(test_uri);
+      expect(await this.reactionContract.contractURI()).to.equal(test_uri);
       //Change
-      await this.incidentContract.setContractURI(test_uri2);
+      await this.reactionContract.setContractURI(test_uri2);
       //After
-      expect(await this.incidentContract.contractURI()).to.equal(test_uri2);
+      expect(await this.reactionContract.contractURI()).to.equal(test_uri2);
     });
 
     it("Should Auto-Appoint creator as Admin", async function () {
       expect(
-        await this.incidentContract.roleHas(this.adminAddr, "admin")
+        await this.reactionContract.roleHas(this.adminAddr, "admin")
       ).to.equal(true);
     });
 
     it("Tester expected to be in the subject role", async function () {
       expect(
-        await this.incidentContract.roleHas(this.tester2Addr, "subject")
+        await this.reactionContract.roleHas(this.tester2Addr, "subject")
       ).to.equal(true);
     });
 
@@ -757,17 +757,17 @@ describe("Protocol", function () {
       //Get Tester's Avatar TokenID
       let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
       //Apply to Join Game
-      let tx = await this.incidentContract.connect(tester).nominate(tokenId, test_uri);
+      let tx = await this.reactionContract.connect(tester).nominate(tokenId, test_uri);
       await tx.wait();
       //Expect Event
-      await expect(tx).to.emit(this.incidentContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
+      await expect(tx).to.emit(this.reactionContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
     });
 
     it("Should Update", async function () {
-      let testIncidentContract = await ethers.getContractFactory("IncidentUpgradable").then(res => res.deploy());
-      await testIncidentContract.deployed();
-      //Update Incident Beacon (to the same implementation)
-      hubContract.upgradeIncidentImplementation(testIncidentContract.address);
+      let testReactionContract = await ethers.getContractFactory("ReactionUpgradable").then(res => res.deploy());
+      await testReactionContract.deployed();
+      //Update Reaction Beacon (to the same implementation)
+      hubContract.upgradeReactionImplementation(testReactionContract.address);
     });
 
     it("Should Add Rules", async function () {
@@ -776,8 +776,8 @@ describe("Protocol", function () {
         id: 2, 
         // affected: "investor",
       };
-      // await this.incidentContract.ruleAdd(ruleRef.game,  ruleRef.id, ruleRef.affected);
-      await this.incidentContract.connect(admin).ruleAdd(ruleRef.game,  ruleRef.id);
+      // await this.reactionContract.ruleAdd(ruleRef.game,  ruleRef.id, ruleRef.affected);
+      await this.reactionContract.connect(admin).ruleAdd(ruleRef.game,  ruleRef.id);
     });
     
     it("Should Write a Post", async function () {
@@ -791,59 +791,59 @@ describe("Protocol", function () {
       //Validate Permissions
       await expect(
         //Failed Post
-        this.incidentContract.connect(tester).post(post.entRole, post.tokenId, post.uri)
+        this.reactionContract.connect(tester).post(post.entRole, post.tokenId, post.uri)
       ).to.be.revertedWith("SOUL:NOT_YOURS");
 
       //Successful Post
-      let tx = await this.incidentContract.connect(tester2).post(post.entRole, post.tokenId, post.uri);
+      let tx = await this.reactionContract.connect(tester2).post(post.entRole, post.tokenId, post.uri);
       // wait until the transaction is mined
       await tx.wait();
       //Expect Event
-      await expect(tx).to.emit(this.incidentContract, 'Post').withArgs(this.tester2Addr, post.tokenId, post.entRole, post.uri);
+      await expect(tx).to.emit(this.reactionContract, 'Post').withArgs(this.tester2Addr, post.tokenId, post.entRole, post.uri);
     });
 
     it("Should Update Token URI", async function () {
       //Protected
       await expect(
-        this.incidentContract.connect(tester3).setRoleURI("admin", test_uri)
+        this.reactionContract.connect(tester3).setRoleURI("admin", test_uri)
       ).to.be.revertedWith("INVALID_PERMISSIONS");
       //Set Admin Token URI
-      await this.incidentContract.connect(admin).setRoleURI("admin", test_uri);
+      await this.reactionContract.connect(admin).setRoleURI("admin", test_uri);
       //Validate
-      expect(await this.incidentContract.roleURI("admin")).to.equal(test_uri);
+      expect(await this.reactionContract.roleURI("admin")).to.equal(test_uri);
     });
 
     it("Should Assign Witness", async function () {
       //Assign Admin
-      await this.incidentContract.connect(admin).roleAssign(this.tester3Addr, "witness");
+      await this.reactionContract.connect(admin).roleAssign(this.tester3Addr, "witness");
       //Validate
-      expect(await this.incidentContract.roleHas(this.tester3Addr, "witness")).to.equal(true);
+      expect(await this.reactionContract.roleHas(this.tester3Addr, "witness")).to.equal(true);
     });
 
-    it("Game Authoritys Can Assign Themselves to Incident", async function () {
+    it("Game Authoritys Can Assign Themselves to Reaction", async function () {
       //Assign as Game Authority
       gameContract.connect(admin).roleAssign(this.tester4Addr, "authority")
-      //Assign Incident Authority
-      await this.incidentContract.connect(tester4).roleAssign(this.tester4Addr, "authority");
+      //Assign Reaction Authority
+      await this.reactionContract.connect(tester4).roleAssign(this.tester4Addr, "authority");
       //Validate
-      expect(await this.incidentContract.roleHas(this.tester4Addr, "authority")).to.equal(true);
+      expect(await this.reactionContract.roleHas(this.tester4Addr, "authority")).to.equal(true);
     });
 
-    it("User Can Open Incident", async function () {
+    it("User Can Open Reaction", async function () {
       //Validate
       await expect(
-        this.incidentContract.connect(tester2).stageFile()
+        this.reactionContract.connect(tester2).stageFile()
       ).to.be.revertedWith("ROLE:CREATOR_OR_ADMIN");
-      //File Incident
-      let tx = await this.incidentContract.connect(admin).stageFile();
+      //File Reaction
+      let tx = await this.reactionContract.connect(admin).stageFile();
       //Expect State Event
-      await expect(tx).to.emit(this.incidentContract, 'Stage').withArgs(1);
+      await expect(tx).to.emit(this.reactionContract, 'Stage').withArgs(1);
     });
 
     it("Should Validate Authority with parent game", async function () {
       //Validate
       await expect(
-        this.incidentContract.connect(admin).roleAssign(this.tester3Addr, "authority")
+        this.reactionContract.connect(admin).roleAssign(this.tester3Addr, "authority")
       ).to.be.revertedWith("User Required to hold same role in the Game context");
     });
 
@@ -851,44 +851,44 @@ describe("Protocol", function () {
       //Get Tester's Avatar TokenID
       let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
       //Apply to Join Game
-      let tx = await this.incidentContract.connect(tester).nominate(tokenId, test_uri);
+      let tx = await this.reactionContract.connect(tester).nominate(tokenId, test_uri);
       await tx.wait();
       //Expect Event
-      await expect(tx).to.emit(this.incidentContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
+      await expect(tx).to.emit(this.reactionContract, 'Nominate').withArgs(this.testerAddr, tokenId, test_uri);
     });
 
     it("Should Accept a Authority From the parent game", async function () {
       //Check Before
       // expect(await this.gameContract.roleHas(this.testerAddr, "authority")).to.equal(true);
       //Assign Authority
-      await this.incidentContract.connect(admin).roleAssign(this.authorityAddr, "authority");
+      await this.reactionContract.connect(admin).roleAssign(this.authorityAddr, "authority");
       //Check After
-      expect(await this.incidentContract.roleHas(this.authorityAddr, "authority")).to.equal(true);
+      expect(await this.reactionContract.roleHas(this.authorityAddr, "authority")).to.equal(true);
     });
     
     it("Should Wait for Verdict Stage", async function () {
-      //File Incident
-      let tx = await this.incidentContract.connect(authority).stageWaitForVerdict();
+      //File Reaction
+      let tx = await this.reactionContract.connect(authority).stageWaitForVerdict();
       //Expect State Event
-      await expect(tx).to.emit(this.incidentContract, 'Stage').withArgs(2);
+      await expect(tx).to.emit(this.reactionContract, 'Stage').withArgs(2);
     });
 
     it("Should Wait for authority", async function () {
       let verdict = [{ ruleId:1, decision: true }];
-      //File Incident -- Expect Failure
+      //File Reaction -- Expect Failure
       await expect(
-        this.incidentContract.connect(tester2).stageVerdict(verdict, test_uri)
+        this.reactionContract.connect(tester2).stageVerdict(verdict, test_uri)
       ).to.be.revertedWith("ROLE:AUTHORITY_ONLY");
     });
 
-    it("Should Accept Verdict URI & Close Incident", async function () {
+    it("Should Accept Verdict URI & Close Reaction", async function () {
       let verdict = [{ruleId:1, decision:true}];
-      //Submit Verdict & Close Incident
-      let tx = await this.incidentContract.connect(authority).stageVerdict(verdict, test_uri);
+      //Submit Verdict & Close Reaction
+      let tx = await this.reactionContract.connect(authority).stageVerdict(verdict, test_uri);
       //Expect Verdict Event
-      await expect(tx).to.emit(this.incidentContract, 'Verdict').withArgs(test_uri, this.authorityAddr);
+      await expect(tx).to.emit(this.reactionContract, 'Verdict').withArgs(test_uri, this.authorityAddr);
       //Expect State Event
-      await expect(tx).to.emit(this.incidentContract, 'Stage').withArgs(6);
+      await expect(tx).to.emit(this.reactionContract, 'Stage').withArgs(6);
     });
 
     // it("[TODO] Can Change Rating", async function () {
@@ -911,6 +911,6 @@ describe("Protocol", function () {
 
     // });
 
-  }); //Incident
+  }); //Reaction
     
 });

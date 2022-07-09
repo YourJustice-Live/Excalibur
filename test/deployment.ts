@@ -10,7 +10,7 @@ const { upgrades } = require("hardhat");
 
 describe("Deployment", function () {
     let gameContract: Contract;
-    let incidentContract: Contract;
+    let reactionContract: Contract;
     let hubContract: Contract;
     let configContract: Contract;
     let actionRepoContract: Contract;
@@ -40,9 +40,9 @@ describe("Deployment", function () {
         gameContract = await ethers.getContractFactory("GameUpgradable").then(res => res.deploy());
         await gameContract.deployed();
 
-        //--- Incident Implementation
-        incidentContract = await ethers.getContractFactory("IncidentUpgradable").then(res => res.deploy());
-        await incidentContract.deployed();
+        //--- Reaction Implementation
+        reactionContract = await ethers.getContractFactory("ReactionUpgradable").then(res => res.deploy());
+        await reactionContract.deployed();
         
     });
 
@@ -55,7 +55,7 @@ describe("Deployment", function () {
                 openRepoContract.address,
                 configContract.address, 
                 gameContract.address,
-                incidentContract.address,
+                reactionContract.address,
             ],{
             // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
             kind: "uups",
@@ -79,7 +79,7 @@ describe("Deployment", function () {
                openRepoContract.address,
                configContract.address, 
                gameContract.address,
-               incidentContract.address,
+               reactionContract.address,
            ],{
            // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
            kind: "uups",
@@ -175,7 +175,7 @@ describe("Deployment", function () {
                 openRepoContract.address,
                 configContract.address, 
                 gameContract.address,
-                incidentContract.address
+                reactionContract.address
             ));
             await mockHub.deployed();
             // console.log("MockHub Deployed to:", mockHub.address);
