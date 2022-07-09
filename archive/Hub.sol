@@ -13,13 +13,13 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "./interfaces/IConfig.sol";
 import "./interfaces/IAssoc.sol";
 import "./interfaces/IAssocRepo.sol";
-import "./interfaces/ICommonYJ.sol";
+import "./interfaces/IProtocolEntity.sol";
 import "./interfaces/IHub.sol";
 import "./interfaces/IGameUp.sol";
 import "./interfaces/IIncident.sol";
 import "./interfaces/IAvatar.sol";
 import "./libraries/DataTypes.sol";
-// import "./abstract/CommonYJ.sol";
+// import "./abstract/ProtocolEntity.sol";
 import "./abstract/Assoc.sol";
 
 
@@ -121,12 +121,12 @@ contract Hub is
         //Avatar
         address avatarContract = getAssoc("avatar");
         if(avatarContract != address(0)){
-            ICommonYJ(avatarContract).setHub(newHubAddr);
+            IProtocolEntity(avatarContract).setHub(newHubAddr);
         }
         //History
         address actionRepo = getAssoc("history");
         if(actionRepo != address(0)){
-            ICommonYJ(actionRepo).setHub(newHubAddr);
+            IProtocolEntity(actionRepo).setHub(newHubAddr);
         }
         //Emit Hub Change Event
         emit HubChanged(newHubAddr);

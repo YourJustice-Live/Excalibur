@@ -98,7 +98,7 @@ async function main() {
     console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.hub+" "+publicAddr.openRepo+" "+ contractAddr.config+" "+contractAddr.game+ " "+contractAddr.incident);
   }
 
-  //--- Avatar Upgradable
+  //--- Soul Upgradable
   if(!contractAddr.avatar){
 
     //Deploy Avatar Upgradable

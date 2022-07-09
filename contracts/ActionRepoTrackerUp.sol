@@ -8,7 +8,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 // import "./interfaces/IAssoc.sol";
 import "./interfaces/IActionRepo.sol";
-import "./abstract/CommonYJUpgradable.sol";
+import "./abstract/ProtocolEntityUpgradable.sol";
 import "./abstract/ERC1155GUIDTrackerUp.sol";
 
 
@@ -21,7 +21,7 @@ import "./abstract/ERC1155GUIDTrackerUp.sol";
 contract ActionRepoTrackerUp is 
         IActionRepo, 
         Initializable,
-        CommonYJUpgradable, 
+        ProtocolEntityUpgradable, 
         UUPSUpgradeable,
         ERC1155GUIDTrackerUp {
 
@@ -43,7 +43,7 @@ contract ActionRepoTrackerUp is
     function initialize (address hub) public initializer {
         //Initializers
         __UUPSUpgradeable_init();
-        __CommonYJ_init(hub);
+        __ProtocolEntity_init(hub);
         __setTargetContract( repo().addressGetOf(address(_HUB), "avatar") );
         //Set Contract URI
         // _setContractURI(uri_);

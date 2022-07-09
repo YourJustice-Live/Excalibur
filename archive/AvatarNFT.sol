@@ -11,7 +11,7 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 // import "./interfaces/IConfig.sol";
 // import "./libraries/DataTypes.sol";
 import "./interfaces/IAvatar.sol";
-import "./abstract/CommonYJ.sol";
+import "./abstract/ProtocolEntity.sol";
 import "./abstract/Opinions.sol";
 
 
@@ -29,7 +29,7 @@ import "./abstract/Opinions.sol";
   */
 contract AvatarNFT is 
         IAvatar, 
-        CommonYJ, 
+        ProtocolEntity, 
         Opinions,
         ERC721URIStorage {
     
@@ -51,7 +51,7 @@ contract AvatarNFT is
     //--- Functions
 
     /// Constructor
-    constructor(address hub) CommonYJ(hub) ERC721("Avatar (YourJustice.life)", "AVATAR") {
+    constructor(address hub) ProtocolEntity(hub) ERC721("Avatar (YourJustice.life)", "AVATAR") {
 
     }
 

@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/utils/Context.sol";
 import "../public/interfaces/IOpenRepo.sol";
-import "../interfaces/ICommonYJ.sol";
+import "../interfaces/IProtocolEntity.sol";
 import "../interfaces/IGameUp.sol";
 // import "../interfaces/IHub.sol";
 
@@ -24,7 +24,7 @@ abstract contract GameExtension is Context {
 
     //Get Data Repo Address (From Hub)
     function repoAddr() public view returns (address) {
-        return ICommonYJ(address(this)).repoAddr();
+        return IProtocolEntity(address(this)).repoAddr();
     }
 
     //Get Assoc Repo
@@ -34,7 +34,7 @@ abstract contract GameExtension is Context {
 
     /// Hub Address
     function hubAddress() internal view returns (address) {
-        return ICommonYJ(address(this)).getHub();
+        return IProtocolEntity(address(this)).getHub();
     }
         
 }

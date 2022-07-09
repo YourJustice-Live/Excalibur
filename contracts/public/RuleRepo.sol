@@ -11,7 +11,7 @@ import "../libraries/DataTypes.sol";
 import "../interfaces/IERC1155RolesTracker.sol";
 import "../interfaces/IRules.sol";
 import "../interfaces/IActionRepo.sol";
-import "../interfaces/ICommonYJ.sol";
+import "../interfaces/IProtocolEntity.sol";
 import "../interfaces/IGameUp.sol";
 import "../public/interfaces/IOpenRepo.sol";
 
@@ -47,12 +47,12 @@ contract RuleRepo is IRules {
 
     /// Hub Address
     function hubAddress() internal view returns (address) {
-        return ICommonYJ(msg.sender).getHub();
+        return IProtocolEntity(msg.sender).getHub();
     }
 
     //Get Data Repo Address (From Hub)
     function repoAddr() public view returns (address) {
-        return ICommonYJ(msg.sender).repoAddr();
+        return IProtocolEntity(msg.sender).repoAddr();
     }
 
     //Get Assoc Repo

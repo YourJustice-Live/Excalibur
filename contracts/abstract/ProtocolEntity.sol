@@ -4,14 +4,14 @@ pragma solidity 0.8.4;
 // import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../interfaces/ICommonYJ.sol";
+import "../interfaces/IProtocolEntity.sol";
 import "../interfaces/IHub.sol";
 import "../libraries/DataTypes.sol";
 
 /**
  * Common Protocol Functions
  */
-abstract contract CommonYJ is ICommonYJ, Ownable {
+abstract contract ProtocolEntity is IProtocolEntity, Ownable {
     
     //--- Storage
 
@@ -27,7 +27,7 @@ abstract contract CommonYJ is ICommonYJ, Ownable {
     }
 
     /// Inherit owner from Protocol's config
-    function owner() public view override (ICommonYJ, Ownable) returns (address) {
+    function owner() public view override (IProtocolEntity, Ownable) returns (address) {
         return _HUB.owner();
     }
 

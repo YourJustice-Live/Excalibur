@@ -18,7 +18,7 @@ import "./interfaces/IRules.sol";
 import "./interfaces/IIncident.sol";
 import "./interfaces/IActionRepo.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
-import "./abstract/CommonYJUpgradable.sol";
+import "./abstract/ProtocolEntityUpgradable.sol";
 import "./abstract/ContractBase.sol";
 import "./abstract/Opinions.sol";
 import "./abstract/Posts.sol";
@@ -50,7 +50,7 @@ contract GameUpgradable is
         IRules,
         // Rules, 
         ContractBase,
-        CommonYJUpgradable, 
+        ProtocolEntityUpgradable, 
         Opinions, 
         Posts,
         ProxyMulti,
@@ -120,7 +120,7 @@ contract GameUpgradable is
     function initialize (address hub, string calldata name_, string calldata uri_) public override initializer {
         //Initializers
         // __ERC1155RolesUpgradable_init("");
-        __CommonYJ_init(hub);
+        __ProtocolEntity_init(hub);
         // __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
         __setTargetContract(repo().addressGetOf(address(_HUB), "avatar"));
         

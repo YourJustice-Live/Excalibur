@@ -10,7 +10,7 @@ import "./interfaces/IRules.sol";
 import "./interfaces/ISoul.sol";
 import "./interfaces/IERC1155RolesTracker.sol";
 import "./interfaces/IGameUp.sol";
-import "./abstract/CommonYJUpgradable.sol";
+import "./abstract/ProtocolEntityUpgradable.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/Posts.sol";
 
@@ -21,7 +21,7 @@ import "./abstract/Posts.sol";
 contract IncidentUpgradable is 
     IIncident, 
     Posts, 
-    CommonYJUpgradable, 
+    ProtocolEntityUpgradable, 
     ERC1155RolesTrackerUp {
 
     //--- Storage
@@ -76,7 +76,7 @@ contract IncidentUpgradable is
         address container
     ) public override initializer {
         //Initializers
-        __CommonYJ_init(hub);
+        __ProtocolEntity_init(hub);
         __setTargetContract(getSoulAddr());
         //Set Parent Container
         _setParentCTX(container);

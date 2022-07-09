@@ -112,8 +112,8 @@
             "offset": 0,
             "slot": "102",
             "type": "t_contract(IHub)17382",
-            "contract": "CommonYJUpgradable",
-            "src": "contracts\\abstract\\CommonYJUpgradable.sol:20"
+            "contract": "ProtocolEntityUpgradable",
+            "src": "contracts\\abstract\\ProtocolEntityUpgradable.sol:20"
           },
           {
             "label": "__gap",
@@ -916,8 +916,8 @@
             "offset": 0,
             "slot": "102",
             "type": "t_contract(IHub)17150",
-            "contract": "CommonYJUpgradable",
-            "src": "contracts\\abstract\\CommonYJUpgradable.sol:24"
+            "contract": "ProtocolEntityUpgradable",
+            "src": "contracts\\abstract\\ProtocolEntityUpgradable.sol:24"
           },
           {
             "label": "__gap",
@@ -1195,8 +1195,8 @@
             "offset": 0,
             "slot": "102",
             "type": "t_contract(IHub)17150",
-            "contract": "CommonYJUpgradable",
-            "src": "contracts\\abstract\\CommonYJUpgradable.sol:24"
+            "contract": "ProtocolEntityUpgradable",
+            "src": "contracts\\abstract\\ProtocolEntityUpgradable.sol:24"
           },
           {
             "label": "__gap",

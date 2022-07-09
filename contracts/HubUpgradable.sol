@@ -15,7 +15,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "./interfaces/IConfig.sol";
 // import "./interfaces/IAssoc.sol";
 import "./public/interfaces/IOpenRepo.sol";
-import "./interfaces/ICommonYJ.sol";
+import "./interfaces/IProtocolEntity.sol";
 import "./interfaces/IHub.sol";
 import "./interfaces/IGameUp.sol";
 import "./interfaces/IIncident.sol";
@@ -133,13 +133,13 @@ contract HubUpgradable is
         //Avatar
         address avatarContract = repo().addressGet("avatar");
         if(avatarContract != address(0)){
-            try ICommonYJ(avatarContract).setHub(newHubAddr){}  //Failure should not be fatal
+            try IProtocolEntity(avatarContract).setHub(newHubAddr){}  //Failure should not be fatal
             catch Error(string memory /*reason*/) {}
         }
         //History
         address actionRepo = repo().addressGet("history");
         if(actionRepo != address(0)){
-            try ICommonYJ(actionRepo).setHub(newHubAddr) {}   //Failure should not be fatal
+            try IProtocolEntity(actionRepo).setHub(newHubAddr) {}   //Failure should not be fatal
             catch Error(string memory reason) {
                 console.log("Failed to update Hub for ActionRepo Contract", reason);
             }

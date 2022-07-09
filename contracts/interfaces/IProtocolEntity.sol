@@ -4,7 +4,7 @@ pragma solidity 0.8.4;
 /**
  * Common Protocol Functions
  */
-interface ICommonYJ {
+interface IProtocolEntity {
     
     /// Inherit owner from Protocol's config
     function owner() external view returns (address);

@@ -13,7 +13,7 @@ import "./interfaces/IIncident.sol";
 // import "./libraries/DataTypes.sol";
 import "./abstract/ERC1155Roles.sol";
 import "./abstract/ContractBase.sol";
-import "./abstract/CommonYJ.sol";
+import "./abstract/ProtocolEntity.sol";
 import "./abstract/Rules.sol";
 import "./abstract/Opinions.sol";
 import "./abstract/Recursion.sol";
@@ -40,7 +40,7 @@ import "./abstract/Posts.sol";
 contract Game is 
         IGame, 
         ContractBase,
-        CommonYJ, 
+        ProtocolEntity, 
         Rules, 
         Opinions, 
         Posts, 
@@ -78,7 +78,7 @@ contract Game is
             || super.supportsInterface(interfaceId);
     }
 
-    constructor(address hub, address actionRepo) CommonYJ(hub) ERC1155(""){
+    constructor(address hub, address actionRepo) ProtocolEntity(hub) ERC1155(""){
         //Fetch & Set Current History Contract
         // _setActionsContract(_HUB.historyContract());
         // _setActionsContract(actionRepo); //CANCELLED

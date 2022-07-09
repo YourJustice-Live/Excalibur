@@ -5,7 +5,7 @@ pragma solidity 0.8.4;
 
 // import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "../interfaces/ICommonYJ.sol";
+import "../interfaces/IProtocolEntity.sol";
 import "../interfaces/IHub.sol";
 import "../libraries/DataTypes.sol";
 import "../abstract/ContractBase.sol";
@@ -13,8 +13,8 @@ import "../public/interfaces/IOpenRepo.sol";
 /**
  * Common Protocol Functions
  */
-abstract contract CommonYJUpgradable is 
-        ICommonYJ, 
+abstract contract ProtocolEntityUpgradable is 
+        IProtocolEntity, 
         ContractBase, 
         OwnableUpgradeable {
     
@@ -27,13 +27,13 @@ abstract contract CommonYJUpgradable is
     //--- Functions
 
     /// Initializer
-    function __CommonYJ_init(address hub) internal onlyInitializing {
+    function __ProtocolEntity_init(address hub) internal onlyInitializing {
         //Set Protocol's Config Address
         _setHub(hub);
     }
 
     /// Inherit owner from Protocol's config
-    function owner() public view override(ICommonYJ, OwnableUpgradeable) returns (address) {
+    function owner() public view override(IProtocolEntity, OwnableUpgradeable) returns (address) {
         return _HUB.owner();
     }
 

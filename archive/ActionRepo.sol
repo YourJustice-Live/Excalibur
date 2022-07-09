@@ -6,7 +6,7 @@ pragma solidity 0.8.4;
 import "./interfaces/IActionRepo.sol";
 // import "./libraries/DataTypes.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "./abstract/CommonYJ.sol";
+import "./abstract/ProtocolEntity.sol";
 import "./abstract/ERC1155GUID.sol";
 
 
@@ -16,7 +16,7 @@ import "./abstract/ERC1155GUID.sol";
  * 2D - Compound GUID + Additional Data & URI
  * [TBD] 3D - Individual Instances of Action (Incidents) as NFTs + Event Details (Time, Incident no.,  etc')
  */
-contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
+contract ActionRepo is IActionRepo, ProtocolEntity, ERC1155GUID {
 
     //--- Storage
     using AddressUpgradeable for address;
@@ -32,7 +32,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     //--- Functions
 
-    constructor(address hub) CommonYJ(hub) ERC1155(""){
+    constructor(address hub) ProtocolEntity(hub) ERC1155(""){
         // name = "YourJustice: Semantic Action Repo";
     }
 

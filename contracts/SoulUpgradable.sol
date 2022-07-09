@@ -12,7 +12,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "./interfaces/ISoul.sol";
 import "./abstract/Opinions.sol";
-import "./abstract/CommonYJUpgradable.sol";
+import "./abstract/ProtocolEntityUpgradable.sol";
 
 
 /**
@@ -29,7 +29,7 @@ import "./abstract/CommonYJUpgradable.sol";
 contract SoulUpgradable is 
         ISoul, 
         Initializable,
-        CommonYJUpgradable, 
+        ProtocolEntityUpgradable, 
         UUPSUpgradeable,
         Opinions,
         ERC721URIStorageUpgradeable {
@@ -58,7 +58,7 @@ contract SoulUpgradable is
         __ERC721_init("Soulbound Tokens (YJ.life)", "SOUL");
         __ERC721URIStorage_init();
         __UUPSUpgradeable_init();
-        __CommonYJ_init(hub);
+        __ProtocolEntity_init(hub);
         //Set Contract URI
         // _setContractURI(uri_);
     }
