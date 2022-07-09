@@ -68,23 +68,6 @@ abstract contract Rules is IRules {
         return id;
     }
 
-    /// Disable Rule
-    function _ruleDisable(uint256 id, bool disabled) internal {
-        _rules[id].disabled = disabled;
-        //Event
-        emit RuleDisabled(id, disabled);
-    }
-    
-    /// Remove Rule
-    function _ruleRemove(uint256 id) internal {
-        delete _rules[id];
-        //Event
-        emit RuleRemoved(id);
-    }
-
-    //TODO: Separate Rule Effects Update from Rule Update
-
-
     /// Set Rule
     function _ruleSet(uint256 id, DataTypes.Rule memory rule, DataTypes.Effect[] memory effects) internal {
         //Set
@@ -107,6 +90,22 @@ abstract contract Rules is IRules {
         _ruleSet(id, rule, effects);
     }
     
+    /// Disable Rule
+    function _ruleDisable(uint256 id, bool disabled) internal {
+        _rules[id].disabled = disabled;
+        //Event
+        emit RuleDisabled(id, disabled);
+    }
+    
+    /// Remove Rule
+    function _ruleRemove(uint256 id) internal {
+        delete _rules[id];
+        //Event
+        emit RuleRemoved(id);
+    }
+
+    //TODO: Separate Rule Effects Update from Rule Update
+
     /* REMOVED - This should probably be in the implementing Contract
     /// Update Confirmation Method for Action
     function confirmationSet(uint256 id, DataTypes.Confirmation memory confirmation) external override {
