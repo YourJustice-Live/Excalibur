@@ -441,6 +441,8 @@ describe("Protocol", function () {
         uri: "ADDITIONAL_DATA_URI",
         // bool negation;  //false - Commision  true - Omission
         negation: false,
+        // int8 value;
+        value: 0,
       };
       // Effect Object (Describes Changes to Rating By Type)
       let effects1 = [

@@ -63,6 +63,7 @@ library DataTypes {
         bytes32 about;      //About What (Action's GUID)      //TODO: Maybe Call This 'actionGUID'? 
         string affected;    //Affected Role. E.g. "investors"
         bool negation;      //0 - Commision  1 - Omission
+        // int8 value;         //Rule's Value 3 - (-3) [TBD] (Must, Should, Could -0- C)
         string uri;         //Test & Conditions
         bool disabled;      //1 - Rule Disabled
     }
