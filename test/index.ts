@@ -52,37 +52,24 @@ describe("Protocol", function () {
     // hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.gameUpContract.address, this.incidentContract.address));
 
     //--- Deploy Hub Upgradable (UUPS)
-    hubContract = await ethers.getContractFactory("HubUpgradable").then(Contract => 
-      upgrades.deployProxy(Contract,
-        [
-          this.openRepo.address,
-          configContract.address, 
-          this.gameUpContract.address, 
-          this.incidentContract.address
-        ],{
-        // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
-        kind: "uups",
-        timeout: 120000
-      })
-    );
+    hubContract = await deployUUPS("HubUpgradable", 
+      [
+        this.openRepo.address,
+        configContract.address, 
+        this.gameUpContract.address, 
+        this.incidentContract.address
+      ]);
     // await hubContract.deployed();
 
 
     //--- Rule Repository
     //Deploy
-    this.ruleRepo = await ethers.getContractFactory("RuleRepo").then(res => res.deploy());
+    this.ruleRepo = await deployContract("RuleRepo", []);
     //Set to Hub
-    hubContract.assocAdd("RULE_REPO", this.ruleRepo.address);
+    hubContract.setAssoc("RULE_REPO", this.ruleRepo.address);
 
     //--- Deploy Soul Upgradable (UUPS)
-    avatarContract = await ethers.getContractFactory("SoulUpgradable").then(Contract => 
-      upgrades.deployProxy(Contract,
-        [hubContract.address],{
-        // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
-        kind: "uups",
-        timeout: 120000
-      })
-    );
+    avatarContract = await deployUUPS("SoulUpgradable", [hubContract.address]);
 
     //Set Avatar Contract to Hub
     hubContract.setAssoc("avatar", avatarContract.address);
@@ -860,7 +847,7 @@ describe("Protocol", function () {
       ).to.be.revertedWith("User Required to hold same role in the Game context");
     });
 
-    it("Anyonw Can Apply to Join", async function () {
+    it("Anyone Can Apply to Join", async function () {
       //Get Tester's Avatar TokenID
       let tokenId = await avatarContract.tokenByAddress(this.testerAddr);
       //Apply to Join Game

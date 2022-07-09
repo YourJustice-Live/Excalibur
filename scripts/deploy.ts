@@ -4,6 +4,7 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { ethers } from "hardhat";
+import { deployContract, deployUUPS } from "../utils/deployment";
 const { upgrades } = require("hardhat");
 const hre = require("hardhat");
 const chain = hre.hardhatArguments.network;
@@ -61,22 +62,29 @@ async function main() {
   //--- TEST: Upgradable Hub
   if(!contractAddr.hub){
     //Deploy Hub Upgradable (UUPS)    
-    hubContract = await ethers.getContractFactory("HubUpgradable").then(Contract => 
-      upgrades.deployProxy(Contract,
-        [
-          publicAddr.openRepo,
-          contractAddr.config, 
-          contractAddr.game,
-          contractAddr.incident,
-        ],{
-        kind: "uups",
-        timeout: 120000
-      })
-    );
+    // hubContract = await ethers.getContractFactory("HubUpgradable").then(Contract => 
+    //   upgrades.deployProxy(Contract,
+    //     [
+    //       publicAddr.openRepo,
+    //       contractAddr.config, 
+    //       contractAddr.game,
+    //       contractAddr.incident,
+    //     ],{
+    //     kind: "uups",
+    //     timeout: 120000
+    //   })
+    // );
+    hubContract = await deployUUPS("HubUpgradable",
+      [
+        publicAddr.openRepo,
+        contractAddr.config, 
+        contractAddr.game,
+        contractAddr.incident,
+      ]);
     await hubContract.deployed();
 
     //Set RuleRepo to Hub
-    hubContract.assocAdd("RULE_REPO", publicAddr.ruleRepo.address);
+    hubContract.setAssoc("RULE_REPO", publicAddr.ruleRepo.address);
 
     //Set Address
     contractAddr.hub = hubContract.address;
