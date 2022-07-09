@@ -110,7 +110,7 @@ contract Hub is
     /// Set Configurations Contract Address
     function _setConfig(address config) internal {
         //Validate Contract's Designation
-        require(keccak256(abi.encodePacked(IConfig(config).symbol())) == keccak256(abi.encodePacked("Config")), "Invalid Config Contract");
+        require(Utils.stringMatch(IConfig(config).symbol(), "Config"), "Invalid Config Contract");
         //Set
         // _CONFIG = IConfig(config);
         _setAssoc("config", config);
