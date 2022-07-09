@@ -193,7 +193,7 @@ contract GameUpgradable is
         return reactionContract;
     }
 
-    /// Disable Reaction
+    /// Disable Reaction        //TODO: Also Support Enable
     function reactionDisable(address reactionContract) public override onlyOwner {
         //Validate
         require(_active[reactionContract], "Reaction Not Active");
