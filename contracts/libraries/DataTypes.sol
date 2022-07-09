@@ -67,7 +67,7 @@ library DataTypes {
         bool disabled;      //1 - Rule Disabled
     }
     
-    // Effect Structure
+    // Effect Structure (Reputation Changes)
     struct Effect {
         string name;
         uint8 value;    // value: 5

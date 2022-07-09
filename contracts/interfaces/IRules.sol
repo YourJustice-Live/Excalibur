@@ -60,7 +60,7 @@ interface IRules {
     /// Action Confirmation Change
     event Confirmation(uint256 indexed id, string ruling, bool evidence, uint witness);
 
-    /// Reaction Changed
+    /// Reaction Change
     event Reaction(uint256 indexed id, bytes32 reactionId);
 
 }
