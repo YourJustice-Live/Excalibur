@@ -12,7 +12,6 @@ import "./interfaces/IRules.sol";
 import "./interfaces/IIncident.sol";
 // import "./libraries/DataTypes.sol";
 import "./abstract/ERC1155Roles.sol";
-import "./abstract/ContractBase.sol";
 import "./abstract/ProtocolEntity.sol";
 import "./abstract/Rules.sol";
 import "./abstract/Opinions.sol";
@@ -39,7 +38,6 @@ import "./abstract/Posts.sol";
  */
 contract Game is 
         IGame, 
-        ContractBase,
         ProtocolEntity, 
         Rules, 
         Opinions, 

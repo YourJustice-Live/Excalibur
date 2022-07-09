@@ -19,7 +19,7 @@ import "./interfaces/IIncident.sol";
 import "./interfaces/IActionRepo.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/ProtocolEntityUpgradable.sol";
-import "./abstract/ContractBase.sol";
+// import "./abstract/ContractBase.sol";
 import "./abstract/Opinions.sol";
 import "./abstract/Posts.sol";
 // import "./abstract/Rules.sol";
@@ -52,7 +52,7 @@ contract GameUpgradable is
         IGame, 
         IRules,
         // Rules, 
-        ContractBase,
+        // ContractBase,
         ProtocolEntityUpgradable, 
         Opinions, 
         Posts,

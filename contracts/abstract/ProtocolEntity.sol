@@ -8,11 +8,12 @@ import "../interfaces/IProtocolEntity.sol";
 import "../interfaces/IHub.sol";
 import "../libraries/DataTypes.sol";
 import "../libraries/Utils.sol";
+import "../abstract/ContractBase.sol";
 
 /**
  * Common Protocol Functions
  */
-abstract contract ProtocolEntity is IProtocolEntity, Ownable {
+abstract contract ProtocolEntity is IProtocolEntity, ContractBase, Ownable {
     
     //--- Storage
 
