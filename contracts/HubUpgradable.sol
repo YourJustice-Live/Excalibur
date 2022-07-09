@@ -13,7 +13,6 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import "./interfaces/IConfig.sol";
-// import "./interfaces/IAssoc.sol";
 import "./public/interfaces/IOpenRepo.sol";
 import "./interfaces/IProtocolEntity.sol";
 import "./interfaces/IHub.sol";
@@ -22,7 +21,6 @@ import "./interfaces/IReaction.sol";
 import "./interfaces/ISoul.sol";
 import "./libraries/DataTypes.sol";
 import "./abstract/ContractBase.sol";
-// import "./abstract/Assoc.sol";
 import "./abstract/AssocExt.sol";
 
 
@@ -34,7 +32,6 @@ import "./abstract/AssocExt.sol";
  */
 contract HubUpgradable is 
         IHub 
-        // , IAssoc
         , Initializable
         , ContractBase
         , OwnableUpgradeable 
@@ -47,20 +44,13 @@ contract HubUpgradable is
     address public beaconReaction;
     address public beaconGame;  //TBD
 
-    // mapping(string => address) internal _contracts;      // Mapping for Used Contracts
-
-    //Avatar Contract Address
-    // address public override avatarContract;
-    //Action Repo
-    // address public override historyContract;
-
     // using Counters for Counters.Counter;
     // Counters.Counter internal _tokenIds; //Track Last Token ID
     // Counters.Counter internal _reactionIds;  //Track Last Reaction ID
 
     // Arbitrary contract designation signature
     string public constant override role = "Hub";
-    string public constant override symbol = "Hub";
+    string public constant override symbol = "HUB";
 
     //--- Storage
     // address internal _CONFIG;    //Configuration Contract
@@ -69,13 +59,11 @@ contract HubUpgradable is
     mapping(address => bool) internal _games; // Mapping for Active Games   //[TBD]
     mapping(address => address) internal _reactions;      // Mapping for Reaction Contracts  [C] => [J]
 
-
     //--- Functions
  
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
         return interfaceId == type(IHub).interfaceId 
-            // || interfaceId == type(IAssoc).interfaceId 
             || super.supportsInterface(interfaceId);
     }
 
