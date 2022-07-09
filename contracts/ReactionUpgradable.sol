@@ -32,7 +32,7 @@ contract ReactionUpgradable is
     string public name;
     // Contract symbol
     // string public symbol;
-    string public constant symbol = "EVENT";
+    string public constant symbol = "REACTION";
 
     //Game
     // address private _game;
