@@ -35,7 +35,7 @@ async function main() {
 
   //--- Open Repo
   if(!publicAddr.openRepo){
-    //Deploy OpenRepo Upgradable (UUDP)
+    //Deploy OpenRepo Upgradable (UUPS)
     let contractInstance = await ethers.getContractFactory("OpenRepoUpgradable").then(Contract => 
       upgrades.deployProxy(Contract, [],{
         kind: "uups",

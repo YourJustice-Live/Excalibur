@@ -28,7 +28,7 @@ describe("Deployment", function () {
         //Populate Accounts
         [account1, account2] = await ethers.getSigners();
 
-        //--- OpenRepo (UUDP)
+        //--- OpenRepo (UUPS)
         openRepoContract = await ethers.getContractFactory("OpenRepoUpgradable")
             .then(Contract => upgrades.deployProxy(Contract, [],{kind: "uups", timeout: 120000}));
 

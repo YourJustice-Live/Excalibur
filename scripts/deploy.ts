@@ -60,7 +60,7 @@ async function main() {
 
   //--- TEST: Upgradable Hub
   if(!contractAddr.hub){
-    //Deploy Hub Upgradable (UUDP)    
+    //Deploy Hub Upgradable (UUPS)    
     hubContract = await ethers.getContractFactory("HubUpgradable").then(Contract => 
       upgrades.deployProxy(Contract,
         [
@@ -142,7 +142,7 @@ async function main() {
 
     console.log("BEFORE History Contract Deployment");
 
-    //Deploy History Upgradable (UUDP)
+    //Deploy History Upgradable (UUPS)
     const proxyActionRepo = await ethers.getContractFactory("ActionRepoTrackerUp").then(Contract => 
       upgrades.deployProxy(Contract,
         [contractAddr.hub],{

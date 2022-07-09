@@ -30,7 +30,7 @@ describe("Hub", function () {
         this.addr1 = await account1.getAddress();
         this.addr2 = await account2.getAddress();
 
-        //Deploy OpenRepo (UUDP)
+        //Deploy OpenRepo (UUPS)
         openRepoContract = await ethers.getContractFactory("OpenRepoUpgradable")
             .then(Contract => upgrades.deployProxy(Contract, [],{kind: "uups", timeout: 120000}));
 
