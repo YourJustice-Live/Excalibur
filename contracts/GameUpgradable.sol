@@ -219,6 +219,24 @@ contract GameUpgradable is
         _post(tx.origin, tokenId, entRole, uri_);
     }
 
+    /// Get Token URI by Token ID
+    // function tokenURI(uint256 token_id) public view returns (string memory) {
+    // function uri(uint256 token_id) public view override returns (string memory) {
+    function uri(uint256 token_id) public view returns (string memory) {
+        // require(exists(token_id), "NONEXISTENT_TOKEN");
+        return _tokenURIs[token_id];
+    }
+
+    /// Set Metadata URI For Role
+    function setRoleURI(string memory role, string memory _tokenURI) external override AdminOrOwner {
+        _setRoleURI(role, _tokenURI);
+    }
+    
+    /// Set Contract URI
+    function setContractURI(string calldata contract_uri) external override AdminOrOwner {
+        _setContractURI(contract_uri);
+    }
+
     //** Generic Config
     
     /// Generic Config Get Function
@@ -359,12 +377,7 @@ contract GameUpgradable is
         }
     }
 
-
-
-
-
-
- //** Rule Management
+    //** Rule Management
     
     //-- Getters
 
@@ -413,87 +426,5 @@ contract GameUpgradable is
         _ruleRepo().ruleConfirmationUpdate(id, confirmation);
     }
 
-
-/* MOVED OUT TO RuleRepo
-    //** Rule Management
-
-    /// Create New Rule
-    function ruleAdd(
-        DataTypes.Rule memory rule, 
-        DataTypes.Confirmation memory confirmation, 
-        DataTypes.Effect[] memory effects
-    ) public override returns (uint256) {
-        //Validate Caller's Permissions
-        require(roleHas(_msgSender(), "admin"), "Admin Only");
-        //Validate rule.about -- actionGUID Exists
-        address actionRepo = repo().addressGetOf(address(_HUB), "history");
-        IActionRepo(actionRepo).actionGet(rule.about);  //Revetrs if does not exist
-        //Add Rule
-        uint256 id = _ruleAdd(rule, effects);
-        //Set Confirmations
-        _confirmationSet(id, confirmation);
-        return id;
-    }
-
-    /// Update Rule
-    function ruleUpdate(
-        uint256 id, 
-        DataTypes.Rule memory rule, 
-        DataTypes.Effect[] memory effects
-    ) external override {
-        //Validate Caller's Permissions
-        require(roleHas(_msgSender(), "admin"), "Admin Only");
-        //Update Rule
-        _ruleUpdate(id, rule, effects);
-    }
-
-    /// Set Disable Status for Rule
-    function ruleDisable(uint256 id, bool disabled) external {
-         //Validate Caller's Permissions
-        require(roleHas(_msgSender(), "admin"), "Admin Only");
-        //Disable Rule
-        _ruleDisable(id, disabled);
-    }
-
-    /// Update Rule's Confirmation Data
-    function ruleConfirmationUpdate(uint256 id, DataTypes.Confirmation memory confirmation) external override {
-        //Validate Caller's Permissions
-        require(roleHas(_msgSender(), "admin"), "Admin Only");
-        //Set Confirmations
-        _confirmationSet(id, confirmation);
-    }
-    */
-    /*
-    /// TODO: Update Rule's Effects
-    function ruleEffectsUpdate(uint256 id, DataTypes.Effect[] memory effects) external override {
-        //Validate Caller's Permissions
-        require(roleHas(_msgSender(), "admin"), "Admin Only");
-        //Set Effects
-        
-    }
-    */
-
-
-
-
-
-
-    /// Get Token URI by Token ID
-    // function tokenURI(uint256 token_id) public view returns (string memory) {
-    // function uri(uint256 token_id) public view override returns (string memory) {
-    function uri(uint256 token_id) public view returns (string memory) {
-        // require(exists(token_id), "NONEXISTENT_TOKEN");
-        return _tokenURIs[token_id];
-    }
-
-    /// Set Metadata URI For Role
-    function setRoleURI(string memory role, string memory _tokenURI) external override AdminOrOwner {
-        _setRoleURI(role, _tokenURI);
-    }
-    
-    /// Set Contract URI
-    function setContractURI(string calldata contract_uri) external override AdminOrOwner {
-        _setContractURI(contract_uri);
-    }
     
 }
