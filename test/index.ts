@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { Contract, Signer } from "ethers";
 import { ethers } from "hardhat";
+import { deployContract, deployUUPS } from "../utils/deployment";
 const { upgrades } = require("hardhat");
 
 //Test Data
@@ -36,9 +37,10 @@ describe("Protocol", function () {
     // configContract = await ConfigContract.deploy();
     configContract = await ethers.getContractFactory("Config").then(res => res.deploy());
 
-    //--- Deploy OpenRepo Upgradable (UUDP)
-    this.openRepo = await ethers.getContractFactory("OpenRepoUpgradable")
-      .then(Contract => upgrades.deployProxy(Contract, [],{kind: "uups", timeout: 120000}));
+    //--- Deploy OpenRepo Upgradable (UUPS)
+    // this.openRepo = await ethers.getContractFactory("OpenRepoUpgradable")
+    //   .then(Contract => upgrades.deployProxy(Contract, [],{kind: "uups", timeout: 120000}));
+    this.openRepo = await deployUUPS("OpenRepoUpgradable", []);
 
     //--- Deploy Incident Implementation
     this.incidentContract = await ethers.getContractFactory("IncidentUpgradable").then(res => res.deploy());
@@ -49,7 +51,7 @@ describe("Protocol", function () {
     //Deploy Hub
     // hubContract = await ethers.getContractFactory("Hub").then(res => res.deploy(configContract.address, this.gameUpContract.address, this.incidentContract.address));
 
-    //--- Deploy Hub Upgradable (UUDP)
+    //--- Deploy Hub Upgradable (UUPS)
     hubContract = await ethers.getContractFactory("HubUpgradable").then(Contract => 
       upgrades.deployProxy(Contract,
         [
@@ -72,7 +74,7 @@ describe("Protocol", function () {
     //Set to Hub
     hubContract.assocAdd("RULE_REPO", this.ruleRepo.address);
 
-    //--- Deploy Soul Upgradable (UUDP)
+    //--- Deploy Soul Upgradable (UUPS)
     avatarContract = await ethers.getContractFactory("SoulUpgradable").then(Contract => 
       upgrades.deployProxy(Contract,
         [hubContract.address],{
@@ -88,7 +90,7 @@ describe("Protocol", function () {
     //Deploy History
     // actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
 
-    //--- Deploy History Upgradable (UUDP)
+    //--- Deploy History Upgradable (UUPS)
     actionContract = await ethers.getContractFactory("ActionRepoTrackerUp").then(Contract => 
       upgrades.deployProxy(Contract,
         [hubContract.address],{
