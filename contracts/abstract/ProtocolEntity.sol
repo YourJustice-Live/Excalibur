@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/IProtocolEntity.sol";
 import "../interfaces/IHub.sol";
 import "../libraries/DataTypes.sol";
+import "../libraries/Utils.sol";
 
 /**
  * Common Protocol Functions
@@ -50,15 +51,9 @@ abstract contract ProtocolEntity is IProtocolEntity, Ownable {
     /// Set Hub Contract
     function _setHub(address hubAddr) internal {
         //Validate Contract's Designation
-        require(keccak256(abi.encodePacked(IHub(hubAddr).role())) == keccak256(abi.encodePacked("Hub")), "Invalid Hub Contract");
-        // require(keccak256(abi.encodePacked(IHub(hubAddr).symbol())) == keccak256(abi.encodePacked("HUB")), "Invalid Hub Contract");
+        require(Utils.stringMatch(IHub(hubAddr).role(), "Hub"), "Invalid Hub Contract");
         //Set
         _HUB = IHub(hubAddr);
-    }
-    
-    /// Match Two Strings
-    function _stringMatch(string memory str1, string memory str2) internal pure returns(bool){
-        return (keccak256(abi.encodePacked(str1)) == keccak256(abi.encodePacked(str2)));
     }
 
 }

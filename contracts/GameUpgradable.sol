@@ -26,6 +26,9 @@ import "./abstract/Posts.sol";
 // import "./abstract/Recursion.sol";
 // import "./public/interfaces/IOpenRepo.sol";
 import "./abstract/ProxyMulti.sol";
+import "./libraries/Utils.sol";
+
+
 
 /**
  * @title Game Contract
@@ -233,7 +236,7 @@ contract GameUpgradable is
     /// Proxy Fallback Implementations
     function _implementations() internal view virtual override returns (address[] memory){
         // string memory gameType = confGet("type");
-        require (!_stringMatch(confGet("type"), ""), "NO_GAME_TYPE");
+        require (!Utils.stringMatch(confGet("type"), ""), "NO_GAME_TYPE");
         //UID
         string memory gameType = string(abi.encodePacked("GAME_", confGet("type")));
         //Fetch Implementations
@@ -290,7 +293,7 @@ contract GameUpgradable is
 
     /// Join a game (as a regular 'member')
     function join() external override returns (uint256) {
-        require (!_stringMatch(confGet("isClosed"), "true"), "CLOSED_SPACE");
+        require (!Utils.stringMatch(confGet("isClosed"), "true"), "CLOSED_SPACE");
         //Mint Member Token to Self
         return _GUIDAssign(_msgSender(), _stringToBytes32("member"), 1);
     }
