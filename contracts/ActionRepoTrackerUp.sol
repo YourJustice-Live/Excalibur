@@ -6,7 +6,6 @@ pragma solidity 0.8.4;
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-// import "./interfaces/IAssoc.sol";
 import "./interfaces/IActionRepo.sol";
 import "./abstract/ProtocolEntityUpgradable.sol";
 import "./abstract/ERC1155GUIDTrackerUp.sol";
