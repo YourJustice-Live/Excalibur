@@ -9,23 +9,20 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 // import "@openzeppelin/contracts/governance/utils/Votes.sol";
 // import "./abstract/Votes.sol";
 // import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/draft-ERC721VotesUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/governance/utils/VotesUpgradeable.sol";
-
-
-// import "./libraries/DataTypes.sol";
+import "@openzeppelin/contracts-upgradeable/governance/utils/VotesUpgradeable.sol"; //Adds 3.486Kb
 import "./interfaces/IGameUp.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/IIncident.sol";
 import "./interfaces/IActionRepo.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/ProtocolEntityUpgradable.sol";
-// import "./abstract/ContractBase.sol";
 import "./abstract/Opinions.sol";
 import "./abstract/Posts.sol";
 // import "./abstract/Rules.sol";
 // import "./abstract/Recursion.sol";
 // import "./public/interfaces/IOpenRepo.sol";
-import "./abstract/ProxyMulti.sol";
+import "./abstract/ProxyMulti.sol";  //Adds 1.529Kb
+// import "./libraries/DataTypes.sol";
 import "./libraries/Utils.sol";
 
 
@@ -33,7 +30,7 @@ import "./libraries/Utils.sol";
 /**
  * @title Game Contract
  * @dev Retains Group Members in Roles
- * @dev Version 2.2
+ * @dev Version 3.0
  * V1: Using Role NFTs
  * - Mints Member NFTs
  * - One for each
@@ -46,6 +43,9 @@ import "./libraries/Utils.sol";
  * V2: Trackers
  * - NFT Trackers - Assign Avatars instead of Accounts & Track the owner of the Avatar NFT
  * V3:
+ * - Multi-Proxy Pattern  
+ * / DAO Votes [?]
+ * V4:
  * - [TODO] Unique Rule IDs (GUID)
  */
 contract GameUpgradable is 
