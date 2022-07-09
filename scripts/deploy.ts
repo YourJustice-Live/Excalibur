@@ -109,14 +109,16 @@ async function main() {
   //--- Soul Upgradable
   if(!contractAddr.avatar){
 
-    //Deploy Avatar Upgradable
-    const proxyAvatar = await ethers.getContractFactory("SoulUpgradable").then(Contract => 
-      upgrades.deployProxy(Contract,
-        [contractAddr.hub],{
-        kind: "uups",
-        timeout: 120000
-      })
-    );
+    //Deploy Soul Upgradable
+    // const proxyAvatar = await ethers.getContractFactory("SoulUpgradable").then(Contract => 
+    //   upgrades.deployProxy(Contract,
+    //     [contractAddr.hub],{
+    //     kind: "uups",
+    //     timeout: 120000
+    //   })
+    // );
+    //Deploy UUPS
+    const proxyAvatar = await deployUUPS("SoulUpgradable", [contractAddr.hub]);
 
     await proxyAvatar.deployed();
     contractAddr.avatar = proxyAvatar.address;
@@ -151,13 +153,15 @@ async function main() {
     console.log("BEFORE History Contract Deployment");
 
     //Deploy History Upgradable (UUPS)
-    const proxyActionRepo = await ethers.getContractFactory("ActionRepoTrackerUp").then(Contract => 
-      upgrades.deployProxy(Contract,
-        [contractAddr.hub],{
-        kind: "uups",
-        timeout: 120000
-      })
-    );
+    // const proxyActionRepo = await ethers.getContractFactory("ActionRepoTrackerUp").then(Contract => 
+    //   upgrades.deployProxy(Contract,
+    //     [contractAddr.hub],{
+    //     kind: "uups",
+    //     timeout: 120000
+    //   })
+    // );
+    const proxyActionRepo = await deployUUPS("ActionRepoTrackerUp", [contractAddr.hub]);
+
     await proxyActionRepo.deployed();
     
     console.log("Deployed History Contract", proxyActionRepo.address);
