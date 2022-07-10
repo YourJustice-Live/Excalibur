@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
 // import "@openzeppelin/contracts/utils/Counters.sol";
@@ -10,6 +10,7 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 // import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import "./interfaces/ISoul.sol";
 import "./abstract/Opinions.sol";
 import "./abstract/ProtocolEntityUpgradable.sol";
@@ -17,13 +18,14 @@ import "./abstract/ProtocolEntityUpgradable.sol";
 
 /**
  * @title Soulbound NFT Identity Tokens + Reputation Tracking
- * @dev Version 2.0
+ * @dev Version 2.1
  *  - Contract is open for everyone to mint.
  *  - Max of one NFT assigned for each account
  *  - Can create un-assigned NFT (Kept on contract)
  *  - Minted Token's URI is updatable by Token holder
  *  - Assets are non-transferable by owner
- *  - Tokens can be merged (Multiple Owners)
+ *  - Tokens can be merged (multiple owners)
+ *  - Owner can mint tokens for Contracts
  *  - [TODO] Orphan tokens can be claimed/linked
  */
 contract SoulUpgradable is 
@@ -68,7 +70,9 @@ contract SoulUpgradable is
 
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(ISoul).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(ISoul).interfaceId
+            || interfaceId == type(IERC721Upgradeable).interfaceId 
+            || super.supportsInterface(interfaceId);
     }
 
     //** Token Owner Index **/
@@ -131,34 +135,36 @@ contract SoulUpgradable is
     
     //** Token Actions **/
     
-    /// Mint (Create New Avatar for oneself)
-    function mint(string memory tokenURI) public override returns (uint256) {
-        //One Per Account
-        require(balanceOf(_msgSender()) == 0, "Requesting account already has an avatar");
+    /// Mint (Create New Token for Someone Else)
+    function mintFor(address to, string memory tokenURI) public override returns (uint256) {
+        //Validate - Contract Owner 
+        require(_msgSender() == owner(), "Only Owner");
         //Mint
-        uint256 tokenId = _createAvatar(_msgSender(), tokenURI);
-        //Index Owner
-        // _tokenOwnerAdd(_msgSender(), tokenId);   //MOVED TO TokenTransfer Logic
-        //Return
-        return tokenId;
+        return _mint(to, tokenURI);
+    }
+
+    /// Mint (Create New Token for oneself)
+    function mint(string memory tokenURI) external override returns (uint256) {
+        //Mint
+        return _mint(_msgSender(), tokenURI);
     }
 	
-    /// Add (Create New Avatar Without an Owner)
+    /// Add (Create New Token Without an Owner)
     function add(string memory tokenURI) external override returns (uint256) {
         //Mint
-        return _createAvatar(address(this), tokenURI);
+        return _mint(address(this), tokenURI);
     }
 
     /// Burn NFTs
     function burn(uint256 tokenId) external {
-        //Validate Owner of Contract
+        //Validate - Contract Owner 
         require(_msgSender() == owner(), "Only Owner");
         //Burn Token
         _burn(tokenId);
     }
 
     /// Update Token's Metadata
-    function update(uint256 tokenId, string memory uri) public override returns (uint256) {
+    function update(uint256 tokenId, string memory uri) external override returns (uint256) {
         //Validate Owner of Token
         require(_isApprovedOrOwner(_msgSender(), tokenId) || _msgSender() == owner(), "caller is not owner nor approved");
         _setTokenURI(tokenId, uri);	//This Goes for Specific Metadata Set (IPFS and Such)
@@ -168,10 +174,12 @@ contract SoulUpgradable is
         return tokenId;
     }
 
-    /// Create a new Avatar
-    function _createAvatar(address to, string memory uri) internal returns (uint256){
+    /// Create a new Token
+    function _mint(address to, string memory uri) internal returns (uint256){
         //Validate - Bot Protection
-        require(tx.origin == _msgSender(), "Bots not allowed");
+        // require(tx.origin == _msgSender(), "Bots not allowed");      //CANCELLED - Allow Contracts to Have Souls
+        //One Per Account
+        require(to == address(this) || balanceOf(_msgSender()) == 0, "Requesting account already has a token");
         //Mint
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
@@ -193,9 +201,7 @@ contract SoulUpgradable is
         require(
             _msgSender() == owner()
             || from == address(0)   //Minting
-            // || to == address(0)     //Burning
-            ,
-            "Sorry, Assets are non-transferable"
+            , "Sorry, assets are non-transferable"
         );
         
         //Update Address Index        

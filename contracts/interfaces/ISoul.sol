@@ -2,8 +2,10 @@
 
 pragma solidity 0.8.4;
 
-// import "../libraries/DataTypes.sol";
-
+/**
+ * @title Soulbound Token Interface
+ * @dev Additions to IERC721 
+ */
 interface ISoul {
 
     //--- Functions
@@ -13,6 +15,9 @@ interface ISoul {
 
     /// Mint (Create New Avatar for oneself)
     function mint(string memory tokenURI) external returns (uint256);
+
+    /// Mint (Create New Token for Someone Else)
+    function mintFor(address to, string memory tokenURI) external returns (uint256);
 
     /// Add (Create New Avatar Without an Owner)
     function add(string memory tokenURI) external returns (uint256);
