@@ -10,6 +10,7 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 // import "./abstract/Votes.sol";
 // import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/draft-ERC721VotesUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/governance/utils/VotesUpgradeable.sol"; //Adds 3.486Kb
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import "./interfaces/IGameUp.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/IReaction.sol";
@@ -124,11 +125,10 @@ contract GameUpgradable is
         //Initializers
         // __ERC1155RolesUpgradable_init("");
         __ProtocolEntity_init(hub);
-        // __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
-        __setTargetContract(repo().addressGetOf(address(_HUB), "avatar"));
+        __setTargetContract(repo().addressGetOf(address(_HUB), "SBT"));
         
         //Init Recursion Controls
-        // __Recursion_init(address(_HUB)); //DEPRECATED
+        // __Recursion_init(address(_HUB)); //CANCELLED
 
         //Set Contract URI
         _setContractURI(uri_);
@@ -145,6 +145,11 @@ contract GameUpgradable is
         //Assign Creator as Admin & Member
         _roleAssign(tx.origin, "admin", 1);
         _roleAssign(tx.origin, "member", 1);
+
+        /* 0.600Kb */
+        //Register as a Soul
+        address sbtContract = repo().addressGetOf(address(_HUB), "SBT");
+        ISoul(sbtContract).mint(uri_);
     }
 
     //** Reaction Functions
@@ -211,7 +216,7 @@ contract GameUpgradable is
     /// @param uri_     post URI
     function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {
         //Validate that User Controls The Token
-        require(ISoul( repo().addressGetOf(address(_HUB), "avatar") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        require(ISoul( repo().addressGetOf(address(_HUB), "SBT") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
         //Validate: Soul Assigned to the Role 
         require(roleHasByToken(tokenId, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
         // require(roleHasByToken(tokenId, entRole), string(abi.encodePacked("TOKEN: ", tokenId, " NOT_ASSIGNED_AS: ", entRole)) );    //Validate the Calling Account

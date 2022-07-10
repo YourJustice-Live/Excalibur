@@ -23,7 +23,7 @@ async function main() {
     // await hubContract.upgradeGameImplementation(contractAddr.game);
 
     //Set to HUB
-    await hubContract.setAssoc("avatar", contractAddr.avatar);
+    await hubContract.setAssoc("SBT", contractAddr.avatar);
     await hubContract.setAssoc("history", contractAddr.history);
 
 }

@@ -43,7 +43,7 @@ contract ActionRepoTrackerUp is
         //Initializers
         __UUPSUpgradeable_init();
         __ProtocolEntity_init(hub);
-        __setTargetContract( repo().addressGetOf(address(_HUB), "avatar") );
+        __setTargetContract( repo().addressGetOf(address(_HUB), "SBT") );
         //Set Contract URI
         // _setContractURI(uri_);
     }

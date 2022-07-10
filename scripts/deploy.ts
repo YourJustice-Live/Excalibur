@@ -94,7 +94,7 @@ async function main() {
 
     try{
       //Set as Avatars
-      if(!!contractAddr.avatar) await hubContract.setAssoc("avatar", contractAddr.avatar);
+      if(!!contractAddr.avatar) await hubContract.setAssoc("SBT", contractAddr.avatar);
       //Set as History
       if(!!contractAddr.history) await hubContract.setAssoc("history", contractAddr.history);
     }
@@ -130,7 +130,7 @@ async function main() {
     if(!!hubContract){  //If Deployed Together
       try{
         //Set to HUB
-        await hubContract.setAssoc("avatar", contractAddr.avatar);
+        await hubContract.setAssoc("SBT", contractAddr.avatar);
         //Log
         console.log("Registered Avatar Contract to Hub");
       }

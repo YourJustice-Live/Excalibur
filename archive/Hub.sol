@@ -119,7 +119,7 @@ contract Hub is
     /// Update Hub
     function hubChange(address newHubAddr) external override onlyOwner {
         //Avatar
-        address avatarContract = getAssoc("avatar");
+        address avatarContract = getAssoc("SBT");
         if(avatarContract != address(0)){
             IProtocolEntity(avatarContract).setHub(newHubAddr);
         }
@@ -207,7 +207,7 @@ contract Hub is
 
         // console.log("Hub: Add Reputation to Contract:", contractAddr, tokenId, amount);
         // console.log("Hub: Add Reputation in Domain:", domain);
-        address avatarContract = getAssoc("avatar");
+        address avatarContract = getAssoc("SBT");
         //Update Avatar's Reputation    //TODO: Just Check if Contract Implements IRating
         if(avatarContract != address(0) && avatarContract == contractAddr){
             _repAddAvatar(tokenId, domain, rating, amount);
@@ -216,7 +216,7 @@ contract Hub is
 
     /// Add Repuation to Avatar
     function _repAddAvatar(uint256 tokenId, string calldata domain, bool rating, uint8 amount) internal {
-        address avatarContract = getAssoc("avatar");
+        address avatarContract = getAssoc("SBT");
         // require(avatarContract != address(0), "AVATAR_CONTRACT_UNKNOWN");
         // repAdd(avatarContract, tokenId, domain, rating, amount);
         // IAvatar(avatarContract).repAdd(tokenId, domain, rating, amount);

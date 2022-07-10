@@ -137,7 +137,7 @@ contract ReactionUpgradable is
 
     /// Get Soul Contract Address
     function getSoulAddr() internal view returns(address){
-        return repo().addressGetOf(address(_HUB), "avatar");
+        return repo().addressGetOf(address(_HUB), "SBT");
     }
 
     /// Request to Join
@@ -214,7 +214,7 @@ contract ReactionUpgradable is
     function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {
         //Validate that User Controls The Token
         // require(_hasTokenControl(tokenId), "SOUL:NOT_YOURS");
-        // require(ISoul( IAssoc(address(_HUB)).getAssoc("avatar") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        // require(ISoul( IAssoc(address(_HUB)).getAssoc("SBT") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
         require(ISoul( getSoulAddr() ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
         //Validate: Soul Assigned to the Role 
         // require(roleHas(tx.origin, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
@@ -336,8 +336,8 @@ contract ReactionUpgradable is
     /// Rule (Action) Confirmed (Currently Only Judging Avatars)
     function _ruleConfirmed(uint256 ruleId) internal {
         //Get Avatar Contract
-        // ISoul avatarContract = ISoul(_HUB.getAssoc("avatar"));
-        // ISoul avatarContract = ISoul(IAssoc(address(_HUB)).getAssoc("avatar"));
+        // ISoul avatarContract = ISoul(_HUB.getAssoc("SBT"));
+        // ISoul avatarContract = ISoul(IAssoc(address(_HUB)).getAssoc("SBT"));
         ISoul avatarContract = ISoul( getSoulAddr() );
         
 
