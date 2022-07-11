@@ -198,7 +198,7 @@ contract SoulUpgradable is
     }
     
     /// Get Owner Type
-    function _getType(address account) private returns(string memory){
+    function _getType(address account) private view returns(string memory){
         
         // console.log("** _getType() Return: ", response);
 
