@@ -9,7 +9,7 @@ pragma solidity 0.8.4;
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "../libraries/DataTypes.sol";
 import "../interfaces/IERC1155RolesTracker.sol";
-import "../interfaces/IRules.sol";
+import "../interfaces/IRulesRepo.sol";
 import "../interfaces/IActionRepo.sol";
 import "../interfaces/IProtocolEntity.sol";
 import "../interfaces/IGameUp.sol";
@@ -162,14 +162,14 @@ contract RuleRepo is IRules {
     function _ruleDisable(uint256 id, bool disabled) internal {
         _rules[msg.sender][id].disabled = disabled;
         //Event
-        emit RuleDisabled(id, disabled);
+        emit RuleDisabled(msg.sender, id, disabled);
     }
     
     /// Remove Rule
     function _ruleRemove(uint256 id) internal {
         delete _rules[msg.sender][id];
         //Event
-        emit RuleRemoved(id);
+        emit RuleRemoved(msg.sender, id);
     }
 
     //TODO: Separate Rule Effects Update from Rule Update
@@ -179,13 +179,13 @@ contract RuleRepo is IRules {
         //Set
         _rules[msg.sender][id] = rule;
         //Rule Updated Event
-        emit Rule(id, rule.about, rule.affected, rule.uri, rule.negation);
+        emit Rule(msg.sender, id, rule.about, rule.affected, rule.uri, rule.negation);
 
-        // emit RuleEffects(id, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
+        // emit RuleEffects(msg.sender, id, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
         for (uint256 i = 0; i < effects.length; ++i) {
             _effects[msg.sender][id].push(effects[i]);
             //Effect Added Event
-            emit RuleEffect(id, effects[i].direction, effects[i].value, effects[i].name);
+            emit RuleEffect(msg.sender, id, effects[i].direction, effects[i].value, effects[i].name);
         }
     }
 
@@ -210,7 +210,7 @@ contract RuleRepo is IRules {
         //Save
         _ruleConfirmation[msg.sender][id] = confirmation;
         //Event
-        emit Confirmation(id, confirmation.ruling, confirmation.evidence, confirmation.witness);
+        emit Confirmation(msg.sender, id, confirmation.ruling, confirmation.evidence, confirmation.witness);
     }
 
     /// Set Action's Reaction ID
@@ -218,7 +218,7 @@ contract RuleRepo is IRules {
         //Save
         _reactions[msg.sender][id][0] = reaction;
         //Event
-        emit Reaction(id, reaction);
+        emit Reaction(msg.sender, id, reaction);
     }
    
 }
