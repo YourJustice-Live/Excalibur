@@ -9,6 +9,7 @@ const ZERO_ADDR = '0x0000000000000000000000000000000000000000';
 let test_uri = "ipfs://QmQxkoWcpFgMa7bCzxaANWtSt43J1iMgksjNnT4vM1Apd7"; //"TEST_URI";
 let test_uri2 = "ipfs://TEST2";
 let actionGUID = "";
+let soulTokenId = 0;  //Try to keep track of Current Soul Token ID
 
 describe("Protocol", function () {
   //Contract Instances
@@ -72,7 +73,7 @@ describe("Protocol", function () {
     avatarContract = await deployUUPS("SoulUpgradable", [hubContract.address]);
 
     //Set Avatar Contract to Hub
-    hubContract.setAssoc("avatar", avatarContract.address);
+    hubContract.setAssoc("SBT", avatarContract.address);
 
     //Deploy History
     // actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));
@@ -164,25 +165,28 @@ describe("Protocol", function () {
   describe("Soul", function () {
 
     it("Should inherit protocol owner", async function () {
-      expect(await avatarContract.owner()).to.equal(await owner.getAddress());
+      expect(await avatarContract.owner()).to.equal(this.ownerAddr);
     });
     
     it("Can mint only one", async function () {
       let tx = await avatarContract.connect(tester).mint(test_uri);
+      ++soulTokenId;
       tx.wait();
       //Another One for Testing Purposes
-      avatarContract.connect(tester2).mint(test_uri);
+      await avatarContract.connect(tester2).mint(test_uri);
+      ++soulTokenId;
       // console.log("minting", tx);
       //Fetch Token
       let result = await avatarContract.ownerOf(1);
       //Check Owner
-      expect(result).to.equal(await tester.getAddress());
+      expect(result).to.equal(this.testerAddr);
       //Check URI
       expect(await avatarContract.tokenURI(1)).to.equal(test_uri);
       //Another Call Should Fail
       await expect(
         avatarContract.connect(tester).mint(test_uri)
-      ).to.be.revertedWith("Requesting account already has an avatar");
+      ).to.be.revertedWith("Requesting account already has a token");
+      ++soulTokenId;
     });
 
     it("Should Index Addresses", async function () {
@@ -217,6 +221,7 @@ describe("Protocol", function () {
       await avatarContract.connect(tester).add(test_uri);
       await avatarContract.connect(tester).add(test_uri);
       let tx = await avatarContract.connect(tester).add(test_uri);
+      soulTokenId = soulTokenId + 3;
       tx.wait();
       // console.log("minting", tx);
       //Fetch Token
@@ -267,12 +272,12 @@ describe("Protocol", function () {
     });
     
     it("Should NOT be transferable", async function () {
-      //Should Fail to transfer -- "Sorry, Assets are non-transferable"
+      //Should Fail to transfer -- "Sorry, assets are non-transferable"
       let fromAddr = await tester.getAddress();
       let toAddr = await tester2.getAddress();
       await expect(
         avatarContract.connect(tester).transferFrom(fromAddr, toAddr, 1)
-      ).to.be.revertedWith("Sorry, Assets are non-transferable");
+      ).to.be.revertedWith("Sorry, assets are non-transferable");
     });
 
     it("Can update token's metadata", async function () {
@@ -307,6 +312,7 @@ describe("Protocol", function () {
       await avatarContract.connect(tester4).mint(test_uri);
       await avatarContract.connect(tester5).mint(test_uri);
       await avatarContract.connect(authority).mint(test_uri);
+      soulTokenId = soulTokenId + 5;
 
       //Simulate to Get New Game Address
       let JAddr = await hubContract.callStatic.gameMake("Test Game", test_uri);
@@ -319,6 +325,9 @@ describe("Protocol", function () {
       expect(JAddr).to.be.properAddress;
       //Expect Reaction Created Event
       await expect(tx).to.emit(hubContract, 'ContractCreated').withArgs("game", JAddr);
+      await expect(tx).to.emit(avatarContract, 'SoulType').withArgs(soulTokenId, "GAME");
+      // console.log("Current soulTokenId", soulTokenId);
+      ++soulTokenId;
       //Init Game Contract Object
       gameContract = await ethers.getContractFactory("GameUpgradable").then(res => res.attach(JAddr));
       this.gameContract = gameContract;

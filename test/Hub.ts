@@ -84,8 +84,8 @@ describe("Hub", function () {
           );
 
         //Set Avatar Contract to Hub
-        hubContract.setAssoc("avatar", avatarContract.address);
-        hubContract2.setAssoc("avatar", avatarContract.address);
+        hubContract.setAssoc("SBT", avatarContract.address);
+        hubContract2.setAssoc("SBT", avatarContract.address);
 
         //Deploy History
         // actionContract = await ethers.getContractFactory("ActionRepo").then(res => res.deploy(hubContract.address));

@@ -10,6 +10,7 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 // import "./abstract/Votes.sol";
 // import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/draft-ERC721VotesUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/governance/utils/VotesUpgradeable.sol"; //Adds 3.486Kb
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import "./interfaces/IGameUp.sol";
 import "./interfaces/IRules.sol";
 import "./interfaces/IReaction.sol";
@@ -124,11 +125,10 @@ contract GameUpgradable is
         //Initializers
         // __ERC1155RolesUpgradable_init("");
         __ProtocolEntity_init(hub);
-        // __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
-        __setTargetContract(repo().addressGetOf(address(_HUB), "avatar"));
+        __setTargetContract(repo().addressGetOf(address(_HUB), "SBT"));
         
         //Init Recursion Controls
-        // __Recursion_init(address(_HUB)); //DEPRECATED
+        // __Recursion_init(address(_HUB)); //CANCELLED
 
         //Set Contract URI
         _setContractURI(uri_);
@@ -145,6 +145,8 @@ contract GameUpgradable is
         //Assign Creator as Admin & Member
         _roleAssign(tx.origin, "admin", 1);
         _roleAssign(tx.origin, "member", 1);
+
+
     }
 
     //** Reaction Functions
@@ -211,7 +213,7 @@ contract GameUpgradable is
     /// @param uri_     post URI
     function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {
         //Validate that User Controls The Token
-        require(ISoul( repo().addressGetOf(address(_HUB), "avatar") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        require(ISoul( repo().addressGetOf(address(_HUB), "SBT") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
         //Validate: Soul Assigned to the Role 
         require(roleHasByToken(tokenId, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
         // require(roleHasByToken(tokenId, entRole), string(abi.encodePacked("TOKEN: ", tokenId, " NOT_ASSIGNED_AS: ", entRole)) );    //Validate the Calling Account
@@ -253,12 +255,14 @@ contract GameUpgradable is
 
     /// Proxy Fallback Implementations
     function _implementations() internal view virtual override returns (address[] memory){
-        // string memory gameType = confGet("type");
-        require (!Utils.stringMatch(confGet("type"), ""), "NO_GAME_TYPE");
+        address[] memory implementationAddresses;
+        string memory gameType = confGet("type");
+        if(Utils.stringMatch(gameType, "")) return implementationAddresses;
+        // require (!Utils.stringMatch(gameType, ""), "NO_GAME_TYPE");
         //UID
-        string memory gameType = string(abi.encodePacked("GAME_", confGet("type")));
+        string memory gameTypeFull = string(abi.encodePacked("GAME_", gameType));
         //Fetch Implementations
-        address[] memory implementationAddresses = repo().addressGetAllOf(address(_HUB), gameType); //Specific
+        implementationAddresses = repo().addressGetAllOf(address(_HUB), gameTypeFull); //Specific
         require(implementationAddresses.length > 0, "NO_FALLBACK_CONTRACT");
         return implementationAddresses;
     }
@@ -352,7 +356,7 @@ contract GameUpgradable is
         roleRemove(account, roleOld);
     }
 
-    /** DEPRECATE - Allow Uneven Role Distribution 
+    /** TODO: DEPRECATE - Allow Uneven Role Distribution 
     * @dev Hook that is called before any token transfer. This includes minting and burning, as well as batched variants.
     *  - Max of Single Token for each account
     */

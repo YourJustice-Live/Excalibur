@@ -105,7 +105,7 @@ describe("Deployment", function () {
         await proxyAvatar.deployed();
         this.avatarContract = proxyAvatar;
         //Set Avatar Contract to Hub
-        hubContract.setAssoc("avatar", proxyAvatar.address);
+        hubContract.setAssoc("SBT", proxyAvatar.address);
         // console.log("SoulUpgradable deployed to:", proxyAvatar.address);
     });
 
