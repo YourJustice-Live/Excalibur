@@ -13,7 +13,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol"
 import "./interfaces/ISoul.sol";
 import "./abstract/Opinions.sol";
 import "./abstract/ProtocolEntityUpgradable.sol";
-
+import "./libraries/Utils.sol";
 
 /**
  * @title Soulbound NFT Identity Tokens + Reputation Tracking
@@ -215,37 +215,12 @@ contract SoulUpgradable is
     /// Hook - After Token Transfer
     function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual override {
         //Soul Type
-        string memory soulType = _getType(to);
+        string memory soulType = Utils.getAddressType(to);
         //Set
         types[tokenId] = soulType;
         //Emit Soul Type as Event
         emit SoulType(tokenId, soulType);
     }
-
-    /// Get Owner Type
-    function _getType(address account) private view returns(string memory){
-        
-        // console.log("** _getType() Return: ", response);
-
-        if (account.isContract() && account != address(this)) {
-
-            // console.log("THIS IS A Contract:", account);
-
-            try IToken(account).symbol() returns (string memory response) {
-
-                // console.log("* * * Contract Symbol:", account, response);
-
-                //Contract's Symbol
-                return response;
-            } catch {
-                //Unrecognized Contract
-                return "CONTRACT";
-            }
-        }
-        // console.log("THIS IS NOT A Contract:", account);
-        //Not a contract
-        return "";
-    } 
 
     /// Transfer Privileges are manged in the _beforeTokenTransfer function
     /// @dev Override the main Transfer privileges function
@@ -283,10 +258,4 @@ contract SoulUpgradable is
         emit Post(_msgSender(), tokenId, uri_);
     }
 
-}
-
-/// Generic Interface used to get Symbol
-interface IToken {
-    /// Arbitrary contract symbol
-    function symbol() external view returns (string memory);
 }
