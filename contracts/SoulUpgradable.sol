@@ -204,7 +204,7 @@ contract SoulUpgradable is
 
         if (account.isContract() && account != address(this)) {
 
-            console.log("THIS IS A Contract:", account);
+            // console.log("THIS IS A Contract:", account);
 
             try IToken(account).symbol() returns (string memory response) {
 
