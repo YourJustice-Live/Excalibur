@@ -146,10 +146,7 @@ contract GameUpgradable is
         _roleAssign(tx.origin, "admin", 1);
         _roleAssign(tx.origin, "member", 1);
 
-        /* 0.600Kb */
-        //Register as a Soul
-        address sbtContract = repo().addressGetOf(address(_HUB), "SBT");
-        ISoul(sbtContract).mint(uri_);
+
     }
 
     //** Reaction Functions
@@ -258,12 +255,14 @@ contract GameUpgradable is
 
     /// Proxy Fallback Implementations
     function _implementations() internal view virtual override returns (address[] memory){
-        // string memory gameType = confGet("type");
-        require (!Utils.stringMatch(confGet("type"), ""), "NO_GAME_TYPE");
+        address[] memory implementationAddresses;
+        string memory gameType = confGet("type");
+        if(Utils.stringMatch(gameType, "")) return implementationAddresses;
+        // require (!Utils.stringMatch(gameType, ""), "NO_GAME_TYPE");
         //UID
-        string memory gameType = string(abi.encodePacked("GAME_", confGet("type")));
+        string memory gameTypeFull = string(abi.encodePacked("GAME_", gameType));
         //Fetch Implementations
-        address[] memory implementationAddresses = repo().addressGetAllOf(address(_HUB), gameType); //Specific
+        implementationAddresses = repo().addressGetAllOf(address(_HUB), gameTypeFull); //Specific
         require(implementationAddresses.length > 0, "NO_FALLBACK_CONTRACT");
         return implementationAddresses;
     }
@@ -357,7 +356,7 @@ contract GameUpgradable is
         roleRemove(account, roleOld);
     }
 
-    /** DEPRECATE - Allow Uneven Role Distribution 
+    /** TODO: DEPRECATE - Allow Uneven Role Distribution 
     * @dev Hook that is called before any token transfer. This includes minting and burning, as well as batched variants.
     *  - Max of Single Token for each account
     */
