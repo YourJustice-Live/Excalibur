@@ -3,11 +3,10 @@ pragma solidity 0.8.4;
 
 import "hardhat/console.sol";
 
+// import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
-// import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-// import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
@@ -44,10 +43,9 @@ contract SoulUpgradable is
     using CountersUpgradeable for CountersUpgradeable.Counter;
     CountersUpgradeable.Counter private _tokenIds;
 
-    //Positive & Negative Reputation Tracking Per Domain (Personal,Community,Professional) 
-    // mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256))) internal _rep;  //[Token][Domain][bool] => Rep     //Inherited from Opinions
     mapping(address => uint256) internal _owners;  //Map Multiple Accounts to Tokens (Aliases)
-
+    mapping(uint256 => string) public types;    //Soul Types
+    mapping(uint256 => address) internal _link; //[TBD] Linked Souls
 
     //--- Modifiers
 
@@ -138,7 +136,8 @@ contract SoulUpgradable is
     /// Mint (Create New Token for Someone Else)
     function mintFor(address to, string memory tokenURI) public override returns (uint256) {
         //Validate - Contract Owner 
-        require(_msgSender() == owner(), "Only Owner");
+        // require(_msgSender() == owner(), "Only Owner");
+        require(_msgSender() == owner() || _msgSender() == address(_HUB), "Only Owner or Hub");
         //Mint
         return _mint(to, tokenURI);
     }
@@ -183,20 +182,52 @@ contract SoulUpgradable is
         //Mint
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
-        _safeMint(to, newItemId);
+        _mint(to, newItemId);
         //Set URI
         _setTokenURI(newItemId, uri);	//This Goes for Specific Metadata Set (IPFS and Such)
         //Emit URI Changed Event
         emit URI(uri, newItemId);
+        //Soul Type
+        string memory soulType = _getType(to);
+        //Set
+        types[newItemId] = soulType;
+        //Emit Soul Type as Event
+        emit SoulType(newItemId, soulType);
         //Done
         return newItemId;
     }
     
+    /// Get Owner Type
+    function _getType(address account) private returns(string memory){
+        
+        // console.log("** _getType() Return: ", response);
+
+        if (account.isContract() && account != address(this)) {
+
+            console.log("THIS IS A Contract:", account);
+
+            try IToken(account).symbol() returns (string memory response) {
+
+                // console.log("* * * Contract Symbol:", account, response);
+
+                //Contract's Symbol
+                return response;
+            } catch {
+                //Unrecognized Contract
+                return "CONTRACT";
+            }
+        }
+        // console.log("THIS IS NOT A Contract:", account);
+        //Not a contract
+        return "";
+    } 
+
     /// Token Transfer Rules
     function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721Upgradeable) {
         super._beforeTokenTransfer(from, to, tokenId);
-        //Can't be owned by a Contract
-        require(to == address(this) || !to.isContract(), "Destination is a Contract");
+        //Can't be owned by a Contract      //CANCELLED - Allow Contracts to have Souls
+        // require(to == address(this) || !to.isContract(), "Destination is a Contract");
+
         //Non-Transferable (by client)
         require(
             _msgSender() == owner()
@@ -221,24 +252,6 @@ contract SoulUpgradable is
         return true;
     }
 
-    /// Receiver Function For Holding NFTs on Contract
-    /// @dev needed in order to keep tokens in the contract
-    function onERC721Received(address, address, uint256, bytes memory) public pure returns (bytes4) {
-        return this.onERC721Received.selector;
-    }
-
-    /* Try without it, since we don't want any regular ERC1155 to be received
-    /// Receiver Function For Holding NFTs on Contract (Allow for internal NFTs to assume Roles)
-    function onERC1155Received(address, address, uint256, uint256, bytes memory) public pure returns (bytes4) {
-        return this.onERC1155Received.selector;
-    }
-
-    /// Receiver Function For Holding NFTs on Contract
-    function onERC1155BatchReceived(address, address, uint256[] memory, uint256[] memory, bytes memory) public pure returns (bytes4) {
-        return this.onERC1155BatchReceived.selector;
-    }
-    */
-
     /// Check if the Current Account has Control over a Token
     function hasTokenControl(uint256 tokenId) public view override returns (bool) {
         address ownerAccount = ownerOf(tokenId);
@@ -257,4 +270,10 @@ contract SoulUpgradable is
         emit Post(_msgSender(), tokenId, uri_);
     }
 
+}
+
+/// Generic Interface used to get Symbol
+interface IToken {
+    /// Arbitrary contract symbol
+    function symbol() external view returns (string memory);
 }

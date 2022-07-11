@@ -51,4 +51,7 @@ interface ISoul {
     /// General Post
     event Post(address indexed account, uint256 tokenId, string uri);
 
+    /// Soul Type Change
+    event SoulType(uint256 indexed tokenId, string soulType);
+
 }
