@@ -483,22 +483,22 @@ describe("Protocol", function () {
       // console.log("Rule Added Events: ", receipt.events);
 
       //Expect Event
-      await expect(tx).to.emit(this.ruleRepo, 'Rule').withArgs(1, rule.about, rule.affected, rule.uri, rule.negation);
+      await expect(tx).to.emit(this.ruleRepo, 'Rule').withArgs(gameContract.address, 1, rule.about, rule.affected, rule.uri, rule.negation);
       
-      // await expect(tx).to.emit(this.ruleRepo, 'RuleEffects').withArgs(1, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
+      // await expect(tx).to.emit(this.ruleRepo, 'RuleEffects').withArgs(gameContract.address, 1, rule.effects.environmental, rule.effects.personal, rule.effects.social, rule.effects.professional);
       for(let effect of effects1){
-        await expect(tx).to.emit(this.ruleRepo, 'RuleEffect').withArgs(1, effect.direction, effect.value, effect.name);
+        await expect(tx).to.emit(this.ruleRepo, 'RuleEffect').withArgs(gameContract.address, 1, effect.direction, effect.value, effect.name);
       }
-      await expect(tx).to.emit(this.ruleRepo, 'Confirmation').withArgs(1, confirmation.ruling, confirmation.evidence, confirmation.witness);
+      await expect(tx).to.emit(this.ruleRepo, 'Confirmation').withArgs(gameContract.address, 1, confirmation.ruling, confirmation.evidence, confirmation.witness);
 
       //Add Another Rule
       let tx2 = await gameContract.connect(admin).ruleAdd(rule2, confirmation, effects2);
       
             
       //Expect Event
-      await expect(tx2).to.emit(this.ruleRepo, 'Rule').withArgs(2, rule2.about, rule2.affected, rule2.uri, rule2.negation);
-      // await expect(tx2).to.emit(this.ruleRepo, 'RuleEffects').withArgs(2, rule2.effects.environmental, rule2.effects.personal, rule2.effects.social, rule2.effects.professional);
-      await expect(tx2).to.emit(this.ruleRepo, 'Confirmation').withArgs(2, confirmation.ruling, confirmation.evidence, confirmation.witness);
+      await expect(tx2).to.emit(this.ruleRepo, 'Rule').withArgs(gameContract.address, 2, rule2.about, rule2.affected, rule2.uri, rule2.negation);
+      // await expect(tx2).to.emit(this.ruleRepo, 'RuleEffects').withArgs(gameContract.address, 2, rule2.effects.environmental, rule2.effects.personal, rule2.effects.social, rule2.effects.professional);
+      await expect(tx2).to.emit(this.ruleRepo, 'Confirmation').withArgs(gameContract.address, 2, confirmation.ruling, confirmation.evidence, confirmation.witness);
 
       // expect(await gameContract.ruleAdd(actionContract.address)).to.equal("Hello, world!");
       // let ruleData = await gameContract.ruleGet(1);
