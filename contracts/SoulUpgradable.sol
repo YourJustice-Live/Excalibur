@@ -247,10 +247,17 @@ contract SoulUpgradable is
         return "";
     } 
 
+    /// Transfer Privileges are manged in the _beforeTokenTransfer function
+    /// @dev Override the main Transfer privileges function
+    function _isApprovedOrOwner(address spender, uint256 tokenId) internal view override returns (bool) {
+        //Approved or Seconday Owner
+        return (super._isApprovedOrOwner(spender, tokenId)  || (_owners[spender] == tokenId));
+    }
+
     /// Override transferFrom()
     /// Remove Approval Check 
     /// Transfer Privileges are manged in the _beforeTokenTransfer function
-    function transferFrom( address from, address to, uint256 tokenId) public virtual override {
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override {
         //solhint-disable-next-line max-line-length
         // require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner nor approved");
         _transfer(from, to, tokenId);
