@@ -187,11 +187,41 @@ contract SoulUpgradable is
         _setTokenURI(newItemId, uri);	//This Goes for Specific Metadata Set (IPFS and Such)
         //Emit URI Changed Event
         emit URI(uri, newItemId);
-        
         //Done
         return newItemId;
     }
     
+    /// Token Transfer Rules
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721Upgradeable) {
+        super._beforeTokenTransfer(from, to, tokenId);
+        //Can't be owned by a Contract      //CANCELLED - Allow Contracts to have Souls
+        // require(to == address(this) || !to.isContract(), "Destination is a Contract");
+
+        //Non-Transferable (by client)
+        require(
+            _msgSender() == owner()
+            || from == address(0)   //Minting
+            , "Sorry, assets are non-transferable"
+        );
+        
+        //Update Address Index        
+        if(from != address(0)) _owners[from] = 0;
+        if(to != address(0) && to != address(this)){
+            require(_owners[to] == 0, "Receiving address already owns a token");
+            _owners[to] = tokenId;
+        }
+    }
+
+    function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual override {
+        // _owners[owner] = tokenId;
+        //Soul Type
+        string memory soulType = _getType(to);
+        //Set
+        types[tokenId] = soulType;
+        //Emit Soul Type as Event
+        emit SoulType(tokenId, soulType);
+    }
+
     /// Get Owner Type
     function _getType(address account) private view returns(string memory){
         
@@ -217,42 +247,13 @@ contract SoulUpgradable is
         return "";
     } 
 
-    /// Token Transfer Rules
-    function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721Upgradeable) {
-        super._beforeTokenTransfer(from, to, tokenId);
-        //Can't be owned by a Contract      //CANCELLED - Allow Contracts to have Souls
-        // require(to == address(this) || !to.isContract(), "Destination is a Contract");
-
-        //Non-Transferable (by client)
-        require(
-            _msgSender() == owner()
-            || from == address(0)   //Minting
-            , "Sorry, assets are non-transferable"
-        );
-        
-        //Update Address Index        
-        if(from != address(0)) _owners[from] = 0;
-        if(to != address(0) && to != address(this)){
-            require(_owners[to] == 0, "Receiving address already owns a token");
-            _owners[to] = tokenId;
-        }
-    }
-
-
-    function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual override {
-        // _owners[owner] = tokenId;
-        //Soul Type
-        string memory soulType = _getType(to);
-        //Set
-        types[tokenId] = soulType;
-        //Emit Soul Type as Event
-        emit SoulType(tokenId, soulType);
-    }
-
+    /// Override transferFrom()
+    /// Remove Approval Check 
     /// Transfer Privileges are manged in the _beforeTokenTransfer function
-    /// @dev Override the main Transfer privileges function
-    function _isApprovedOrOwner(address, uint256) internal pure override returns (bool) {
-        return true;
+    function transferFrom( address from, address to, uint256 tokenId) public virtual override {
+        //solhint-disable-next-line max-line-length
+        // require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner nor approved");
+        _transfer(from, to, tokenId);
     }
 
     /// Check if the Current Account has Control over a Token
