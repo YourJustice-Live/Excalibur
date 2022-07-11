@@ -187,12 +187,7 @@ contract SoulUpgradable is
         _setTokenURI(newItemId, uri);	//This Goes for Specific Metadata Set (IPFS and Such)
         //Emit URI Changed Event
         emit URI(uri, newItemId);
-        //Soul Type
-        string memory soulType = _getType(to);
-        //Set
-        types[newItemId] = soulType;
-        //Emit Soul Type as Event
-        emit SoulType(newItemId, soulType);
+        
         //Done
         return newItemId;
     }
@@ -242,9 +237,17 @@ contract SoulUpgradable is
             _owners[to] = tokenId;
         }
     }
-    // function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721) {
+
+
+    function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual override {
         // _owners[owner] = tokenId;
-    // }
+        //Soul Type
+        string memory soulType = _getType(to);
+        //Set
+        types[tokenId] = soulType;
+        //Emit Soul Type as Event
+        emit SoulType(tokenId, soulType);
+    }
 
     /// Transfer Privileges are manged in the _beforeTokenTransfer function
     /// @dev Override the main Transfer privileges function
@@ -257,7 +260,9 @@ contract SoulUpgradable is
         address ownerAccount = ownerOf(tokenId);
         return (
             // ownerAccount == _msgSender()    //Token Owner
+            // solhint-disable-next-line avoid-tx-origin
             ownerAccount == tx.origin    //Token Owner (Allows it to go therough the hub)
+            // solhint-disable-next-line avoid-tx-origin
             || (ownerAccount == address(this) && owner() == tx.origin) //Unclaimed Tokens Controlled by Contract Owner/DAO
         );
     }
