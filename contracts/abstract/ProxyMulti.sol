@@ -51,7 +51,7 @@ abstract contract ProxyMulti {
             }
         }
         //If Nothing Found
-        revert("NO_SUCH_ FUNCTION");
+        revert("NO_SUCH_FUNCTION");
     }
     
     /**
