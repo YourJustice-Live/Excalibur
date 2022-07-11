@@ -4,7 +4,7 @@ pragma solidity 0.8.4;
 
 import "../libraries/DataTypes.sol";
 
-interface IJurisdiction {
+interface IGame {
     
     //--- Functions
 
@@ -17,19 +17,25 @@ interface IJurisdiction {
     /// Symbol As Arbitrary contract designation signature
     function symbol() external view returns (string memory);
 
+    /// Generic Config Get Function
+    function confGet(string memory key) external view returns(string memory);
+
+    /// Generic Config Set Function
+    function confSet(string memory key, string memory value) external;
+
     /// Add Post 
     function post(string calldata entRole, uint256 tokenId, string calldata uri) external;
 
-    /// Disable Case
-    function caseDisable(address caseContract) external;
+    /// Disable Reaction
+    function reactionDisable(address reactionContract) external;
 
-    /// Check if Case is Owned by This Contract (& Active)
-    function caseHas(address caseContract) external view returns (bool);
+    /// Check if Reaction is Owned by This Contract (& Active)
+    function reactionHas(address reactionContract) external view returns (bool);
 
-    /// Join jurisdiction as member
+    /// Join game as member
     function join() external returns (uint256);
 
-    /// Leave member role in current jurisdiction
+    /// Leave member role in current game
     function leave() external returns (uint256);
 
     /// Request to Join
@@ -53,25 +59,16 @@ interface IJurisdiction {
     /// Create a new Role
     // function roleCreate(address account, string calldata role) external;
 
-    /// Make a new Case
-    // function caseMake(
-    //     string calldata name_, 
-    //     string calldata uri_, 
-    //     DataTypes.RuleRef[] calldata addRules, 
-    //     DataTypes.InputRoleToken[] calldata assignRoles, 
-    //     PostInput[] calldata posts
-    // ) external returns (address);
-    // function caseMakeOpen(
-    //     string calldata name_, 
-    //     string calldata uri_, 
-    //     DataTypes.RuleRef[] calldata addRules, 
-    //     DataTypes.InputRoleToken[] calldata assignRoles, 
-    //     PostInput[] calldata posts
-    // ) external returns (address);
-    
+    /// Set Metadata URI For Role
+    function setRoleURI(string memory role, string memory _tokenURI) external;
+
+
     /// Add Reputation (Positive or Negative)
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external;
 
+
+
+    /* MOVED TO IRules
     //-- Rule Func.
 
     /// Create New Rule
@@ -82,20 +79,16 @@ interface IJurisdiction {
     
     /// Update Rule's Confirmation Data
     function ruleConfirmationUpdate(uint256 id, DataTypes.Confirmation memory confirmation) external;
-        
-    /// Set Metadata URI For Role
-    function setRoleURI(string memory role, string memory _tokenURI) external;
 
-    /// Generic Config Get Function
-    function confGet(string memory key) external view returns(string memory);
+    */
 
-    /// Generic Config Set Function
-    function confSet(string memory key, string memory value) external;
+    
+
 
     //--- Events
 
-    /// New Case Created
-    event CaseCreated(uint256 indexed id, address contractAddress);    
+    /// New Reaction Created
+    event ReactionCreated(uint256 indexed id, address contractAddress);    
 
     /// Nominate
     event Nominate(address account, uint256 indexed id, string uri);

@@ -6,60 +6,73 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 // import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
-// import "./libraries/DataTypes.sol";
-import "./interfaces/IJurisdictionUp.sol";
+// import "@openzeppelin/contracts/governance/utils/Votes.sol";
+// import "./abstract/Votes.sol";
+// import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/draft-ERC721VotesUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/governance/utils/VotesUpgradeable.sol"; //Adds 3.486Kb
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
+import "./interfaces/IGameUp.sol";
 import "./interfaces/IRules.sol";
-import "./interfaces/ICase.sol";
+import "./interfaces/IReaction.sol";
 import "./interfaces/IActionRepo.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
-import "./abstract/CommonYJUpgradable.sol";
-import "./abstract/Rules.sol";
-import "./abstract/ContractBase.sol";
+import "./abstract/ProtocolEntityUpgradable.sol";
 import "./abstract/Opinions.sol";
 import "./abstract/Posts.sol";
-// import "./abstract/ERC1155RolesUpgradable.sol";
+// import "./abstract/Rules.sol";
 // import "./abstract/Recursion.sol";
 // import "./public/interfaces/IOpenRepo.sol";
+import "./abstract/ProxyMulti.sol";  //Adds 1.529Kb
+// import "./libraries/DataTypes.sol";
+import "./libraries/Utils.sol";
+
+
 
 /**
- * @title Jurisdiction Contract
+ * @title Game Contract
  * @dev Retains Group Members in Roles
- * @dev Version 2.2
+ * @dev Version 3.0
  * V1: Using Role NFTs
  * - Mints Member NFTs
  * - One for each
  * - All members are the same
  * - Rules
- * - Creates new Cases
+ * - Creates new Reactions
  * - Contract URI
  * - Token URIs for Roles
  * - Owner account must have an Avatar NFT
  * V2: Trackers
  * - NFT Trackers - Assign Avatars instead of Accounts & Track the owner of the Avatar NFT
  * V3:
+ * - Multi-Proxy Pattern  
+ * / DAO Votes [?]
+ * V4:
  * - [TODO] Unique Rule IDs (GUID)
  */
-contract JurisdictionUpgradable is 
-        IJurisdiction, 
-        Rules, 
-        ContractBase,
-        CommonYJUpgradable, 
+contract GameUpgradable is 
+        IGame, 
+        IRules,
+        // Rules, 
+        // ContractBase,
+        ProtocolEntityUpgradable, 
         Opinions, 
         Posts,
+        ProxyMulti,
+        // VotesUpgradeable,
         ERC1155RolesTrackerUp {
         // ERC1155RolesUpgradable {
 
     //--- Storage
-    string public constant override symbol = "JURISDICTION";
+    string public constant override symbol = "GAME";
     using Strings for uint256;
 
     using CountersUpgradeable for CountersUpgradeable.Counter;
     // CountersUpgradeable.Counter internal _tokenIds; //Track Last Token ID
-    CountersUpgradeable.Counter internal _caseIds;  //Track Last Case ID
+    CountersUpgradeable.Counter internal _reactionIds;  //Track Last Reaction ID
     
     // Contract name
     string public name;
-    // Mapping for Case Contracts
+    // Mapping for Reaction Contracts
     mapping(address => bool) internal _active;
 
     //Post Input Struct
@@ -80,11 +93,29 @@ contract JurisdictionUpgradable is
         _;
     }
 
+
     //--- Functions
+
+
+    /** For VotesUpgradeable
+     * @dev Returns the balance of `account`.
+     * /
+    function _getVotingUnits(address account) internal view virtual override returns (uint256) {
+        return balanceOf(account, _roleToId("member"));
+    }
+    */
+
+
+
+    //Get Rules Repo
+    function _ruleRepo() internal view returns (IRules) {
+        address ruleRepoAddr = repo().addressGetOf(address(_HUB), "RULE_REPO");
+        return IRules(ruleRepoAddr);
+    }
 
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IJurisdiction).interfaceId 
+        return interfaceId == type(IGame).interfaceId 
             || interfaceId == type(IRules).interfaceId 
             || super.supportsInterface(interfaceId);
     }
@@ -93,87 +124,87 @@ contract JurisdictionUpgradable is
     function initialize (address hub, string calldata name_, string calldata uri_) public override initializer {
         //Initializers
         // __ERC1155RolesUpgradable_init("");
-        __CommonYJ_init(hub);
-        // __setTargetContract(IAssoc(address(_HUB)).getAssoc("avatar"));
-        __setTargetContract(repo().addressGetOf(address(_HUB), "avatar"));
+        __ProtocolEntity_init(hub);
+        __setTargetContract(repo().addressGetOf(address(_HUB), "SBT"));
         
         //Init Recursion Controls
-        // __Recursion_init(address(_HUB)); //DEPRECATED
+        // __Recursion_init(address(_HUB)); //CANCELLED
 
         //Set Contract URI
         _setContractURI(uri_);
         //Identifiers
         name = name_;
-        //Init Default Jurisdiction Roles
+        //Init Default Game Roles
         _roleCreate("admin"); 
         _roleCreate("member");
-        _roleCreate("judge");
+        _roleCreate("authority");
         //Default Token URIs
         _setRoleURI("admin", "https://ipfs.io/ipfs/QmQcahBAJkXzSgwQn2zZ9D1m7friRCuW7rVia5KWNpWK7x");
         _setRoleURI("member", "https://ipfs.io/ipfs/QmbXVfwyTAfoYcThK7LZ2FAADoZPjbfbPJDcXWcwf79ssY");
-        _setRoleURI("judge", "https://ipfs.io/ipfs/QmRVXii7PRTtaYRt5mD1yrAqy623itttjQX3hsnikYpi1x");
+        _setRoleURI("authority", "https://ipfs.io/ipfs/QmRVXii7PRTtaYRt5mD1yrAqy623itttjQX3hsnikYpi1x");
         //Assign Creator as Admin & Member
         _roleAssign(tx.origin, "admin", 1);
         _roleAssign(tx.origin, "member", 1);
+
+
     }
 
-    //** Case Functions
+    //** Reaction Functions
 
-    /// Make a new Case
+    /// Make a new Reaction
     /// @dev a wrapper function for creation, adding rules, assigning roles & posting
-    function caseMake(
+    function reactionMake(
         string calldata name_, 
         string calldata uri_, 
         DataTypes.RuleRef[] calldata addRules, 
         DataTypes.InputRoleToken[] calldata assignRoles, 
         PostInput[] calldata posts
     ) public returns (address) {
-        //Validate Caller Permissions (Member of Jurisdiction)
+        //Validate Caller Permissions (Member of Game)
         require(roleHas(_msgSender(), "member"), "Members Only");
-        //Assign Case ID
-        _caseIds.increment(); //Start with 1
-        uint256 caseId = _caseIds.current();
-        //Create new Case
-        address caseContract = _HUB.caseMake(name_, uri_, addRules, assignRoles);
+        //Assign Reaction ID
+        _reactionIds.increment(); //Start with 1
+        uint256 reactionId = _reactionIds.current();
+        //Create new Reaction
+        address reactionContract = _HUB.reactionMake(name_, uri_, addRules, assignRoles);
         //Remember Address
-        _active[caseContract] = true;
-        //New Case Created Event
-        emit CaseCreated(caseId, caseContract);
+        _active[reactionContract] = true;
+        //New Reaction Created Event
+        emit ReactionCreated(reactionId, reactionContract);
         //Posts
         for (uint256 i = 0; i < posts.length; ++i) {
-            ICase(caseContract).post(posts[i].entRole, posts[i].tokenId, posts[i].uri);
+            IReaction(reactionContract).post(posts[i].entRole, posts[i].tokenId, posts[i].uri);
         }
-        return caseContract;
+        return reactionContract;
     }
     
-    /// Make a new Case & File it
-    /// @dev a wrapper function for creation, adding rules, assigning roles, posting & filing a case
-    function caseMakeOpen(
+    /// Make a new Reaction & File it
+    /// @dev a wrapper function for creation, adding rules, assigning roles, posting & filing a reaction
+    function reactionMakeOpen(
         string calldata name_, 
         string calldata uri_, 
         DataTypes.RuleRef[] calldata addRules, 
         DataTypes.InputRoleToken[] calldata assignRoles, 
         PostInput[] calldata posts
-    // ) public returns (uint256, address) {
     ) public returns (address) {
-        //Make Case
-        address caseContract = caseMake(name_, uri_, addRules, assignRoles, posts);
-        //File Case
-        ICase(caseContract).stageFile();
+        //Make Reaction
+        address reactionContract = reactionMake(name_, uri_, addRules, assignRoles, posts);
+        //File Reaction
+        IReaction(reactionContract).stageFile();
         //Return
-        return caseContract;
+        return reactionContract;
     }
 
-    /// Disable Case
-    function caseDisable(address caseContract) public override onlyOwner {
+    /// Disable Reaction        //TODO: Also Support Enable
+    function reactionDisable(address reactionContract) public override onlyOwner {
         //Validate
-        require(_active[caseContract], "Case Not Active");
-        _active[caseContract] = false;
+        require(_active[reactionContract], "Reaction Not Active");
+        _active[reactionContract] = false;
     }
 
-    /// Check if Case is Owned by This Contract (& Active)
-    function caseHas(address caseContract) public view override returns (bool){
-        return _active[caseContract];
+    /// Check if Reaction is Owned by This Contract (& Active)
+    function reactionHas(address reactionContract) public view override returns (bool){
+        return _active[reactionContract];
     }
 
     /// Add Post 
@@ -182,12 +213,30 @@ contract JurisdictionUpgradable is
     /// @param uri_     post URI
     function post(string calldata entRole, uint256 tokenId, string calldata uri_) external override {
         //Validate that User Controls The Token
-        require(ISoul( repo().addressGetOf(address(_HUB), "avatar") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
+        require(ISoul( repo().addressGetOf(address(_HUB), "SBT") ).hasTokenControl(tokenId), "SOUL:NOT_YOURS");
         //Validate: Soul Assigned to the Role 
         require(roleHasByToken(tokenId, entRole), "ROLE:NOT_ASSIGNED");    //Validate the Calling Account
         // require(roleHasByToken(tokenId, entRole), string(abi.encodePacked("TOKEN: ", tokenId, " NOT_ASSIGNED_AS: ", entRole)) );    //Validate the Calling Account
         //Post Event
         _post(tx.origin, tokenId, entRole, uri_);
+    }
+
+    /// Get Token URI by Token ID
+    // function tokenURI(uint256 token_id) public view returns (string memory) {
+    // function uri(uint256 token_id) public view override returns (string memory) {
+    function uri(uint256 token_id) public view returns (string memory) {
+        // require(exists(token_id), "NONEXISTENT_TOKEN");
+        return _tokenURIs[token_id];
+    }
+
+    /// Set Metadata URI For Role
+    function setRoleURI(string memory role, string memory _tokenURI) external override AdminOrOwner {
+        _setRoleURI(role, _tokenURI);
+    }
+    
+    /// Set Contract URI
+    function setContractURI(string calldata contract_uri) external override AdminOrOwner {
+        _setContractURI(contract_uri);
     }
 
     //** Generic Config
@@ -196,19 +245,66 @@ contract JurisdictionUpgradable is
     function confGet(string memory key) public view override returns(string memory) {
         return repo().stringGet(key);
     }
-
+    
     /// Generic Config Set Function
     function confSet(string memory key, string memory value) public override AdminOrOwner {
-        repo().stringSet(key, value);
+        _confSet(key, value);
     }
+
+    //** Multi Proxy
+
+    /// Proxy Fallback Implementations
+    function _implementations() internal view virtual override returns (address[] memory){
+        address[] memory implementationAddresses;
+        string memory gameType = confGet("type");
+        if(Utils.stringMatch(gameType, "")) return implementationAddresses;
+        // require (!Utils.stringMatch(gameType, ""), "NO_GAME_TYPE");
+        //UID
+        string memory gameTypeFull = string(abi.encodePacked("GAME_", gameType));
+        //Fetch Implementations
+        implementationAddresses = repo().addressGetAllOf(address(_HUB), gameTypeFull); //Specific
+        require(implementationAddresses.length > 0, "NO_FALLBACK_CONTRACT");
+        return implementationAddresses;
+    }
+
+    /* Support for Global Extension
+    /// Proxy Fallback Implementations
+    function _implementations() internal view virtual override returns (address[] memory){
+        //UID
+        string memory gameType = string(abi.encodePacked("GAME_", confGet("type")));
+        //Fetch Implementations
+        address[] memory implementationAddresses = repo().addressGetAllOf(address(_HUB), gameType); //Specific
+        address[] memory implementationAddressesAll = repo().addressGetAllOf(address(_HUB), "GAME_ALL"); //General
+        return arrayConcat(implementationAddressesAll, implementationAddresses);
+    }
+    
+    /// Concatenate Arrays (A Suboptimal Solution -- ~800Bytes)      //TODO: Maybe move to an external library?
+    function arrayConcat(address[] memory Accounts, address[] memory Accounts2) private pure returns(address[] memory) {
+        //Create a new container array
+        address[] memory returnArr = new address[](Accounts.length + Accounts2.length);
+        uint i=0;
+        if(Accounts.length > 0){
+            for (; i < Accounts.length; i++) {
+                returnArr[i] = Accounts[i];
+            }
+        }
+        uint j=0;
+        if(Accounts2.length > 0){
+            while (j < Accounts.length) {
+                returnArr[i++] = Accounts2[j++];
+            }
+        }
+        return returnArr;
+    } 
+    */
+
 
     //** Custom Rating Functions
     
     /// Add Reputation (Positive or Negative)
-    // function repAdd(address contractAddr, uint256 tokenId, string calldata domain, DataTypes.Rating rating, uint8 amount) external override {
     function repAdd(address contractAddr, uint256 tokenId, string calldata domain, bool rating, uint8 amount) external override {
-        //Validate - Called by Child Case
-        require(caseHas(_msgSender()), "NOT A VALID CASE");
+        //Validate - Called by Child Reaction
+        require(reactionHas(_msgSender()), "NOT A VALID INCIDENT");
         //Run on Self
         _repAdd(contractAddr, tokenId, domain, rating, amount);
         //Update Hub
@@ -217,60 +313,40 @@ contract JurisdictionUpgradable is
 
     //** Role Management
 
-    /// Join a jurisdiction (as a regular 'member')
+    /// Join a game (as a regular 'member')
     function join() external override returns (uint256) {
-        require (!_stringMatch(confGet("isClosed"), "true"), "CLOSED_SPACE");
+        require (!Utils.stringMatch(confGet("isClosed"), "true"), "CLOSED_SPACE");
         //Mint Member Token to Self
         return _GUIDAssign(_msgSender(), _stringToBytes32("member"), 1);
     }
 
-    /// Leave 'member' Role in jurisdiction
+    /// Leave 'member' Role in game
     function leave() external override returns (uint256) {
         return _GUIDRemove(_msgSender(), _stringToBytes32("member"), 1);
     }
 
     /// Request to Join
     function nominate(uint256 soulToken, string memory uri_) external override {
-        // uint256 soulToken = _getExtTokenId(_msgSender());
         emit Nominate(_msgSender(), soulToken, uri_);
     }
 
     /// Assign Someone Else to a Role
     function roleAssign(address account, string memory role) public override roleExists(role) AdminOrOwner {
-        //Validate Permissions
-        // require(owner() == _msgSender()      //Owner
-        //     || roleHas(_msgSender(), "admin")    //Admin Role
-        //     , "INVALID_PERMISSIONS");
-        //Add
         _roleAssign(account, role, 1);
     }
 
     /// Assign Tethered Token to a Role
     function roleAssignToToken(uint256 ownerToken, string memory role) public override roleExists(role) AdminOrOwner {
-        //Validate Permissions
-        // require(owner() == _msgSender()      //Owner
-        //     || roleHas(_msgSender(), "admin")    //Admin Role
-        //     , "INVALID_PERMISSIONS");
         _roleAssignToToken(ownerToken, role, 1);
     }
 
     /// Remove Someone Else from a Role
     function roleRemove(address account, string memory role) public override roleExists(role) AdminOrOwner {
-        //Validate Permissions
-        // require(owner() == _msgSender()      //Owner
-        //     || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Role
-        //     , "INVALID_PERMISSIONS");
-        //Remove
         _roleRemove(account, role, 1);
     }
 
     /// Remove Tethered Token from a Role
     function roleRemoveFromToken(uint256 ownerToken, string memory role) public override roleExists(role) AdminOrOwner {
-        //Validate Permissions
-        // require(owner() == _msgSender()      //Owner
-        //     || balanceOf(_msgSender(), _roleToId("admin")) > 0     //Admin Role
-        //     , "INVALID_PERMISSIONS");
-        //Remove
         _roleRemoveFromToken(ownerToken, role, 1);
     }
 
@@ -280,7 +356,7 @@ contract JurisdictionUpgradable is
         roleRemove(account, roleOld);
     }
 
-    /** DEPRECATE - Allow Uneven Role Distribution 
+    /** TODO: DEPRECATE - Allow Uneven Role Distribution 
     * @dev Hook that is called before any token transfer. This includes minting and burning, as well as batched variants.
     *  - Max of Single Token for each account
     */
@@ -306,6 +382,25 @@ contract JurisdictionUpgradable is
     }
 
     //** Rule Management
+    
+    //-- Getters
+
+    /// Get Rule
+    function ruleGet(uint256 id) public view override returns (DataTypes.Rule memory) {
+        return _ruleRepo().ruleGet(id);
+    }
+
+    /// Get Rule's Effects
+    function effectsGet(uint256 id) public view override returns (DataTypes.Effect[] memory){
+        return _ruleRepo().effectsGet(id);
+    }
+
+    /// Get Rule's Confirmation Method
+    function confirmationGet(uint256 id) public view override returns (DataTypes.Confirmation memory){
+        return _ruleRepo().confirmationGet(id);
+    }
+
+    //-- Setters
 
     /// Create New Rule
     function ruleAdd(
@@ -313,19 +408,7 @@ contract JurisdictionUpgradable is
         DataTypes.Confirmation memory confirmation, 
         DataTypes.Effect[] memory effects
     ) public override returns (uint256) {
-        //Validate Caller's Permissions
-        require(roleHas(_msgSender(), "admin"), "Admin Only");
-
-        //Validate rule.about -- actionGUID Exists
-        // address actionRepo = IAssoc(address(_HUB)).getAssoc("history");
-        address actionRepo = repo().addressGetOf(address(_HUB), "history");
-        IActionRepo(actionRepo).actionGet(rule.about);  //Revetrs if does not exist
-
-        //Add Rule
-        uint256 id = _ruleAdd(rule, effects);
-        //Set Confirmations
-        _confirmationSet(id, confirmation);
-        return id;
+        return _ruleRepo().ruleAdd(rule, confirmation, effects);
     }
 
     /// Update Rule
@@ -334,63 +417,18 @@ contract JurisdictionUpgradable is
         DataTypes.Rule memory rule, 
         DataTypes.Effect[] memory effects
     ) external override {
-        //Validate Caller's Permissions
-        require(roleHas(_msgSender(), "admin"), "Admin Only");
-        //Update Rule
-        _ruleUpdate(id, rule, effects);
+        _ruleRepo().ruleUpdate(id, rule, effects);
     }
 
     /// Set Disable Status for Rule
-    function ruleDisable(uint256 id, bool disabled) external {
-         //Validate Caller's Permissions
-        require(roleHas(_msgSender(), "admin"), "Admin Only");
-        //Disable Rule
-        _ruleDisable(id, disabled);
+    function ruleDisable(uint256 id, bool disabled) external override {
+        _ruleRepo().ruleDisable(id, disabled);
     }
 
     /// Update Rule's Confirmation Data
     function ruleConfirmationUpdate(uint256 id, DataTypes.Confirmation memory confirmation) external override {
-        //Validate Caller's Permissions
-        require(roleHas(_msgSender(), "admin"), "Admin Only");
-        //Set Confirmations
-        _confirmationSet(id, confirmation);
+        _ruleRepo().ruleConfirmationUpdate(id, confirmation);
     }
 
-    /*
-    /// TODO: Update Rule's Effects
-    function ruleEffectsUpdate(uint256 id, DataTypes.Effect[] memory effects) external override {
-        //Validate Caller's Permissions
-        require(roleHas(_msgSender(), "admin"), "Admin Only");
-        //Set Effects
-        
-    }
-    */
-
-    /// Get Token URI by Token ID
-    // function tokenURI(uint256 token_id) public view returns (string memory) {
-    // function uri(uint256 token_id) public view override returns (string memory) {
-    function uri(uint256 token_id) public view returns (string memory) {
-        // require(exists(token_id), "NONEXISTENT_TOKEN");
-        return _tokenURIs[token_id];
-    }
-
-    /// Set Metadata URI For Role
-    function setRoleURI(string memory role, string memory _tokenURI) external override AdminOrOwner {
-        //Validate Permissions
-        // require(owner() == _msgSender()      //Owner
-        //     || roleHas(_msgSender(), "admin")    //Admin Role
-        //     , "INVALID_PERMISSIONS");
-        _setRoleURI(role, _tokenURI);
-    }
-    
-    /// Set Contract URI
-    function setContractURI(string calldata contract_uri) external override AdminOrOwner {
-        //Validate Permissions
-        // require( owner() == _msgSender()      //Owner
-        //     || roleHas(_msgSender(), "admin")    //Admin Role
-        //     , "INVALID_PERMISSIONS");
-        //Set
-        _setContractURI(contract_uri);
-    }
     
 }

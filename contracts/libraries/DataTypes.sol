@@ -24,13 +24,13 @@ library DataTypes {
         Professional
     }
 
-    //--- Cases
+    //--- Reactions
 
-    //Case Lifecycle
-    enum CaseStage {
+    //Reaction Lifecycle
+    enum ReactionStage {
         Draft,
         Open,           // Filed -- Confirmation/Discussion (Evidence, Witnesses, etc’)
-        Verdict,        // Awaiting Decision (Judge, Jury, vote, etc’)
+        Verdict,        // Awaiting Decision (Authority, Jury, vote, etc’)
         Action,         // Remedy - Reward / Punishment / Compensation
         Appeal,
         Enforcement,
@@ -54,9 +54,6 @@ library DataTypes {
         string verb;
         string object;
         string tool; //[TBD]
-        //     //Describe an event
-        //     affected: "investors",  //Plaintiff Role (Filing the case)
-        // string affected;    //[PONDER] Doest this really belong here? Is that part of the unique combination, or should this be an array, or an eadge?      //MOVED TO Rule
     }
 
     //--- Rules
@@ -64,13 +61,13 @@ library DataTypes {
     // Rule Object
     struct Rule {
         bytes32 about;      //About What (Action's GUID)      //TODO: Maybe Call This 'actionGUID'? 
-        string affected;    // affected: "investors",  //Plaintiff Role (Filing the case)
+        string affected;    //Affected Role. E.g. "investors"
         bool negation;      //0 - Commision  1 - Omission
         string uri;         //Test & Conditions
         bool disabled;      //1 - Rule Disabled
     }
     
-    // Effect Structure
+    // Effect Structure (Reputation Changes)
     struct Effect {
         string name;
         uint8 value;    // value: 5
@@ -81,18 +78,18 @@ library DataTypes {
     //Rule Confirmation Method
     struct Confirmation {
         string ruling;
-        // ruling: "judge"|"jury"|"democracy",  //Decision Maker
+        // ruling: "authority"|"jury"|"democracy",  //Decision Maker
         bool evidence;
         // evidence: true, //Require Evidence
         uint witness;
         // witness: 1,  //Minimal number of witnesses
     }
 
-    //--- Case Data
+    //--- Reaction Data
 
     //Rule Reference
     struct RuleRef {
-        address jurisdiction;
+        address game;
         uint256 ruleId;
     }
     

@@ -11,15 +11,33 @@ interface IRules {
     ///Get Rule
     function ruleGet(uint256 id) external view returns (DataTypes.Rule memory);
 
-    /// Update Confirmation Method for Action
-    // function confirmationSet(uint256 id, DataTypes.Confirmation memory confirmation) external;
+    /// Get Rule's Effects
+    function effectsGet(uint256 id) external view returns (DataTypes.Effect[] memory);
 
     /// Get Rule's Confirmation Method
     function confirmationGet(uint256 id) external view returns (DataTypes.Confirmation memory);
 
-    /// Get Rule's Effects
-    function effectsGet(uint256 id) external view returns (DataTypes.Effect[] memory);
+    /// Update Confirmation Method for Action
+    // function confirmationSet(uint256 id, DataTypes.Confirmation memory confirmation) external;
 
+    //--
+    
+    /// Generate a Global Unique Identifier for a Rule
+    // function ruleGUID(DataTypes.Rule memory rule) external pure returns (bytes32);
+
+
+    /// Create New Rule
+    function ruleAdd(DataTypes.Rule memory rule, DataTypes.Confirmation memory confirmation, DataTypes.Effect[] memory effects) external returns (uint256);
+
+    /// Update Rule
+    function ruleUpdate(uint256 id, DataTypes.Rule memory rule, DataTypes.Effect[] memory effects) external;
+    
+    /// Set Disable Status for Rule
+    function ruleDisable(uint256 id, bool disabled) external;
+
+    /// Update Rule's Confirmation Data
+    function ruleConfirmationUpdate(uint256 id, DataTypes.Confirmation memory confirmation) external;
+  
     //--- Events
 
     /// Action Repository (HISTORY) Set
@@ -41,5 +59,8 @@ interface IRules {
 
     /// Action Confirmation Change
     event Confirmation(uint256 indexed id, string ruling, bool evidence, uint witness);
+
+    /// Reaction Change
+    event Reaction(uint256 indexed id, bytes32 reactionId);
 
 }

@@ -36,7 +36,7 @@ const config = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 200,
+            runs: 10,
           },
         },
       },
@@ -52,7 +52,6 @@ const config = {
       gas: 2100000,
       gasPrice: 8000000000
       // gasPrice: 10000000000,
-      
     },
     goerli: {
       url: process.env.GOERLI_RPC || "",
@@ -61,12 +60,15 @@ const config = {
 
     mumbai: {
       url: process.env.MUMBAI_RPC || "",
+      // url: "https://rpc-mumbai.maticvigil.com",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     polygon: {
-      url: "https://rpc-mumbai.maticvigil.com",
-      // accounts: [process.env.PRIVATE_KEY]
+      url: "https://rpc-mainnet.maticvigil.com/",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      // chainId: 137,
+      // gasPrice: 1000000000,
+      // accounts: [process.env.PRIVATE_KEY]
     },
 
     aurora:{
@@ -78,7 +80,6 @@ const config = {
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
     
-    
     optimism: {
       url: process.env.OP_RPC || "",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
@@ -87,7 +88,6 @@ const config = {
       url: process.env.OP_TEST_RPC || "",
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
-
 
   },
   gasReporter: {

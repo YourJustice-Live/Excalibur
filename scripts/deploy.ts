@@ -4,7 +4,8 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 import { ethers } from "hardhat";
-const {  upgrades } = require("hardhat");
+import { deployContract, deployUUPS } from "../utils/deployment";
+const { upgrades } = require("hardhat");
 const hre = require("hardhat");
 const chain = hre.hardhatArguments.network;
 
@@ -15,6 +16,9 @@ import publicAddrs from "./_publicAddrs";
 const publicAddr = publicAddrs[chain];
 
 async function main() {
+
+  //Validate Foundation
+  if(!publicAddr.openRepo || publicAddr.ruleRepo) throw "Must First Deploy Foundation Contracts on Chain:'"+chain+"'";
 
   console.log("Running on Chain: ", chain);
 
@@ -31,47 +35,57 @@ async function main() {
     console.log("Deployed Config Contract to " + contractAddr.config);
   }
 
-  //--- Jurisdiction Implementation
-  if(!contractAddr.jurisdiction){
-    //Deploy Jurisdiction
-    let contract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
+  //--- Game Implementation
+  if(!contractAddr.game){
+    //Deploy Game
+    let contract = await ethers.getContractFactory("GameUpgradable").then(res => res.deploy());
     await contract.deployed();
     //Set Address
-    contractAddr.jurisdiction = contract.address;
+    contractAddr.game = contract.address;
     //Log
-    console.log("Deployed Jurisdiction Contract to " + contractAddr.jurisdiction);
-    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.jurisdiction);
+    console.log("Deployed Game Contract to " + contractAddr.game);
+    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.game);
   }
 
-  //--- Case Implementation
-  if(!contractAddr.case){
-    //Deploy Case
-    let contract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
+  //--- Reaction Implementation
+  if(!contractAddr.reaction){
+    //Deploy Reaction
+    let contract = await ethers.getContractFactory("ReactionUpgradable").then(res => res.deploy());
     await contract.deployed();
     //Set Address
-    contractAddr.case = contract.address;
+    contractAddr.reaction = contract.address;
     //Log
-    console.log("Deployed Case Contract to " + contractAddr.case);
-    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.case);
+    console.log("Deployed Reaction Contract to " + contractAddr.reaction);
+    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.reaction);
   }
 
   //--- TEST: Upgradable Hub
   if(!contractAddr.hub){
-    //Deploy Hub Upgradable (UUDP)    
-    hubContract = await ethers.getContractFactory("HubUpgradable").then(Contract => 
-      upgrades.deployProxy(Contract,
-        [
-          publicAddr.openRepo,
-          contractAddr.config, 
-          contractAddr.jurisdiction,
-          contractAddr.case,
-        ],{
-        kind: "uups",
-        timeout: 120000
-      })
-    );
+    //Deploy Hub Upgradable (UUPS)    
+    // hubContract = await ethers.getContractFactory("HubUpgradable").then(Contract => 
+    //   upgrades.deployProxy(Contract,
+    //     [
+    //       publicAddr.openRepo,
+    //       contractAddr.config, 
+    //       contractAddr.game,
+    //       contractAddr.reaction,
+    //     ],{
+    //     kind: "uups",
+    //     timeout: 120000
+    //   })
+    // );
+    hubContract = await deployUUPS("HubUpgradable",
+      [
+        publicAddr.openRepo,
+        contractAddr.config, 
+        contractAddr.game,
+        contractAddr.reaction,
+      ]);
 
     await hubContract.deployed();
+
+    //Set RuleRepo to Hub
+    hubContract.setAssoc("RULE_REPO", publicAddr.ruleRepo.address);
 
     //Set Address
     contractAddr.hub = hubContract.address;
@@ -80,7 +94,7 @@ async function main() {
 
     try{
       //Set as Avatars
-      if(!!contractAddr.avatar) await hubContract.setAssoc("avatar", contractAddr.avatar);
+      if(!!contractAddr.avatar) await hubContract.setAssoc("SBT", contractAddr.avatar);
       //Set as History
       if(!!contractAddr.history) await hubContract.setAssoc("history", contractAddr.history);
     }
@@ -89,21 +103,23 @@ async function main() {
     }
 
     //Log
-    console.log("Deployed Hub Upgradable Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " jurisdiction: "+contractAddr.jurisdiction+ " Case: "+ contractAddr.case);
-    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.hub+" "+publicAddr.openRepo+" "+ contractAddr.config+" "+contractAddr.jurisdiction+ " "+contractAddr.case);
+    console.log("Deployed Hub Upgradable Contract to " + contractAddr.hub+ " Conf: "+ contractAddr.config+ " game: "+contractAddr.game+ " Reaction: "+ contractAddr.reaction);
+    console.log("Run: npx hardhat verify --network "+chain+" " + contractAddr.hub+" "+publicAddr.openRepo+" "+ contractAddr.config+" "+contractAddr.game+ " "+contractAddr.reaction);
   }
 
-  //--- Avatar Upgradable
+  //--- Soul Upgradable
   if(!contractAddr.avatar){
 
-    //Deploy Avatar Upgradable
-    const proxyAvatar = await ethers.getContractFactory("SoulUpgradable").then(Contract => 
-      upgrades.deployProxy(Contract,
-        [contractAddr.hub],{
-        kind: "uups",
-        timeout: 120000
-      })
-    );
+    //Deploy Soul Upgradable
+    // const proxyAvatar = await ethers.getContractFactory("SoulUpgradable").then(Contract => 
+    //   upgrades.deployProxy(Contract,
+    //     [contractAddr.hub],{
+    //     kind: "uups",
+    //     timeout: 120000
+    //   })
+    // );
+    //Deploy UUPS
+    const proxyAvatar = await deployUUPS("SoulUpgradable", [contractAddr.hub]);
 
     await proxyAvatar.deployed();
     contractAddr.avatar = proxyAvatar.address;
@@ -114,7 +130,7 @@ async function main() {
     if(!!hubContract){  //If Deployed Together
       try{
         //Set to HUB
-        await hubContract.setAssoc("avatar", contractAddr.avatar);
+        await hubContract.setAssoc("SBT", contractAddr.avatar);
         //Log
         console.log("Registered Avatar Contract to Hub");
       }
@@ -137,14 +153,16 @@ async function main() {
 
     console.log("BEFORE History Contract Deployment");
 
-    //Deploy History Upgradable (UUDP)
-    const proxyActionRepo = await ethers.getContractFactory("ActionRepoTrackerUp").then(Contract => 
-      upgrades.deployProxy(Contract,
-        [contractAddr.hub],{
-        kind: "uups",
-        timeout: 120000
-      })
-    );
+    //Deploy History Upgradable (UUPS)
+    // const proxyActionRepo = await ethers.getContractFactory("ActionRepoTrackerUp").then(Contract => 
+    //   upgrades.deployProxy(Contract,
+    //     [contractAddr.hub],{
+    //     kind: "uups",
+    //     timeout: 120000
+    //   })
+    // );
+    const proxyActionRepo = await deployUUPS("ActionRepoTrackerUp", [contractAddr.hub]);
+
     await proxyActionRepo.deployed();
     
     console.log("Deployed History Contract", proxyActionRepo.address);

@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { Contract, ContractReceipt, Signer } from "ethers";
 import { ethers } from "hardhat";
-const {  upgrades } = require("hardhat");
+const { upgrades } = require("hardhat");
 
 
 //Test Data
@@ -9,12 +9,11 @@ const {  upgrades } = require("hardhat");
 // let test_uri = "ipfs://QmQxkoWcpFgMa7bCzxaANWtSt43J1iMgksjNnT4vM1Apd7"; //"TEST_URI";
 
 describe("Deployment", function () {
-    let jurisdictionContract: Contract;
-    let caseContract: Contract;
+    let gameContract: Contract;
+    let reactionContract: Contract;
     let hubContract: Contract;
     let configContract: Contract;
     let actionRepoContract: Contract;
-    let assocRepoContract: Contract;
     let openRepoContract: Contract;
     let SoulUpgradable: Contract;
     // let actionContract: Contract;
@@ -29,11 +28,7 @@ describe("Deployment", function () {
         //Populate Accounts
         [account1, account2] = await ethers.getSigners();
 
-        //--- AssocRepo
-        // assocRepoContract = await ethers.getContractFactory("AssocRepo").then(res => res.deploy());
-        // await assocRepoContract.deployed();
-       
-        //--- OpenRepo (UUDP)
+        //--- OpenRepo (UUPS)
         openRepoContract = await ethers.getContractFactory("OpenRepoUpgradable")
             .then(Contract => upgrades.deployProxy(Contract, [],{kind: "uups", timeout: 120000}));
 
@@ -41,13 +36,13 @@ describe("Deployment", function () {
         configContract = await ethers.getContractFactory("Config").then(res => res.deploy());
         await configContract.deployed();
 
-        //--- Jurisdiction Implementation
-        jurisdictionContract = await ethers.getContractFactory("JurisdictionUpgradable").then(res => res.deploy());
-        await jurisdictionContract.deployed();
+        //--- Game Implementation
+        gameContract = await ethers.getContractFactory("GameUpgradable").then(res => res.deploy());
+        await gameContract.deployed();
 
-        //--- Case Implementation
-        caseContract = await ethers.getContractFactory("CaseUpgradable").then(res => res.deploy());
-        await caseContract.deployed();
+        //--- Reaction Implementation
+        reactionContract = await ethers.getContractFactory("ReactionUpgradable").then(res => res.deploy());
+        await reactionContract.deployed();
         
     });
 
@@ -57,11 +52,10 @@ describe("Deployment", function () {
         // deploying new proxy
         const proxyHub = await upgrades.deployProxy(HubUpgradable,
             [
-                // assocRepoContract.address, 
                 openRepoContract.address,
                 configContract.address, 
-                jurisdictionContract.address,
-                caseContract.address,
+                gameContract.address,
+                reactionContract.address,
             ],{
             // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
             kind: "uups",
@@ -82,11 +76,10 @@ describe("Deployment", function () {
        const HubUpgradable = await ethers.getContractFactory("HubUpgradable");
        const proxyHub2 = await upgrades.deployProxy(HubUpgradable,
            [
-               // assocRepoContract.address, 
                openRepoContract.address,
                configContract.address, 
-               jurisdictionContract.address,
-               caseContract.address,
+               gameContract.address,
+               reactionContract.address,
            ],{
            // https://docs.openzeppelin.com/upgrades-plugins/1.x/api-hardhat-upgrades#common-options
            kind: "uups",
@@ -112,7 +105,7 @@ describe("Deployment", function () {
         await proxyAvatar.deployed();
         this.avatarContract = proxyAvatar;
         //Set Avatar Contract to Hub
-        hubContract.setAssoc("avatar", proxyAvatar.address);
+        hubContract.setAssoc("SBT", proxyAvatar.address);
         // console.log("SoulUpgradable deployed to:", proxyAvatar.address);
     });
 
@@ -179,11 +172,10 @@ describe("Deployment", function () {
         it("Should Deploy Mock Hub Contract", async function () {
             //--- Mock Hub
             let mockHub = await ethers.getContractFactory("HubMock").then(res => res.deploy(
-                // assocRepoContract.address, 
                 openRepoContract.address,
                 configContract.address, 
-                jurisdictionContract.address,
-                caseContract.address
+                gameContract.address,
+                reactionContract.address
             ));
             await mockHub.deployed();
             // console.log("MockHub Deployed to:", mockHub.address);

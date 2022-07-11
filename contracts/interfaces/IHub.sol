@@ -19,12 +19,12 @@ interface IHub {
     //Repo Address
     function repoAddr() external view returns(address);
 
-    /// Make a new Jurisdiction
-    function jurisdictionMake(string calldata name_, string calldata uri_) external returns (address);
+    /// Make a new Game
+    function gameMake(string calldata name_, string calldata uri_) external returns (address);
 
-    /// Make a new Case
-    // function caseMake(string calldata name_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external returns (address);
-    function caseMake(
+    /// Make a new Reaction
+    // function reactionMake(string calldata name_, DataTypes.RuleRef[] memory addRules, DataTypes.InputRole[] memory assignRoles) external returns (address);
+    function reactionMake(
         string calldata name_, 
         string calldata uri_, 
         DataTypes.RuleRef[] memory addRules, 
