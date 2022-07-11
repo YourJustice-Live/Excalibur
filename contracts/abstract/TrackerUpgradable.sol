@@ -4,6 +4,7 @@ pragma solidity 0.8.4;
 // import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "../interfaces/ISoul.sol";
 
 /**
@@ -22,11 +23,10 @@ abstract contract TrackerUpgradable {
 
     /// Set Target Contract
     function __setTargetContract(address targetContract) internal virtual {
-        //Validate IERC721
-        // require(IERC165(targetContract).supportsInterface(type(IERC721).interfaceId), "Target Expected to Support IERC721");
+        //Validate Interfaces
+        // require(IERC165(targetContract).supportsInterface(type(IERC721).interfaceId), "Target Expected to Support IERC721"); //Additional 0.238Kb
         require(IERC165(targetContract).supportsInterface(type(ISoul).interfaceId), "Target contract expected to support ISoul");
         _targetContract = targetContract;
-        // _targetContract = IERC721(targetContract);
     }
 
     /// Get a Token ID Based on account address (Throws)

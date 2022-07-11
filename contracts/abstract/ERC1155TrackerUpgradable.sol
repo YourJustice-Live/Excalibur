@@ -44,12 +44,16 @@ abstract contract ERC1155TrackerUpgradable is
     mapping(uint256 => uint256[]) internal _uniqueMemberTokens;
 
 
-    /// Get Target Contract
+    /// Initializer
+    function initialize (address sbtAddress) public virtual initializer {
+        //Initializers
+        __setTargetContract(sbtAddress);
+    }
+
+    /// Expose Target Contract
     function getTargetContract() public view virtual override returns (address) {
         return _targetContract;
     }
-
-
 
     /// Unique Members Count (w/Token)
     function uniqueMembers(uint256 id) public view override returns (uint256[] memory) {
