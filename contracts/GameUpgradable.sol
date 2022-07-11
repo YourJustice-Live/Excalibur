@@ -51,8 +51,6 @@ import "./abstract/ProxyMulti.sol";  //Adds 1.529Kb
 contract GameUpgradable is 
         IGame, 
         IRules,
-        // Rules, 
-        // ContractBase,
         ProtocolEntityUpgradable, 
         Opinions, 
         Posts,
