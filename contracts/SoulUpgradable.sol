@@ -212,8 +212,8 @@ contract SoulUpgradable is
         }
     }
 
+    /// Hook - After Token Transfer
     function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual override {
-        // _owners[owner] = tokenId;
         //Soul Type
         string memory soulType = _getType(to);
         //Set
