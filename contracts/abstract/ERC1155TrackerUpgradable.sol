@@ -17,6 +17,7 @@ import "../interfaces/IERC1155Tracker.sol";
 import "../interfaces/ISoul.sol";
 import "../libraries/AddressArray.sol";
 import "../libraries/UintArray.sol";
+import "../abstract/TrackerUpgradable.sol";
 
 /**
  * @title ERC1155 Tracker Upgradable
@@ -25,7 +26,8 @@ import "../libraries/UintArray.sol";
 abstract contract ERC1155TrackerUpgradable is 
         Initializable, 
         ContextUpgradeable, 
-        ERC165Upgradeable, 
+        ERC165Upgradeable,
+        TrackerUpgradable, 
         IERC1155Tracker {
 
     using AddressUpgradeable for address;
@@ -41,47 +43,13 @@ abstract contract ERC1155TrackerUpgradable is
     //Index Unique Members for each TokenId
     mapping(uint256 => uint256[]) internal _uniqueMemberTokens;
 
-    // Target Contract (External Source)
-    address _targetContract;
 
     /// Get Target Contract
     function getTargetContract() public view virtual override returns (address) {
         return _targetContract;
     }
 
-    /// Set Target Contract
-    function __setTargetContract(address targetContract) internal virtual {
-        //Validate IERC721
-        // require(IERC165(targetContract).supportsInterface(type(IERC721).interfaceId), "Target Expected to Support IERC721");
-        require(IERC165(targetContract).supportsInterface(type(ISoul).interfaceId), "Target contract expected to support ISoul");
-        _targetContract = targetContract;
-        // _targetContract = IERC721(targetContract);
-    }
 
-    /// Get a Token ID Based on account address (Throws)
-    function getExtTokenId(address account) public view returns(uint256) {
-        //Validate Input
-        require(account != _targetContract, "ERC1155Tracker: source contract address is not a valid account");
-        //Get
-        uint256 ownerToken = _getExtTokenId(account);
-        //Validate Output
-        require(ownerToken != 0, "ERC1155Tracker: requested account not found on source contract");
-        //Return
-        return ownerToken;
-    }
-
-    /// Get a Token ID Based on account address
-    function _getExtTokenId(address account) internal view returns (uint256) {
-        // require(account != address(0), "ERC1155Tracker: address zero is not a valid account");       //Redundant 
-        require(account != _targetContract, "ERC1155Tracker: source contract address is not a valid account");
-        //Run function on destination contract
-        // return ISoul(_targetContract).tokenByAddress(account);
-        uint256 ownerToken = ISoul(_targetContract).tokenByAddress(account);
-        //Validate
-        // require(ownerToken != 0, "ERC1155Tracker: account not found on source contract");
-        //Return
-        return ownerToken;
-    }
 
     /// Unique Members Count (w/Token)
     function uniqueMembers(uint256 id) public view override returns (uint256[] memory) {
