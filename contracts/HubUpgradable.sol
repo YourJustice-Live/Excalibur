@@ -119,7 +119,7 @@ contract HubUpgradable is
     /// Update Hub
     function hubChange(address newHubAddr) external override onlyOwner {
         //Avatar
-        address avatarContract = repo().addressGet("avatar");
+        address avatarContract = repo().addressGet("SBT");
         if(avatarContract != address(0)){
             try IProtocolEntity(avatarContract).setHub(newHubAddr){}  //Failure should not be fatal
             catch Error(string memory /*reason*/) {}
@@ -182,6 +182,15 @@ contract HubUpgradable is
         emit ContractCreated("game", address(newGameProxy));
         //Remember
         _games[address(newGameProxy)] = true;
+
+        //Register as a Soul
+        try ISoul(repo().addressGet("SBT")).mintFor(address(newGameProxy), uri_) {}   //Failure should not be fatal
+        catch Error(string memory reason) {
+            console.log("Failed to mint a soul for the new Game Contract", reason);
+        }
+        
+        // repo().addressAdd("GAME", address(newGameProxy));
+
         //Return
         return address(newGameProxy);
     }
@@ -223,7 +232,7 @@ contract HubUpgradable is
         //Validate - Known & Active Game 
         require(_games[_msgSender()], "UNAUTHORIZED: Valid Game Only");
         //Update Avatar's Reputation    //TODO: Just Check if Contract Implements IRating
-        address avatarContract = repo().addressGet("avatar");
+        address avatarContract = repo().addressGet("SBT");
         if(avatarContract != address(0) && avatarContract == contractAddr){
             _repAddAvatar(tokenId, domain, rating, amount);
         }
@@ -231,7 +240,7 @@ contract HubUpgradable is
 
     /// Add Repuation to Avatar
     function _repAddAvatar(uint256 tokenId, string calldata domain, bool rating, uint8 amount) internal {
-        address avatarContract = repo().addressGet("avatar");
+        address avatarContract = repo().addressGet("SBT");
         try ISoul(avatarContract).repAdd(tokenId, domain, rating, amount) {}   //Failure should not be fatal
         catch Error(string memory /*reason*/) {}
     }
