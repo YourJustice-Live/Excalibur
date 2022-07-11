@@ -33,12 +33,9 @@ import "../libraries/StringArray.sol";
 contract OpenRepoUpgradable is 
         IOpenRepo, 
         Initializable,
-        // Context, 
         OwnableUpgradeable,
         UUPSUpgradeable,
         ERC165,
-        // BoolStore,
-        // StringStore,
         ContractBase {
 
     //--- Storage
@@ -78,7 +75,7 @@ contract OpenRepoUpgradable is
     function _authorizeUpgrade(address newImplementation) internal onlyOwner override { }
 
 
-    //-- Addresses 
+    //-- Addresses
 
     /// Get Address By Origin Owner Node
     function addressGetOf(address originContract, string memory key) public view override returns(address) {
