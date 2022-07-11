@@ -261,7 +261,7 @@ abstract contract ERC1155TrackerUpgradable is
         emit TransferSingle(operator, from, to, id, amount);
         emit TransferByToken(operator, ownerFrom, ownerTo, id, amount);
 
-        // _afterTokenTransfer(operator, from, to, ids, amounts, data);
+        _afterTokenTransfer(operator, from, to, ids, amounts, data);
 
         // _doSafeTransferAcceptanceCheck(operator, from, to, id, amount, data);
     }
@@ -311,7 +311,7 @@ abstract contract ERC1155TrackerUpgradable is
         emit TransferBatch(operator, from, to, ids, amounts);
         emit TransferBatchByToken(operator, ownerFrom, ownerTo, ids, amounts);
 
-        // _afterTokenTransfer(operator, from, to, ids, amounts, data);
+        _afterTokenTransfer(operator, from, to, ids, amounts, data);
 
         // _doSafeBatchTransferAcceptanceCheck(operator, from, to, ids, amounts, data);
     }
@@ -384,7 +384,7 @@ abstract contract ERC1155TrackerUpgradable is
         emit TransferSingle(operator, address(0), to, id, amount);
         emit TransferByToken(operator, 0, toToken, id, amount);
 
-        // _afterTokenTransfer(operator, address(0), to, ids, amounts, data);
+        _afterTokenTransfer(operator, address(0), to, ids, amounts, data);
         _afterTokenTransferTracker(operator, 0, toToken, ids, amounts, data);
 
         // _doSafeTransferAcceptanceCheck(operator, address(0), to, id, amount, data);
@@ -422,7 +422,7 @@ abstract contract ERC1155TrackerUpgradable is
         emit TransferBatch(operator, address(0), to, ids, amounts);
         emit TransferBatchByToken(operator, 0, toToken, ids, amounts);
 
-        // _afterTokenTransfer(operator, address(0), to, ids, amounts, data);
+        _afterTokenTransfer(operator, address(0), to, ids, amounts, data);
         _afterTokenTransferTracker(operator, 0, toToken, ids, amounts, data);
 
         // _doSafeBatchTransferAcceptanceCheck(operator, address(0), to, ids, amounts, data);
@@ -472,7 +472,7 @@ abstract contract ERC1155TrackerUpgradable is
         emit TransferSingle(operator, from, address(0), id, amount);
         emit TransferByToken(operator, fromToken, 0, id, amount);
 
-        // _afterTokenTransfer(operator, from, address(0), ids, amounts, "");
+        _afterTokenTransfer(operator, from, address(0), ids, amounts, "");
         _afterTokenTransferTracker(operator, fromToken, 0, ids, amounts, "");
     }
 
@@ -512,7 +512,7 @@ abstract contract ERC1155TrackerUpgradable is
         emit TransferBatch(operator, from, address(0), ids, amounts);
         emit TransferBatchByToken(operator, fromToken, 0, ids, amounts);
 
-        // _afterTokenTransfer(operator, from, address(0), ids, amounts, "");
+        _afterTokenTransfer(operator, from, address(0), ids, amounts, "");
         _afterTokenTransferTracker(operator, fromToken, 0, ids, amounts, "");
     }
 
