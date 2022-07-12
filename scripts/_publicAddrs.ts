@@ -6,8 +6,8 @@ const publicAddr: any = {
     ruleRepo: "0xa14C272e1D6BE9c89933e2Ad8560e83F945Ee407", //V1.0
   },
   mumbai:{
-    openRepo: "0x7216B1ccA943f740794EC96263678dc91f230796",
-    ruleRepo: "0x84AF36Bafb102A63A7d6239B4A4a3D76fB873823",
+    openRepo: "0xCc7eD408ff30220D02619F7cCc35db7Db7D3878c", 
+    ruleRepo: "0xCd8F2a69Ca83e9866298F3f5919a89e82522BEdB",
   },
   optimism:{
     openRepo: "",
