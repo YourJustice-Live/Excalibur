@@ -6,16 +6,11 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 // import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
-// import "@openzeppelin/contracts/governance/utils/Votes.sol";
-// import "./abstract/Votes.sol";
-// import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/draft-ERC721VotesUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/governance/utils/VotesUpgradeable.sol"; //Adds 3.486Kb
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import "./interfaces/IGameUp.sol";
 import "./interfaces/IRulesRepo.sol";
 import "./interfaces/IReaction.sol";
 import "./interfaces/IActionRepo.sol";
-import "./public/interfaces/IVotesRepo.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/ProtocolEntityUpgradable.sol";
 import "./abstract/Opinions.sol";
@@ -44,7 +39,6 @@ import "./abstract/ProxyMulti.sol";  //Adds 1.529Kb
  * - NFT Trackers - Assign Avatars instead of Accounts & Track the owner of the Avatar NFT
  * V3:
  * - Multi-Proxy Pattern
- * / DAO Votes [?]
  * V4:
  * - [TODO] Unique Rule IDs (GUID)
  */
@@ -55,7 +49,6 @@ contract GameUpgradable is
         Opinions, 
         Posts,
         ProxyMulti,
-        // VotesUpgradeable,
         ERC1155RolesTrackerUp {
         // ERC1155RolesUpgradable {
 
@@ -91,16 +84,6 @@ contract GameUpgradable is
     }
 
     //--- Functions
-
-
-    /** For VotesUpgradeable
-     * @dev Returns the balance of `account`.
-     * /
-    function _getVotingUnits(address account) internal view virtual override returns (uint256) {
-        return balanceOf(account, _roleToId("member"));
-    }
-    */
-
 
     //Get Rules Repo
     function _ruleRepo() internal view returns (IRules) {
@@ -373,33 +356,6 @@ contract GameUpgradable is
             }
         }
     }
-
-    function _afterTokenTransfer(
-        address operator,
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
-    ) internal virtual override {
-        super._afterTokenTransfer(operator, from, to, ids, amounts, data);
-
-
-        address votesRepoAddr = repo().addressGetOf(address(_HUB), "VOTES_REPO");
-        if(votesRepoAddr != address(0)){
-            for (uint256 i = 0; i < ids.length; ++i) {
-                // uint256 id = ids[i];
-                uint256 amount = amounts[i];
-                //Votes Changes
-                IVotesRepo(votesRepoAddr).transferVotingUnits(from, to, amount);
-            }
-        }
-        else{
-            console.log("No Votes Repo Configured", votesRepoAddr);
-        }
-
-    }
-
 
     //** Rule Management
     
