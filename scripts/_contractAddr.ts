@@ -9,12 +9,12 @@ const contractAddr: any = {
       history:"0xD7ab715a2C1e5b450b54B1E3cE5136D755c715B8", //D4.4 (Proxy)
   },
   mumbai:{
-    config: "0x1F2c31D5034F27A4352Bc6ca0fc72cdC32809808", // D2.1
-    game: "0x57d1469c53Bb259Dc876A274ADd329Eb703Ab286", // D2.91
-    reaction: "0xED7621062a097f95183edC753e185B4f75d4B637", // D2.8
-    hub: "0x47307dEBB584C680E51dAFb167622ce9633c2Acf", // D4.6 (Proxy)
-    avatar: "0xFe61dc25C3B8c3F990bCea5bb901704B2a8b9Bd2", // D2.8 (Proxy)
-    history: "0x95BD98a656C907fC037aF87Ea740fD94188Cd65f", // D4.4 (Proxy)
+    config: "0x93D6FC74935133E54aa1A2f9bF4E85fA3E65C992",
+    game: "0xFc3BFfD5496b436D84DcDe1c7134C59aF43cE97C",
+    reaction: "0xa25406Fe9F3C4F48eE86c0DeD044cCA06A00C005",
+    hub: "0xefb9cD307fB4BD7Bb49769e3a3bd1E08682bfF61",
+    avatar: "0x74dB43EE8703643E72116e4D52b273C997Dd38Ad",
+    history: "0x8fA0a4027075dd50D34090825c489F350706e8Ee",
   },
   optimism:{
   },
