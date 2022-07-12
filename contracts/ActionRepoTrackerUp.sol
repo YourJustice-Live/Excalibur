@@ -39,7 +39,7 @@ contract ActionRepoTrackerUp is
     //--- Functions
 
     /// Initializer
-    function initialize (address hub) public initializer {
+    function initialize (address hub) public initializer override {
         //Initializers
         __UUPSUpgradeable_init();
         __ProtocolEntity_init(hub);

@@ -15,6 +15,7 @@ import "./interfaces/IGameUp.sol";
 import "./interfaces/IRulesRepo.sol";
 import "./interfaces/IReaction.sol";
 import "./interfaces/IActionRepo.sol";
+import "./public/interfaces/IVotesRepo.sol";
 import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/ProtocolEntityUpgradable.sol";
 import "./abstract/Opinions.sol";
@@ -24,7 +25,6 @@ import "./abstract/Posts.sol";
 // import "./public/interfaces/IOpenRepo.sol";
 import "./abstract/ProxyMulti.sol";  //Adds 1.529Kb
 // import "./libraries/DataTypes.sol";
-
 
 
 /**
@@ -372,6 +372,32 @@ contract GameUpgradable is
                 require(amount == 1, "ONE_TOKEN_MAX");
             }
         }
+    }
+
+    function _afterTokenTransfer(
+        address operator,
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) internal virtual override {
+        super._afterTokenTransfer(operator, from, to, ids, amounts, data);
+
+
+        address votesRepoAddr = repo().addressGetOf(address(_HUB), "VOTES_REPO");
+        if(votesRepoAddr != address(0)){
+            for (uint256 i = 0; i < ids.length; ++i) {
+                // uint256 id = ids[i];
+                uint256 amount = amounts[i];
+                //Votes Changes
+                IVotesRepo(votesRepoAddr).transferVotingUnits(from, to, amount);
+            }
+        }
+        else{
+            console.log("No Votes Repo Configured", votesRepoAddr);
+        }
+
     }
 
 
