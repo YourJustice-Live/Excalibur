@@ -15,11 +15,7 @@ import "./abstract/ERC1155RolesTrackerUp.sol";
 import "./abstract/ProtocolEntityUpgradable.sol";
 import "./abstract/Opinions.sol";
 import "./abstract/Posts.sol";
-// import "./abstract/Rules.sol";
-// import "./abstract/Recursion.sol";
-// import "./public/interfaces/IOpenRepo.sol";
 import "./abstract/ProxyMulti.sol";  //Adds 1.529Kb
-// import "./libraries/DataTypes.sol";
 
 
 /**
