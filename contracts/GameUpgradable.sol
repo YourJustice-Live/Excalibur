@@ -93,7 +93,6 @@ contract GameUpgradable is
         _;
     }
 
-
     //--- Functions
 
 
@@ -104,7 +103,6 @@ contract GameUpgradable is
         return balanceOf(account, _roleToId("member"));
     }
     */
-
 
 
     //Get Rules Repo
@@ -145,8 +143,6 @@ contract GameUpgradable is
         //Assign Creator as Admin & Member
         _roleAssign(tx.origin, "admin", 1);
         _roleAssign(tx.origin, "member", 1);
-
-
     }
 
     //** Reaction Functions
@@ -380,6 +376,7 @@ contract GameUpgradable is
             }
         }
     }
+
 
     //** Rule Management
     
