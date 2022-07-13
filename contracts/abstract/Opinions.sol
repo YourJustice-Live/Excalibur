@@ -6,7 +6,7 @@ import "../interfaces/IOpinions.sol";
 
 /**
  * @title Rating for Contracts & Tokens
- * @dev Designed To Be Used by Jurisdictions
+ * @dev Designed To Be Used by Games
  * - Hold & Update Multidimentional Rating Data about Other On-Chain Entities
  */
 abstract contract Opinions is IOpinions {

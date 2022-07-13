@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 
 // import "../ERC1155D.sol";
 // import "../ERC1155Tracker.sol";
-import "../CaseUpgradable.sol";
+import "../ReactionUpgradable.sol";
 import "../libraries/DataTypes.sol";
 
 
@@ -12,7 +12,7 @@ import "../libraries/DataTypes.sol";
  * @title ERC1155Mock
  * This mock just publicizes internal functions for testing purposes
  */
-contract CaseMock is CaseUpgradable {
+contract ReactionMock is ReactionUpgradable {
 
     constructor(
         address hub,
@@ -25,8 +25,8 @@ contract CaseMock is CaseUpgradable {
 
         // initialize(
         //     hub, 
-        //     "Mock Case", 
-        //     "MOCKCASE_URI", 
+        //     "Mock Reaction", 
+        //     "MOCK_URI", 
         //     addRules,
         //     assignRoles,
         //     container

@@ -15,7 +15,7 @@ contract Config is Ownable {
     //-- Storage
     
     // Symbol as Arbitrary contract designation signature
-    string public constant symbol = "YJConfig";
+    string public constant symbol = "Config";
     
     //Treasury
     address private _treasury;

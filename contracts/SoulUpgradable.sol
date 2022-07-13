@@ -1,35 +1,36 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
+// import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
-// import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-// import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import "./interfaces/ISoul.sol";
 import "./abstract/Opinions.sol";
-import "./abstract/CommonYJUpgradable.sol";
-
+import "./abstract/ProtocolEntityUpgradable.sol";
+import "./libraries/Utils.sol";
 
 /**
  * @title Soulbound NFT Identity Tokens + Reputation Tracking
- * @dev Version 2.0
+ * @dev Version 2.1
  *  - Contract is open for everyone to mint.
  *  - Max of one NFT assigned for each account
  *  - Can create un-assigned NFT (Kept on contract)
  *  - Minted Token's URI is updatable by Token holder
  *  - Assets are non-transferable by owner
- *  - Tokens can be merged (Multiple Owners)
+ *  - Tokens can be merged (multiple owners)
+ *  - Owner can mint tokens for Contracts
  *  - [TODO] Orphan tokens can be claimed/linked
  */
 contract SoulUpgradable is 
         ISoul, 
         Initializable,
-        CommonYJUpgradable, 
+        ProtocolEntityUpgradable, 
         UUPSUpgradeable,
         Opinions,
         ERC721URIStorageUpgradeable {
@@ -42,10 +43,9 @@ contract SoulUpgradable is
     using CountersUpgradeable for CountersUpgradeable.Counter;
     CountersUpgradeable.Counter private _tokenIds;
 
-    //Positive & Negative Reputation Tracking Per Domain (Personal,Community,Professional) 
-    // mapping(uint256 => mapping(DataTypes.Domain => mapping(DataTypes.Rating => uint256))) internal _rep;  //[Token][Domain][bool] => Rep     //Inherited from Opinions
     mapping(address => uint256) internal _owners;  //Map Multiple Accounts to Tokens (Aliases)
-
+    mapping(uint256 => string) public types;    //Soul Types
+    mapping(uint256 => address) internal _link; //[TBD] Linked Souls
 
     //--- Modifiers
 
@@ -58,7 +58,7 @@ contract SoulUpgradable is
         __ERC721_init("Soulbound Tokens (YJ.life)", "SOUL");
         __ERC721URIStorage_init();
         __UUPSUpgradeable_init();
-        __CommonYJ_init(hub);
+        __ProtocolEntity_init(hub);
         //Set Contract URI
         // _setContractURI(uri_);
     }
@@ -68,7 +68,9 @@ contract SoulUpgradable is
 
     /// ERC165 - Supported Interfaces
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(ISoul).interfaceId || super.supportsInterface(interfaceId);
+        return interfaceId == type(ISoul).interfaceId
+            || interfaceId == type(IERC721Upgradeable).interfaceId 
+            || super.supportsInterface(interfaceId);
     }
 
     //** Token Owner Index **/
@@ -131,34 +133,37 @@ contract SoulUpgradable is
     
     //** Token Actions **/
     
-    /// Mint (Create New Avatar for oneself)
-    function mint(string memory tokenURI) public override returns (uint256) {
-        //One Per Account
-        require(balanceOf(_msgSender()) == 0, "Requesting account already has an avatar");
+    /// Mint (Create New Token for Someone Else)
+    function mintFor(address to, string memory tokenURI) public override returns (uint256) {
+        //Validate - Contract Owner 
+        // require(_msgSender() == owner(), "Only Owner");
+        require(_msgSender() == owner() || _msgSender() == address(_HUB), "Only Owner or Hub");
         //Mint
-        uint256 tokenId = _createAvatar(_msgSender(), tokenURI);
-        //Index Owner
-        // _tokenOwnerAdd(_msgSender(), tokenId);   //MOVED TO TokenTransfer Logic
-        //Return
-        return tokenId;
+        return _mint(to, tokenURI);
+    }
+
+    /// Mint (Create New Token for oneself)
+    function mint(string memory tokenURI) external override returns (uint256) {
+        //Mint
+        return _mint(_msgSender(), tokenURI);
     }
 	
-    /// Add (Create New Avatar Without an Owner)
+    /// Add (Create New Token Without an Owner)
     function add(string memory tokenURI) external override returns (uint256) {
         //Mint
-        return _createAvatar(address(this), tokenURI);
+        return _mint(address(this), tokenURI);
     }
 
     /// Burn NFTs
     function burn(uint256 tokenId) external {
-        //Validate Owner of Contract
+        //Validate - Contract Owner 
         require(_msgSender() == owner(), "Only Owner");
         //Burn Token
         _burn(tokenId);
     }
 
     /// Update Token's Metadata
-    function update(uint256 tokenId, string memory uri) public override returns (uint256) {
+    function update(uint256 tokenId, string memory uri) external override returns (uint256) {
         //Validate Owner of Token
         require(_isApprovedOrOwner(_msgSender(), tokenId) || _msgSender() == owner(), "caller is not owner nor approved");
         _setTokenURI(tokenId, uri);	//This Goes for Specific Metadata Set (IPFS and Such)
@@ -168,14 +173,16 @@ contract SoulUpgradable is
         return tokenId;
     }
 
-    /// Create a new Avatar
-    function _createAvatar(address to, string memory uri) internal returns (uint256){
+    /// Create a new Token
+    function _mint(address to, string memory uri) internal returns (uint256){
         //Validate - Bot Protection
-        require(tx.origin == _msgSender(), "Bots not allowed");
+        // require(tx.origin == _msgSender(), "Bots not allowed");      //CANCELLED - Allow Contracts to Have Souls
+        //One Per Account
+        require(to == address(this) || balanceOf(_msgSender()) == 0, "Requesting account already has a token");
         //Mint
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
-        _safeMint(to, newItemId);
+        _mint(to, newItemId);
         //Set URI
         _setTokenURI(newItemId, uri);	//This Goes for Specific Metadata Set (IPFS and Such)
         //Emit URI Changed Event
@@ -187,15 +194,14 @@ contract SoulUpgradable is
     /// Token Transfer Rules
     function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721Upgradeable) {
         super._beforeTokenTransfer(from, to, tokenId);
-        //Can't be owned by a Contract
-        require(to == address(this) || !to.isContract(), "Destination is a Contract");
+        //Can't be owned by a Contract      //CANCELLED - Allow Contracts to have Souls
+        // require(to == address(this) || !to.isContract(), "Destination is a Contract");
+
         //Non-Transferable (by client)
         require(
             _msgSender() == owner()
             || from == address(0)   //Minting
-            // || to == address(0)     //Burning
-            ,
-            "Sorry, Assets are non-transferable"
+            , "Sorry, assets are non-transferable"
         );
         
         //Update Address Index        
@@ -205,40 +211,41 @@ contract SoulUpgradable is
             _owners[to] = tokenId;
         }
     }
-    // function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721) {
-        // _owners[owner] = tokenId;
-    // }
+
+    /// Hook - After Token Transfer
+    function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual override {
+        //Soul Type
+        string memory soulType = Utils.getAddressType(to);
+        //Set
+        types[tokenId] = soulType;
+        //Emit Soul Type as Event
+        emit SoulType(tokenId, soulType);
+    }
 
     /// Transfer Privileges are manged in the _beforeTokenTransfer function
     /// @dev Override the main Transfer privileges function
-    function _isApprovedOrOwner(address, uint256) internal pure override returns (bool) {
-        return true;
+    function _isApprovedOrOwner(address spender, uint256 tokenId) internal view override returns (bool) {
+        //Approved or Seconday Owner
+        return (super._isApprovedOrOwner(spender, tokenId)  || (_owners[spender] == tokenId));
     }
 
-    /// Receiver Function For Holding NFTs on Contract
-    /// @dev needed in order to keep tokens in the contract
-    function onERC721Received(address, address, uint256, bytes memory) public pure returns (bytes4) {
-        return this.onERC721Received.selector;
+    /// Override transferFrom()
+    /// Remove Approval Check 
+    /// Transfer Privileges are manged in the _beforeTokenTransfer function
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override {
+        //solhint-disable-next-line max-line-length
+        // require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner nor approved");
+        _transfer(from, to, tokenId);
     }
-
-    /* Try without it, since we don't want any regular ERC1155 to be received
-    /// Receiver Function For Holding NFTs on Contract (Allow for internal NFTs to assume Roles)
-    function onERC1155Received(address, address, uint256, uint256, bytes memory) public pure returns (bytes4) {
-        return this.onERC1155Received.selector;
-    }
-
-    /// Receiver Function For Holding NFTs on Contract
-    function onERC1155BatchReceived(address, address, uint256[] memory, uint256[] memory, bytes memory) public pure returns (bytes4) {
-        return this.onERC1155BatchReceived.selector;
-    }
-    */
 
     /// Check if the Current Account has Control over a Token
     function hasTokenControl(uint256 tokenId) public view override returns (bool) {
         address ownerAccount = ownerOf(tokenId);
         return (
             // ownerAccount == _msgSender()    //Token Owner
+            // solhint-disable-next-line avoid-tx-origin
             ownerAccount == tx.origin    //Token Owner (Allows it to go therough the hub)
+            // solhint-disable-next-line avoid-tx-origin
             || (ownerAccount == address(this) && owner() == tx.origin) //Unclaimed Tokens Controlled by Contract Owner/DAO
         );
     }

@@ -2,6 +2,7 @@
 pragma solidity 0.8.4;
 
 import "../interfaces/IContractBase.sol";
+import "../libraries/Utils.sol";
 
 /**
  * @title Basic Contract Funtionality (For all contracts)

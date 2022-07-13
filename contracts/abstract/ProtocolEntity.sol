@@ -4,14 +4,15 @@ pragma solidity 0.8.4;
 // import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../interfaces/ICommonYJ.sol";
+import "../interfaces/IProtocolEntity.sol";
 import "../interfaces/IHub.sol";
 import "../libraries/DataTypes.sol";
+import "../abstract/ContractBase.sol";
 
 /**
  * Common Protocol Functions
  */
-abstract contract CommonYJ is ICommonYJ, Ownable {
+abstract contract ProtocolEntity is IProtocolEntity, ContractBase, Ownable {
     
     //--- Storage
 
@@ -27,7 +28,7 @@ abstract contract CommonYJ is ICommonYJ, Ownable {
     }
 
     /// Inherit owner from Protocol's config
-    function owner() public view override (ICommonYJ, Ownable) returns (address) {
+    function owner() public view override (IProtocolEntity, Ownable) returns (address) {
         return _HUB.owner();
     }
 
@@ -50,15 +51,9 @@ abstract contract CommonYJ is ICommonYJ, Ownable {
     /// Set Hub Contract
     function _setHub(address hubAddr) internal {
         //Validate Contract's Designation
-        require(keccak256(abi.encodePacked(IHub(hubAddr).role())) == keccak256(abi.encodePacked("YJHub")), "Invalid Hub Contract");
-        // require(keccak256(abi.encodePacked(IHub(hubAddr).symbol())) == keccak256(abi.encodePacked("YJHUB")), "Invalid Hub Contract");
+        require(Utils.stringMatch(IHub(hubAddr).role(), "Hub"), "Invalid Hub Contract");
         //Set
         _HUB = IHub(hubAddr);
-    }
-    
-    /// Match Two Strings
-    function _stringMatch(string memory str1, string memory str2) internal pure returns(bool){
-        return (keccak256(abi.encodePacked(str1)) == keccak256(abi.encodePacked(str2)));
     }
 
 }

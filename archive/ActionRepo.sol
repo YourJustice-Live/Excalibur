@@ -6,7 +6,7 @@ pragma solidity 0.8.4;
 import "./interfaces/IActionRepo.sol";
 // import "./libraries/DataTypes.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "./abstract/CommonYJ.sol";
+import "./abstract/ProtocolEntity.sol";
 import "./abstract/ERC1155GUID.sol";
 
 
@@ -14,9 +14,9 @@ import "./abstract/ERC1155GUID.sol";
  * @title History Retention
  * @dev Event Repository -- Retains Unique Events and Their Apperance Throught History
  * 2D - Compound GUID + Additional Data & URI
- * [TBD] 3D - Individual Instances of Action (Incidents) as NFTs + Event Details (Time, Case no.,  etc')
+ * [TBD] 3D - Individual Instances of Action (Reactions) as NFTs + Event Details (Time, Reaction no.,  etc')
  */
-contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
+contract ActionRepo is IActionRepo, ProtocolEntity, ERC1155GUID {
 
     //--- Storage
     using AddressUpgradeable for address;
@@ -32,7 +32,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     //--- Functions
 
-    constructor(address hub) CommonYJ(hub) ERC1155(""){
+    constructor(address hub) ProtocolEntity(hub) ERC1155(""){
         // name = "YourJustice: Semantic Action Repo";
     }
 
@@ -49,7 +49,7 @@ contract ActionRepo is IActionRepo, CommonYJ, ERC1155GUID {
 
     /// Register New Action
     function actionAdd(DataTypes.SVO memory svo, string memory uri) public override returns (bytes32) {
-        //TODO: Validate
+        //Validate
         // require(!_msgSender().isContract(), "No-Bots");
 
         //Store Additional Details

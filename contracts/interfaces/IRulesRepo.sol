@@ -44,23 +44,23 @@ interface IRules {
     // event ActionRepoSet(address actionRepo);
 
     /// Rule Added or Changed
-    event Rule(uint256 indexed id, bytes32 about, string affected, string uri, bool negation);
+    event Rule(address indexed originAddress, uint256 indexed id, bytes32 about, string affected, string uri, bool negation);
 
     /// Rule Disabled Status Changed
-    event RuleDisabled(uint256 id, bool disabled);
+    event RuleDisabled(address indexed originAddress, uint256 id, bool disabled);
 
     /// Rule Removed
-    event RuleRemoved(uint256 indexed id);
+    event RuleRemoved(address indexed originAddress, uint256 indexed id);
 
     /// Rule's Effects
-    // event RuleEffects(uint256 indexed id, int8 environmental, int8 personal, int8 social, int8 professional);
+    // event RuleEffects(address indexed originAddress, uint256 indexed id, int8 environmental, int8 personal, int8 social, int8 professional);
     /// Generic Role Effect
-    event RuleEffect(uint256 indexed id, bool direction, uint8 value, string name);
+    event RuleEffect(address indexed originAddress, uint256 indexed id, bool direction, uint8 value, string name);
 
     /// Action Confirmation Change
-    event Confirmation(uint256 indexed id, string ruling, bool evidence, uint witness);
+    event Confirmation(address indexed originAddress, uint256 indexed id, string ruling, bool evidence, uint witness);
 
     /// Reaction Change
-    event Reaction(uint256 indexed id, bytes32 reactionId);
+    event Reaction(address indexed originAddress, uint256 indexed id, bytes32 reactionId);
 
 }

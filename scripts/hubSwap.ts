@@ -5,7 +5,7 @@
 // Runtime Environment's members available in the global scope.
 
 import { ethers } from "hardhat";
-const {  upgrades } = require("hardhat");
+const { upgrades } = require("hardhat");
 const hre = require("hardhat");
 const chain = hre.hardhatArguments.network;
 
@@ -27,7 +27,7 @@ async function main() {
     //New Hub
     let hubContract = await ethers.getContractFactory("HubUpgradable").then(res => res.attach(contractAddr.hub));
     //Set Contract Associations
-    await hubContract.setAssoc("avatar", contractAddr.avatar);
+    await hubContract.setAssoc("SBT", contractAddr.avatar);
     await hubContract.setAssoc("history", contractAddr.history);
 
 }

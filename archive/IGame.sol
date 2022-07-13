@@ -4,7 +4,7 @@ pragma solidity 0.8.4;
 
 import "../libraries/DataTypes.sol";
 
-interface IJurisdiction {
+interface IGame {
     
     //--- Functions
 
@@ -14,16 +14,16 @@ interface IJurisdiction {
     /// Set Contract URI
     function setContractURI(string calldata contract_uri) external;
 
-    /// Disable Case
-    function caseDisable(address caseContract) external;
+    /// Disable Reaction
+    function reactionDisable(address reactionContract) external;
 
-    /// Check if Case is Owned by This Contract (& Active)
-    function caseHas(address caseContract) external view returns (bool);
+    /// Check if Reaction is Owned by This Contract (& Active)
+    function reactionHas(address reactionContract) external view returns (bool);
 
-    /// Join jurisdiction as member
+    /// Join game as member
     function join() external;
 
-    /// Leave member role in current jurisdiction
+    /// Leave member role in current game
     function leave() external;
 
     /// Assign Someone to a Role
@@ -38,8 +38,8 @@ interface IJurisdiction {
     /// Create a new Role
     // function roleCreate(address account, string calldata role) external;
 
-    /// Make a new Case
-    // function caseMake(
+    /// Make a new Reaction
+    // function reactionMake(
     //     string calldata name_, 
     //     DataTypes.RuleRef[] calldata addRules, 
     //     DataTypes.InputRole[] calldata assignRoles, 
@@ -65,6 +65,6 @@ interface IJurisdiction {
 
     //--- Events
 
-    /// New Case Created
-    event CaseCreated(uint256 indexed id, address contractAddress);    
+    /// New Reaction Created
+    event ReactionCreated(uint256 indexed id, address contractAddress);    
 }
