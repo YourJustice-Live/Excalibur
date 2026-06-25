@@ -26,7 +26,7 @@
     "@openzeppelin/test-helpers": "^0.5.16",
     "@types/mocha": "^9.1.0",
     "chai": "^4.5.0",
-    "ethereum-waffle": "^3.4.0",
+    "ethereum-waffle": "^4.0.10",
     "ethers": "^5.8.0",
     "hardhat": "^2.28.6",
     "hardhat-gas-reporter": "^1.0.10",
@@ -41,5 +41,13 @@
     "dotenv": "^16.6.1",
     "hardhat-contract-sizer": "^2.10.1",
     "solidity-coverage": "^0.7.22"
+  },
+  "overrides": {
+    "@ethersproject/providers@5.8.0": {
+      "ws": "8.21.0"
+    },
+    "eth-lib@0.1.29": {
+      "ws": "5.2.5"
+    }
   }
 }

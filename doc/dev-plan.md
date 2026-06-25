@@ -2,6 +2,18 @@
 
 ## Open Tasks
 
+### EXC-0002: Fix `HubUpgradable` initializer validation failures in tests
+
+Status: open
+
+`npx hardhat test` currently fails because OpenZeppelin upgrades validation reports `contracts/HubUpgradable.sol:HubUpgradable` is missing an initializer call for `OwnableUpgradeable`. The first deployment failure cascades into undefined contract references in later tests.
+
+Acceptance criteria:
+
+- `HubUpgradable` initializes every required upgradeable parent contract exactly once.
+- Proxy deployment tests no longer fail OpenZeppelin upgrade-safety validation.
+- `npx hardhat test` passes, or any remaining failures are tracked as separate tasks with exact failing tests and root causes.
+
 ### EXC-0001: Migrate legacy Hardhat test tooling to clear remaining audit findings
 
 Status: open
