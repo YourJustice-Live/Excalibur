@@ -626,7 +626,7 @@ describe("Protocol", function () {
       });
 
       it("Should Fallback to Extension Function", async function () {
-        this.daoContract = await ethers.getContractFactory("Dummy2").then(res => res.attach(this.gameContract.address));
+        this.daoContract = await ethers.getContractFactory("Dummy").then(res => res.attach(this.gameContract.address));
         this.daoContract2 = await ethers.getContractFactory("Dummy2").then(res => res.attach(this.gameContract.address));
         //First Dummy        
         expect(await await this.daoContract.debugFunc()).to.equal("Hello World Dummy");
@@ -831,7 +831,7 @@ describe("Protocol", function () {
 
     it("Game Authoritys Can Assign Themselves to Reaction", async function () {
       //Assign as Game Authority
-      gameContract.connect(admin).roleAssign(this.tester4Addr, "authority")
+      await gameContract.connect(admin).roleAssign(this.tester4Addr, "authority");
       //Assign Reaction Authority
       await this.reactionContract.connect(tester4).roleAssign(this.tester4Addr, "authority");
       //Validate

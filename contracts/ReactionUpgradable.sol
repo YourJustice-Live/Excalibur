@@ -77,7 +77,7 @@ contract ReactionUpgradable is
     ) public override initializer {
         //Initializers
         __ProtocolEntity_init(hub);
-        __setTargetContract(getSoulAddr());
+        __ERC1155TrackerUpgradable_init(getSoulAddr());
         //Set Parent Container
         _setParentCTX(container);
         

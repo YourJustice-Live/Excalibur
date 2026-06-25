@@ -46,6 +46,10 @@ abstract contract ERC1155TrackerUpgradable is
 
     /// Initializer
     function initialize (address sbtAddress) public virtual initializer {
+        __ERC1155TrackerUpgradable_init(sbtAddress);
+    }
+
+    function __ERC1155TrackerUpgradable_init(address sbtAddress) internal onlyInitializing {
         //Initializers
         __setTargetContract(sbtAddress);
     }

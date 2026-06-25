@@ -99,7 +99,7 @@ contract GameUpgradable is
         //Initializers
         // __ERC1155RolesUpgradable_init("");
         __ProtocolEntity_init(hub);
-        __setTargetContract(repo().addressGetOf(address(_HUB), "SBT"));
+        __ERC1155TrackerUpgradable_init(repo().addressGetOf(address(_HUB), "SBT"));
         
         //Init Recursion Controls
         // __Recursion_init(address(_HUB)); //CANCELLED

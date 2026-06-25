@@ -30,6 +30,7 @@ abstract contract ProtocolEntityUpgradable is
 
     /// Initializer
     function __ProtocolEntity_init(address hub) internal onlyInitializing {
+        __Ownable_init();
         //Set Protocol's Config Address
         _setHub(hub);
     }

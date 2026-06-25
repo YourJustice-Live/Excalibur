@@ -77,6 +77,7 @@ contract HubUpgradable is
         //Set Data Repo Address
         _setRepo(openRepo);
         //Initializers
+        __Ownable_init();
         __UUPSUpgradeable_init();
         //Set Protocol's Config Address
         _setConfig(config);
