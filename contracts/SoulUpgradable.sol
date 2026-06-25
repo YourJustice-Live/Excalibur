@@ -192,8 +192,8 @@ contract SoulUpgradable is
     }
     
     /// Token Transfer Rules
-    function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual override(ERC721Upgradeable) {
-        super._beforeTokenTransfer(from, to, tokenId);
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize) internal virtual override {
+        super._beforeTokenTransfer(from, to, tokenId, batchSize);
         //Can't be owned by a Contract      //CANCELLED - Allow Contracts to have Souls
         // require(to == address(this) || !to.isContract(), "Destination is a Contract");
 
@@ -213,7 +213,9 @@ contract SoulUpgradable is
     }
 
     /// Hook - After Token Transfer
-    function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual override {
+    function _afterTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize) internal virtual override {
+        super._afterTokenTransfer(from, to, tokenId, batchSize);
+
         //Soul Type
         string memory soulType = Utils.getAddressType(to);
         //Set
